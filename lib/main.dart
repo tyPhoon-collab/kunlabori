@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:kunlabori/src/rust/api/interface.dart';
 import 'package:kunlabori/src/rust/frb_generated.dart';
 
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: HomePage());
+    return MaterialApp(home: const HomePage());
   }
 }
 
@@ -34,7 +35,7 @@ class HomePage extends HookWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                textStream.value = createDocument(id: docId);
+                textStream.value = create(id: docId);
               },
               child: const Text('Create Document'),
             ),
@@ -52,12 +53,7 @@ class HomePage extends HookWidget {
             ),
             TextField(
               onSubmitted: (text) {
-                editDocument(
-                  id: docId,
-                  position: BigInt.from(0),
-                  deleteCount: 0,
-                  text: text,
-                );
+                insert(id: docId, position: 0, text: text);
               },
             ),
           ],

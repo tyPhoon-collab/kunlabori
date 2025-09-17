@@ -9,17 +9,25 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 String greet({required String name}) =>
     RustLib.instance.api.crateApiInterfaceGreet(name: name);
 
-Stream<String> createDocument({required String id}) =>
-    RustLib.instance.api.crateApiInterfaceCreateDocument(id: id);
+Stream<String> create({required String id}) =>
+    RustLib.instance.api.crateApiInterfaceCreate(id: id);
 
-void editDocument({
+void insert({
   required String id,
-  required BigInt position,
-  required PlatformInt64 deleteCount,
+  required int position,
   required String text,
-}) => RustLib.instance.api.crateApiInterfaceEditDocument(
+}) => RustLib.instance.api.crateApiInterfaceInsert(
+  id: id,
+  position: position,
+  text: text,
+);
+
+void delete({
+  required String id,
+  required int position,
+  required int deleteCount,
+}) => RustLib.instance.api.crateApiInterfaceDelete(
   id: id,
   position: position,
   deleteCount: deleteCount,
-  text: text,
 );

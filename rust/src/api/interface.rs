@@ -11,7 +11,7 @@ pub fn greet(name: String) -> String {
 }
 
 #[flutter_rust_bridge::frb(sync)]
-pub fn create_document(id: String, sink: StreamSink<String>) -> Result<(), String> {
+pub fn create(id: String, sink: StreamSink<String>) -> Result<(), String> {
     let app_state = get_app_state();
     let mut documents = app_state.documents.lock().map_err(|e| e.to_string())?;
 
@@ -28,10 +28,9 @@ pub fn create_document(id: String, sink: StreamSink<String>) -> Result<(), Strin
 }
 
 #[flutter_rust_bridge::frb(sync)]
-pub fn edit_document(
+pub fn insert(
     id: String,
-    position: usize,
-    delete_count: isize,
+    position: u32,
     text: String,
 ) -> Result<(), String> {
     let app_state = get_app_state();
@@ -41,10 +40,25 @@ pub fn edit_document(
         .get_mut(&id)
         .ok_or_else(|| format!("Document with id {id} not found"))?;
     document
-        .edit(position, delete_count, &text)
-        .map_err(|e| e.to_string())?;
+        .insert(position, &text).map_err(|e| format!("Insert error: {:?}", e))?;
 
-    info!("Edited document with id {id}: pos={position}, del={delete_count}, text={text}");
+    info!("Inserted text into document with id {id}: pos={position}, text={text}");
+
+    Ok(())
+}
+
+#[flutter_rust_bridge::frb(sync)]
+pub fn delete(id: String, position: u32, delete_count: u32) -> Result<(), String> {
+    let app_state = get_app_state();
+    let mut documents = app_state.documents.lock().map_err(|e| e.to_string())?;
+
+    let document = documents
+        .get_mut(&id)
+        .ok_or_else(|| format!("Document with id {id} not found"))?;
+    document
+        .delete(position, delete_count).map_err(|e| format!("Delete error: {:?}", e))?;
+
+    info!("Deleted text from document with id {id}: pos={position}, del={delete_count}");
 
     Ok(())
 }
