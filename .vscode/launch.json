@@ -1,0 +1,37 @@
+{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "kunlabori",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--web-header=Cross-Origin-Opener-Policy=same-origin",
+                "--web-header=Cross-Origin-Embedder-Policy=require-corp"
+            ]
+        },
+        {
+            "name": "kunlabori (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "args": [
+                "--web-header=Cross-Origin-Opener-Policy=same-origin",
+                "--web-header=Cross-Origin-Embedder-Policy=require-corp"
+            ]
+        },
+        {
+            "name": "kunlabori (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "args": [
+                "--web-header=Cross-Origin-Opener-Policy=same-origin",
+                "--web-header=Cross-Origin-Embedder-Policy=require-corp"
+            ]
+        },
+    ]
+}
