@@ -1,17 +1,13 @@
 use log::info;
 
 use crate::{
+    api::model::SimpleDelta,
     domain::{app_state::get_app_state, document::Document},
     frb_generated::StreamSink,
 };
 
-#[flutter_rust_bridge::frb(sync)] // Synchronous mode for simplicity of the demo
-pub fn greet(name: String) -> String {
-    format!("Hello, {name}!")
-}
-
 #[flutter_rust_bridge::frb(sync)]
-pub fn create(id: String, sink: StreamSink<String>) -> Result<(), String> {
+pub fn create(id: String, sink: StreamSink<SimpleDelta>) -> Result<(), String> {
     let app_state = get_app_state();
     let mut documents = app_state.documents.lock().map_err(|e| e.to_string())?;
 
@@ -28,11 +24,7 @@ pub fn create(id: String, sink: StreamSink<String>) -> Result<(), String> {
 }
 
 #[flutter_rust_bridge::frb(sync)]
-pub fn insert(
-    id: String,
-    position: u32,
-    text: String,
-) -> Result<(), String> {
+pub fn insert(id: String, position: u32, text: String) -> Result<(), String> {
     let app_state = get_app_state();
     let mut documents = app_state.documents.lock().map_err(|e| e.to_string())?;
 
@@ -40,7 +32,8 @@ pub fn insert(
         .get_mut(&id)
         .ok_or_else(|| format!("Document with id {id} not found"))?;
     document
-        .insert(position, &text).map_err(|e| format!("Insert error: {:?}", e))?;
+        .insert(position, &text)
+        .map_err(|e| format!("Insert error: {:?}", e))?;
 
     info!("Inserted text into document with id {id}: pos={position}, text={text}");
 
@@ -56,7 +49,8 @@ pub fn delete(id: String, position: u32, delete_count: u32) -> Result<(), String
         .get_mut(&id)
         .ok_or_else(|| format!("Document with id {id} not found"))?;
     document
-        .delete(position, delete_count).map_err(|e| format!("Delete error: {:?}", e))?;
+        .delete(position, delete_count)
+        .map_err(|e| format!("Delete error: {:?}", e))?;
 
     info!("Deleted text from document with id {id}: pos={position}, del={delete_count}");
 

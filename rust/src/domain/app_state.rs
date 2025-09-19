@@ -4,6 +4,7 @@ use std::{
 };
 
 use crate::domain::document::Document;
+
 pub struct AppState {
     pub documents: Mutex<HashMap<String, Document>>,
 }

@@ -1,14 +1,13 @@
 use std::any::Any;
 
 use log::info;
-use yrs::{Doc, GetString, Observable, Subscription, Text, Transact};
+use yrs::{types::Delta, Doc, GetString, Observable, Out, Subscription, Text, Transact};
 
-use crate::frb_generated::StreamSink;
+use crate::{api::model::SimpleDelta, frb_generated::StreamSink};
 
 pub struct Document {
     pub id: String,
     doc: Doc,
-    update_subscription: Subscription,
     text_subscription: Subscription,
 }
 
@@ -16,39 +15,47 @@ unsafe impl Send for Document {}
 unsafe impl Sync for Document {}
 
 impl Document {
-    pub fn new(id: String, stream_sink: StreamSink<String>) -> Self {
+    pub fn new(id: String, stream_sink: StreamSink<SimpleDelta>) -> Self {
         let doc = Doc::new();
         let text_ref = doc.get_or_insert_text(id.clone());
 
-        let update_subscription = doc
-            .observe_update_v1({
-                let stream_sink = stream_sink.clone();
-                let text_ref = doc.get_or_insert_text(id.clone());
-
-                let id = id.clone();
-                move |txn, _update| {
-                    let text = text_ref.get_string(txn);
-                    info!("Document updated: id={} text={}", id, text);
-                    stream_sink.add(text).unwrap();
-                }
-            })
-            .unwrap();
-
         let text_subscription = text_ref.observe({
             let stream_sink = stream_sink.clone();
-            let text_ref = doc.get_or_insert_text(id.clone());
+            info!("Text changed");
 
-            move |txn, _event| {
-                info!("Text changed");
-                let text = text_ref.get_string(txn);
-                stream_sink.add(text).unwrap();
+            move |txn, event| {
+                event.delta(txn).iter().for_each(|op| {
+                    info!("Op: {:?}", op);
+                    match op {
+                        Delta::Inserted(value, _) => {
+                            let text = match value {
+                                Out::Any(a) => a.to_string(),
+                                _ => panic!("Unexpected Out type"),
+                            };
+                            stream_sink.add(SimpleDelta::Insert { text }).unwrap();
+                        }
+                        Delta::Deleted(delete_count) => {
+                            stream_sink
+                                .add(SimpleDelta::Delete {
+                                    delete_count: *delete_count,
+                                })
+                                .unwrap();
+                        }
+                        Delta::Retain(retain_count, _) => {
+                            stream_sink
+                                .add(SimpleDelta::Retain {
+                                    retain_count: *retain_count,
+                                })
+                                .unwrap();
+                        }
+                    }
+                });
             }
         });
 
         Self {
             id,
             doc,
-            update_subscription,
             text_subscription,
         }
     }

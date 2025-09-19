@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1375208734;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1615408659;
 
 // Section: executor
 
@@ -67,10 +67,10 @@ fn wire__crate__api__interface__create_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_id = <String>::sse_decode(&mut deserializer);
-            let api_sink =
-                <StreamSink<String, flutter_rust_bridge::for_generated::SseCodec>>::sse_decode(
-                    &mut deserializer,
-                );
+            let api_sink = <StreamSink<
+                crate::api::model::SimpleDelta,
+                flutter_rust_bridge::for_generated::SseCodec,
+            >>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, String>((move || {
                 let output_ok = crate::api::interface::create(api_id, api_sink)?;
@@ -107,36 +107,6 @@ fn wire__crate__api__interface__delete_impl(
             transform_result_sse::<_, String>((move || {
                 let output_ok =
                     crate::api::interface::delete(api_id, api_position, api_delete_count)?;
-                Ok(output_ok)
-            })())
-        },
-    )
-}
-fn wire__crate__api__interface__greet_impl(
-    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
-    rust_vec_len_: i32,
-    data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
-        flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "greet",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
-        },
-        move || {
-            let message = unsafe {
-                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
-                    ptr_,
-                    rust_vec_len_,
-                    data_len_,
-                )
-            };
-            let mut deserializer =
-                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_name = <String>::sse_decode(&mut deserializer);
-            deserializer.end();
-            transform_result_sse::<_, ()>((move || {
-                let output_ok = Result::<_, ()>::Ok(crate::api::interface::greet(api_name))?;
                 Ok(output_ok)
             })())
         },
@@ -219,7 +189,9 @@ impl SseDecode for flutter_rust_bridge::for_generated::anyhow::Error {
     }
 }
 
-impl SseDecode for StreamSink<String, flutter_rust_bridge::for_generated::SseCodec> {
+impl SseDecode
+    for StreamSink<crate::api::model::SimpleDelta, flutter_rust_bridge::for_generated::SseCodec>
+{
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <String>::sse_decode(deserializer);
@@ -244,6 +216,34 @@ impl SseDecode for Vec<u8> {
             ans_.push(<u8>::sse_decode(deserializer));
         }
         return ans_;
+    }
+}
+
+impl SseDecode for crate::api::model::SimpleDelta {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut tag_ = <i32>::sse_decode(deserializer);
+        match tag_ {
+            0 => {
+                let mut var_text = <String>::sse_decode(deserializer);
+                return crate::api::model::SimpleDelta::Insert { text: var_text };
+            }
+            1 => {
+                let mut var_deleteCount = <u32>::sse_decode(deserializer);
+                return crate::api::model::SimpleDelta::Delete {
+                    delete_count: var_deleteCount,
+                };
+            }
+            2 => {
+                let mut var_retainCount = <u32>::sse_decode(deserializer);
+                return crate::api::model::SimpleDelta::Retain {
+                    retain_count: var_retainCount,
+                };
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
     }
 }
 
@@ -289,7 +289,7 @@ fn pde_ffi_dispatcher_primary_impl(
 ) {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        4 => wire__crate__api__interface__init_app_impl(port, ptr, rust_vec_len, data_len),
+        3 => wire__crate__api__interface__init_app_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -304,13 +304,43 @@ fn pde_ffi_dispatcher_sync_impl(
     match func_id {
         1 => wire__crate__api__interface__create_impl(ptr, rust_vec_len, data_len),
         2 => wire__crate__api__interface__delete_impl(ptr, rust_vec_len, data_len),
-        3 => wire__crate__api__interface__greet_impl(ptr, rust_vec_len, data_len),
-        5 => wire__crate__api__interface__insert_impl(ptr, rust_vec_len, data_len),
+        4 => wire__crate__api__interface__insert_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
 
 // Section: rust2dart
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::model::SimpleDelta {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            crate::api::model::SimpleDelta::Insert { text } => {
+                [0.into_dart(), text.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::model::SimpleDelta::Delete { delete_count } => {
+                [1.into_dart(), delete_count.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::model::SimpleDelta::Retain { retain_count } => {
+                [2.into_dart(), retain_count.into_into_dart().into_dart()].into_dart()
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::model::SimpleDelta
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::model::SimpleDelta>
+    for crate::api::model::SimpleDelta
+{
+    fn into_into_dart(self) -> crate::api::model::SimpleDelta {
+        self
+    }
+}
 
 impl SseEncode for flutter_rust_bridge::for_generated::anyhow::Error {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -319,7 +349,9 @@ impl SseEncode for flutter_rust_bridge::for_generated::anyhow::Error {
     }
 }
 
-impl SseEncode for StreamSink<String, flutter_rust_bridge::for_generated::SseCodec> {
+impl SseEncode
+    for StreamSink<crate::api::model::SimpleDelta, flutter_rust_bridge::for_generated::SseCodec>
+{
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         unimplemented!("")
@@ -339,6 +371,29 @@ impl SseEncode for Vec<u8> {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <u8>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for crate::api::model::SimpleDelta {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        match self {
+            crate::api::model::SimpleDelta::Insert { text } => {
+                <i32>::sse_encode(0, serializer);
+                <String>::sse_encode(text, serializer);
+            }
+            crate::api::model::SimpleDelta::Delete { delete_count } => {
+                <i32>::sse_encode(1, serializer);
+                <u32>::sse_encode(delete_count, serializer);
+            }
+            crate::api::model::SimpleDelta::Retain { retain_count } => {
+                <i32>::sse_encode(2, serializer);
+                <u32>::sse_encode(retain_count, serializer);
+            }
+            _ => {
+                unimplemented!("");
+            }
         }
     }
 }
