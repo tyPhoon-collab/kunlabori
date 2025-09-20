@@ -7,7 +7,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:kunlabori/src/rust/api/model.dart';
 import 'package:kunlabori/src/rust/frb_generated.dart';
 
-Stream<SimpleDelta> create({required String id}) =>
+Stream<Partial> create({required String id}) =>
     RustLib.instance.api.crateApiInterfaceCreate(id: id);
 
 void destroy({required String id}) =>

@@ -9,7 +9,19 @@ import 'package:kunlabori/src/rust/frb_generated.dart';
 
 part 'model.freezed.dart';
 
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `fmt`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `fmt`, `fmt`
+
+@freezed
+sealed class Partial with _$Partial {
+  const Partial._();
+
+  const factory Partial.delta(
+    SimpleDelta field0,
+  ) = Partial_Delta;
+  const factory Partial.update(
+    Uint8List field0,
+  ) = Partial_Update;
+}
 
 @freezed
 sealed class SimpleDelta with _$SimpleDelta {

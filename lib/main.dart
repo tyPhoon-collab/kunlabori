@@ -28,7 +28,7 @@ class HomePage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final docId = const Uuid().v4();
+    final docId = useMemoized(const Uuid().v4);
     final text = useState<String>('');
     final quillController = useMemoized(QuillController.basic);
     final index = useRef<int>(0);
@@ -45,16 +45,21 @@ class HomePage extends HookWidget {
 
     useEffect(() {
       final subscription = create(id: docId).listen(
-        (delta) {
-          debugPrint('Received delta: $delta');
-          text.value += '$delta\n';
-          final action = switch (delta) {
-            SimpleDelta_Insert(:final text) => () => insert(text: text),
-            SimpleDelta_Delete(:final deleteCount) => () => delete(
-              deleteCount: deleteCount,
-            ),
-            SimpleDelta_Retain(:final retainCount) =>
-              () => index.value = retainCount,
+        (partial) {
+          debugPrint('Received delta: $partial');
+          text.value += '$partial\n';
+          final action = switch (partial) {
+            Partial_Delta(:final field0) => switch (field0) {
+              SimpleDelta_Insert(:final text) => () => insert(text: text),
+              SimpleDelta_Delete(:final deleteCount) => () => delete(
+                deleteCount: deleteCount,
+              ),
+              SimpleDelta_Retain(:final retainCount) =>
+                () => index.value = retainCount,
+            },
+            Partial_Update(:final field0) => () {
+              debugPrint('Update received: $field0');
+            },
           };
           action();
         },

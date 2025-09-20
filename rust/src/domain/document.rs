@@ -1,4 +1,4 @@
-use std::{any::Any, error::Error};
+use std::error::Error;
 
 use log::info;
 use yrs::{
@@ -7,25 +7,28 @@ use yrs::{
     Doc, Observable, Out, ReadTxn, StateVector, Subscription, Text, Transact, Update,
 };
 
-use crate::{api::model::SimpleDelta, frb_generated::StreamSink};
+use crate::{
+    api::model::{Partial, SimpleDelta},
+    frb_generated::StreamSink,
+};
 
 pub struct Document {
     pub id: String,
     doc: Doc,
     text_subscription: Subscription,
+    update_subscription: Subscription,
 }
 
 unsafe impl Send for Document {}
 unsafe impl Sync for Document {}
 
 impl Document {
-    pub fn new(id: String, stream_sink: StreamSink<SimpleDelta>) -> Self {
+    pub fn new(id: String, stream_sink: StreamSink<Partial>) -> Self {
         let doc = Doc::new();
         let text_ref = doc.get_or_insert_text(id.clone());
 
         let text_subscription = text_ref.observe({
             let stream_sink = stream_sink.clone();
-            info!("Text changed");
 
             move |txn, event| {
                 event.delta(txn).iter().for_each(|op| {
@@ -36,20 +39,22 @@ impl Document {
                                 Out::Any(a) => a.to_string(),
                                 _ => panic!("Unexpected Out type"),
                             };
-                            stream_sink.add(SimpleDelta::Insert { text }).unwrap();
+                            stream_sink
+                                .add(Partial::Delta(SimpleDelta::Insert { text }))
+                                .unwrap();
                         }
                         Delta::Deleted(delete_count) => {
                             stream_sink
-                                .add(SimpleDelta::Delete {
+                                .add(Partial::Delta(SimpleDelta::Delete {
                                     delete_count: *delete_count,
-                                })
+                                }))
                                 .unwrap();
                         }
                         Delta::Retain(retain_count, _) => {
                             stream_sink
-                                .add(SimpleDelta::Retain {
+                                .add(Partial::Delta(SimpleDelta::Retain {
                                     retain_count: *retain_count,
-                                })
+                                }))
                                 .unwrap();
                         }
                     }
@@ -57,10 +62,23 @@ impl Document {
             }
         });
 
+        let update_subscription = doc
+            .observe_update_v1({
+                let stream_sink = stream_sink.clone();
+                move |_txn, event| {
+                    info!("Update event received");
+                    stream_sink
+                        .add(Partial::Update(event.update.clone()))
+                        .unwrap();
+                }
+            })
+            .unwrap();
+
         Self {
             id,
             doc,
             text_subscription,
+            update_subscription,
         }
     }
 

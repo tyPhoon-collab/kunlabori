@@ -1,7 +1,7 @@
 use log::info;
 
 use crate::{
-    api::model::SimpleDelta,
+    api::model::Partial,
     domain::{
         app_state::{get_app_state, with_document, with_document_mut},
         document::Document,
@@ -10,7 +10,7 @@ use crate::{
 };
 
 #[flutter_rust_bridge::frb(sync)]
-pub fn create(id: String, sink: StreamSink<SimpleDelta>) -> Result<(), String> {
+pub fn create(id: String, stream_sink: StreamSink<Partial>) -> Result<(), String> {
     let app_state = get_app_state();
     let mut documents = app_state.documents.lock().map_err(|e| e.to_string())?;
 
@@ -18,7 +18,7 @@ pub fn create(id: String, sink: StreamSink<SimpleDelta>) -> Result<(), String> {
         return Err(format!("Document with id {id} already exists"));
     }
 
-    let document = Document::new(id.clone(), sink);
+    let document = Document::new(id.clone(), stream_sink);
     documents.insert(id.clone(), document);
     Ok(())
 }

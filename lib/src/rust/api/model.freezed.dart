@@ -12,6 +12,307 @@ part of 'model.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
+mixin _$Partial {
+
+ Object get field0;
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Partial&&const DeepCollectionEquality().equals(other.field0, field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(field0));
+
+@override
+String toString() {
+  return 'Partial(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+class $PartialCopyWith<$Res>  {
+$PartialCopyWith(Partial _, $Res Function(Partial) __);
+}
+
+
+/// Adds pattern-matching-related methods to [Partial].
+extension PartialPatterns on Partial {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Partial_Delta value)?  delta,TResult Function( Partial_Update value)?  update,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case Partial_Delta() when delta != null:
+return delta(_that);case Partial_Update() when update != null:
+return update(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Partial_Delta value)  delta,required TResult Function( Partial_Update value)  update,}){
+final _that = this;
+switch (_that) {
+case Partial_Delta():
+return delta(_that);case Partial_Update():
+return update(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Partial_Delta value)?  delta,TResult? Function( Partial_Update value)?  update,}){
+final _that = this;
+switch (_that) {
+case Partial_Delta() when delta != null:
+return delta(_that);case Partial_Update() when update != null:
+return update(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( SimpleDelta field0)?  delta,TResult Function( Uint8List field0)?  update,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case Partial_Delta() when delta != null:
+return delta(_that.field0);case Partial_Update() when update != null:
+return update(_that.field0);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( SimpleDelta field0)  delta,required TResult Function( Uint8List field0)  update,}) {final _that = this;
+switch (_that) {
+case Partial_Delta():
+return delta(_that.field0);case Partial_Update():
+return update(_that.field0);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( SimpleDelta field0)?  delta,TResult? Function( Uint8List field0)?  update,}) {final _that = this;
+switch (_that) {
+case Partial_Delta() when delta != null:
+return delta(_that.field0);case Partial_Update() when update != null:
+return update(_that.field0);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class Partial_Delta extends Partial {
+  const Partial_Delta(this.field0): super._();
+  
+
+@override final  SimpleDelta field0;
+
+/// Create a copy of Partial
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$Partial_DeltaCopyWith<Partial_Delta> get copyWith => _$Partial_DeltaCopyWithImpl<Partial_Delta>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Partial_Delta&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'Partial.delta(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $Partial_DeltaCopyWith<$Res> implements $PartialCopyWith<$Res> {
+  factory $Partial_DeltaCopyWith(Partial_Delta value, $Res Function(Partial_Delta) _then) = _$Partial_DeltaCopyWithImpl;
+@useResult
+$Res call({
+ SimpleDelta field0
+});
+
+
+$SimpleDeltaCopyWith<$Res> get field0;
+
+}
+/// @nodoc
+class _$Partial_DeltaCopyWithImpl<$Res>
+    implements $Partial_DeltaCopyWith<$Res> {
+  _$Partial_DeltaCopyWithImpl(this._self, this._then);
+
+  final Partial_Delta _self;
+  final $Res Function(Partial_Delta) _then;
+
+/// Create a copy of Partial
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(Partial_Delta(
+null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as SimpleDelta,
+  ));
+}
+
+/// Create a copy of Partial
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SimpleDeltaCopyWith<$Res> get field0 {
+  
+  return $SimpleDeltaCopyWith<$Res>(_self.field0, (value) {
+    return _then(_self.copyWith(field0: value));
+  });
+}
+}
+
+/// @nodoc
+
+
+class Partial_Update extends Partial {
+  const Partial_Update(this.field0): super._();
+  
+
+@override final  Uint8List field0;
+
+/// Create a copy of Partial
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$Partial_UpdateCopyWith<Partial_Update> get copyWith => _$Partial_UpdateCopyWithImpl<Partial_Update>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Partial_Update&&const DeepCollectionEquality().equals(other.field0, field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(field0));
+
+@override
+String toString() {
+  return 'Partial.update(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $Partial_UpdateCopyWith<$Res> implements $PartialCopyWith<$Res> {
+  factory $Partial_UpdateCopyWith(Partial_Update value, $Res Function(Partial_Update) _then) = _$Partial_UpdateCopyWithImpl;
+@useResult
+$Res call({
+ Uint8List field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$Partial_UpdateCopyWithImpl<$Res>
+    implements $Partial_UpdateCopyWith<$Res> {
+  _$Partial_UpdateCopyWithImpl(this._self, this._then);
+
+  final Partial_Update _self;
+  final $Res Function(Partial_Update) _then;
+
+/// Create a copy of Partial
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(Partial_Update(
+null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as Uint8List,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$SimpleDelta {
 
 

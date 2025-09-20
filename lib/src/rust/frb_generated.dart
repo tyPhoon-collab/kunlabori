@@ -82,7 +82,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  Stream<SimpleDelta> crateApiInterfaceCreate({required String id});
+  Stream<Partial> crateApiInterfaceCreate({required String id});
 
   void crateApiInterfaceDelete({
     required String id,
@@ -121,14 +121,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  Stream<SimpleDelta> crateApiInterfaceCreate({required String id}) {
-    final sink = RustStreamSink<SimpleDelta>();
+  Stream<Partial> crateApiInterfaceCreate({required String id}) {
+    final streamSink = RustStreamSink<Partial>();
     handler.executeSync(
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(id, serializer);
-          sse_encode_StreamSink_simple_delta_Sse(sink, serializer);
+          sse_encode_StreamSink_partial_Sse(streamSink, serializer);
           return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 1)!;
         },
         codec: SseCodec(
@@ -136,16 +136,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_String,
         ),
         constMeta: kCrateApiInterfaceCreateConstMeta,
-        argValues: [id, sink],
+        argValues: [id, streamSink],
         apiImpl: this,
       ),
     );
-    return sink.stream;
+    return streamSink.stream;
   }
 
   TaskConstMeta get kCrateApiInterfaceCreateConstMeta => const TaskConstMeta(
     debugName: 'create',
-    argNames: ['id', 'sink'],
+    argNames: ['id', 'streamSink'],
   );
 
   @override
@@ -377,9 +377,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  RustStreamSink<SimpleDelta> dco_decode_StreamSink_simple_delta_Sse(
-    dynamic raw,
-  ) {
+  RustStreamSink<Partial> dco_decode_StreamSink_partial_Sse(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     throw UnimplementedError();
   }
@@ -388,6 +386,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   String dco_decode_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as String;
+  }
+
+  @protected
+  SimpleDelta dco_decode_box_autoadd_simple_delta(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_simple_delta(raw);
   }
 
   @protected
@@ -400,6 +404,23 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as Uint8List;
+  }
+
+  @protected
+  Partial dco_decode_partial(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    switch (raw[0]) {
+      case 0:
+        return Partial_Delta(
+          dco_decode_box_autoadd_simple_delta(raw[1]),
+        );
+      case 1:
+        return Partial_Update(
+          dco_decode_list_prim_u_8_strict(raw[1]),
+        );
+      default:
+        throw Exception('unreachable');
+    }
   }
 
   @protected
@@ -449,7 +470,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  RustStreamSink<SimpleDelta> sse_decode_StreamSink_simple_delta_Sse(
+  RustStreamSink<Partial> sse_decode_StreamSink_partial_Sse(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -464,6 +485,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  SimpleDelta sse_decode_box_autoadd_simple_delta(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return sse_decode_simple_delta(deserializer);
+  }
+
+  @protected
   List<int> sse_decode_list_prim_u_8_loose(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     final len_ = sse_decode_i_32(deserializer);
@@ -475,6 +504,23 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     final len_ = sse_decode_i_32(deserializer);
     return deserializer.buffer.getUint8List(len_);
+  }
+
+  @protected
+  Partial sse_decode_partial(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    final tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        final var_field0 = sse_decode_box_autoadd_simple_delta(deserializer);
+        return Partial_Delta(var_field0);
+      case 1:
+        final var_field0 = sse_decode_list_prim_u_8_strict(deserializer);
+        return Partial_Update(var_field0);
+      default:
+        throw UnimplementedError('');
+    }
   }
 
   @protected
@@ -536,15 +582,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_StreamSink_simple_delta_Sse(
-    RustStreamSink<SimpleDelta> self,
+  void sse_encode_StreamSink_partial_Sse(
+    RustStreamSink<Partial> self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(
       self.setupAndSerialize(
         codec: SseCodec(
-          decodeSuccessData: sse_decode_simple_delta,
+          decodeSuccessData: sse_decode_partial,
           decodeErrorData: sse_decode_AnyhowException,
         ),
       ),
@@ -556,6 +602,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_String(String self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_prim_u_8_strict(utf8.encoder.convert(self), serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_simple_delta(
+    SimpleDelta self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_simple_delta(self, serializer);
   }
 
   @protected
@@ -578,6 +633,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     serializer.buffer.putUint8List(self);
+  }
+
+  @protected
+  void sse_encode_partial(Partial self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    switch (self) {
+      case Partial_Delta(field0: final field0):
+        sse_encode_i_32(0, serializer);
+        sse_encode_box_autoadd_simple_delta(field0, serializer);
+      case Partial_Update(field0: final field0):
+        sse_encode_i_32(1, serializer);
+        sse_encode_list_prim_u_8_strict(field0, serializer);
+    }
   }
 
   @protected

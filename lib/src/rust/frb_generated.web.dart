@@ -26,18 +26,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   AnyhowException dco_decode_AnyhowException(dynamic raw);
 
   @protected
-  RustStreamSink<SimpleDelta> dco_decode_StreamSink_simple_delta_Sse(
-    dynamic raw,
-  );
+  RustStreamSink<Partial> dco_decode_StreamSink_partial_Sse(dynamic raw);
 
   @protected
   String dco_decode_String(dynamic raw);
+
+  @protected
+  SimpleDelta dco_decode_box_autoadd_simple_delta(dynamic raw);
 
   @protected
   List<int> dco_decode_list_prim_u_8_loose(dynamic raw);
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
+
+  @protected
+  Partial dco_decode_partial(dynamic raw);
 
   @protected
   SimpleDelta dco_decode_simple_delta(dynamic raw);
@@ -55,7 +59,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer);
 
   @protected
-  RustStreamSink<SimpleDelta> sse_decode_StreamSink_simple_delta_Sse(
+  RustStreamSink<Partial> sse_decode_StreamSink_partial_Sse(
     SseDeserializer deserializer,
   );
 
@@ -63,10 +67,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
+  SimpleDelta sse_decode_box_autoadd_simple_delta(SseDeserializer deserializer);
+
+  @protected
   List<int> sse_decode_list_prim_u_8_loose(SseDeserializer deserializer);
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
+
+  @protected
+  Partial sse_decode_partial(SseDeserializer deserializer);
 
   @protected
   SimpleDelta sse_decode_simple_delta(SseDeserializer deserializer);
@@ -93,13 +103,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_StreamSink_simple_delta_Sse(
-    RustStreamSink<SimpleDelta> self,
+  void sse_encode_StreamSink_partial_Sse(
+    RustStreamSink<Partial> self,
     SseSerializer serializer,
   );
 
   @protected
   void sse_encode_String(String self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_simple_delta(
+    SimpleDelta self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_prim_u_8_loose(List<int> self, SseSerializer serializer);
@@ -109,6 +125,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     Uint8List self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_partial(Partial self, SseSerializer serializer);
 
   @protected
   void sse_encode_simple_delta(SimpleDelta self, SseSerializer serializer);
