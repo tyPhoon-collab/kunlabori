@@ -3,21 +3,21 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
-import 'api/interface.dart';
-import 'api/model.dart';
 import 'dart:async';
 import 'dart:convert';
-import 'frb_generated.dart';
-import 'frb_generated.io.dart'
-    if (dart.library.js_interop) 'frb_generated.web.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+import 'package:kunlabori/src/rust/api/interface.dart';
+import 'package:kunlabori/src/rust/api/model.dart';
+import 'package:kunlabori/src/rust/frb_generated.dart';
+import 'package:kunlabori/src/rust/frb_generated.io.dart'
+    if (dart.library.js_interop) 'frb_generated.web.dart';
 
 /// Main entrypoint of the Rust API
 class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
+  RustLib._();
   @internal
   static final instance = RustLib._();
-
-  RustLib._();
 
   /// Initialize flutter_rust_bridge
   static Future<void> init({
@@ -36,8 +36,12 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 
   /// Initialize flutter_rust_bridge in mock mode.
   /// No libraries for FFI are loaded.
-  static void initMock({required RustLibApi api}) {
-    instance.initMockImpl(api: api);
+  static void initMock({
+    required RustLibApi api,
+  }) {
+    instance.initMockImpl(
+      api: api,
+    );
   }
 
   /// Dispose flutter_rust_bridge
@@ -67,7 +71,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => 1615408659;
+  int get rustContentHash => 1493772527;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -86,6 +90,13 @@ abstract class RustLibApi extends BaseApi {
     required int deleteCount,
   });
 
+  void crateApiInterfaceDestroy({required String id});
+
+  Uint8List crateApiInterfaceDiff({
+    required String id,
+    required List<int> since,
+  });
+
   Future<void> crateApiInterfaceInitApp();
 
   void crateApiInterfaceInsert({
@@ -93,6 +104,12 @@ abstract class RustLibApi extends BaseApi {
     required int position,
     required String text,
   });
+
+  void crateApiInterfaceMerge({required String id, required List<int> update});
+
+  Uint8List crateApiInterfaceStateVector({required String id});
+
+  Uint8List crateApiInterfaceTimestamp({required String id});
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -126,8 +143,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     return sink.stream;
   }
 
-  TaskConstMeta get kCrateApiInterfaceCreateConstMeta =>
-      const TaskConstMeta(debugName: "create", argNames: ["id", "sink"]);
+  TaskConstMeta get kCrateApiInterfaceCreateConstMeta => const TaskConstMeta(
+    debugName: 'create',
+    argNames: ['id', 'sink'],
+  );
 
   @override
   void crateApiInterfaceDelete({
@@ -156,8 +175,62 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   TaskConstMeta get kCrateApiInterfaceDeleteConstMeta => const TaskConstMeta(
-    debugName: "delete",
-    argNames: ["id", "position", "deleteCount"],
+    debugName: 'delete',
+    argNames: ['id', 'position', 'deleteCount'],
+  );
+
+  @override
+  void crateApiInterfaceDestroy({required String id}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(id, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiInterfaceDestroyConstMeta,
+        argValues: [id],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiInterfaceDestroyConstMeta => const TaskConstMeta(
+    debugName: 'destroy',
+    argNames: ['id'],
+  );
+
+  @override
+  Uint8List crateApiInterfaceDiff({
+    required String id,
+    required List<int> since,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(id, serializer);
+          sse_encode_list_prim_u_8_loose(since, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiInterfaceDiffConstMeta,
+        argValues: [id, since],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiInterfaceDiffConstMeta => const TaskConstMeta(
+    debugName: 'diff',
+    argNames: ['id', 'since'],
   );
 
   @override
@@ -169,7 +242,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 3,
+            funcId: 5,
             port: port_,
           );
         },
@@ -184,8 +257,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     );
   }
 
-  TaskConstMeta get kCrateApiInterfaceInitAppConstMeta =>
-      const TaskConstMeta(debugName: "init_app", argNames: []);
+  TaskConstMeta get kCrateApiInterfaceInitAppConstMeta => const TaskConstMeta(
+    debugName: 'init_app',
+    argNames: [],
+  );
 
   @override
   void crateApiInterfaceInsert({
@@ -200,7 +275,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_String(id, serializer);
           sse_encode_u_32(position, serializer);
           sse_encode_String(text, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -214,8 +289,85 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   TaskConstMeta get kCrateApiInterfaceInsertConstMeta => const TaskConstMeta(
-    debugName: "insert",
-    argNames: ["id", "position", "text"],
+    debugName: 'insert',
+    argNames: ['id', 'position', 'text'],
+  );
+
+  @override
+  void crateApiInterfaceMerge({required String id, required List<int> update}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(id, serializer);
+          sse_encode_list_prim_u_8_loose(update, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiInterfaceMergeConstMeta,
+        argValues: [id, update],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiInterfaceMergeConstMeta => const TaskConstMeta(
+    debugName: 'merge',
+    argNames: ['id', 'update'],
+  );
+
+  @override
+  Uint8List crateApiInterfaceStateVector({required String id}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(id, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiInterfaceStateVectorConstMeta,
+        argValues: [id],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiInterfaceStateVectorConstMeta =>
+      const TaskConstMeta(
+        debugName: 'state_vector',
+        argNames: ['id'],
+      );
+
+  @override
+  Uint8List crateApiInterfaceTimestamp({required String id}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(id, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiInterfaceTimestampConstMeta,
+        argValues: [id],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiInterfaceTimestampConstMeta => const TaskConstMeta(
+    debugName: 'timestamp',
+    argNames: ['id'],
   );
 
   @protected
@@ -239,6 +391,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<int> dco_decode_list_prim_u_8_loose(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as List<int>;
+  }
+
+  @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as Uint8List;
@@ -249,13 +407,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     switch (raw[0]) {
       case 0:
-        return SimpleDelta_Insert(text: dco_decode_String(raw[1]));
+        return SimpleDelta_Insert(
+          text: dco_decode_String(raw[1]),
+        );
       case 1:
-        return SimpleDelta_Delete(deleteCount: dco_decode_u_32(raw[1]));
+        return SimpleDelta_Delete(
+          deleteCount: dco_decode_u_32(raw[1]),
+        );
       case 2:
-        return SimpleDelta_Retain(retainCount: dco_decode_u_32(raw[1]));
+        return SimpleDelta_Retain(
+          retainCount: dco_decode_u_32(raw[1]),
+        );
       default:
-        throw Exception("unreachable");
+        throw Exception('unreachable');
     }
   }
 
@@ -280,7 +444,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var inner = sse_decode_String(deserializer);
+    final inner = sse_decode_String(deserializer);
     return AnyhowException(inner);
   }
 
@@ -295,14 +459,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   String sse_decode_String(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var inner = sse_decode_list_prim_u_8_strict(deserializer);
+    final inner = sse_decode_list_prim_u_8_strict(deserializer);
     return utf8.decoder.convert(inner);
+  }
+
+  @protected
+  List<int> sse_decode_list_prim_u_8_loose(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    final len_ = sse_decode_i_32(deserializer);
+    return deserializer.buffer.getUint8List(len_);
   }
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var len_ = sse_decode_i_32(deserializer);
+    final len_ = sse_decode_i_32(deserializer);
     return deserializer.buffer.getUint8List(len_);
   }
 
@@ -310,16 +481,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   SimpleDelta sse_decode_simple_delta(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
-    var tag_ = sse_decode_i_32(deserializer);
+    final tag_ = sse_decode_i_32(deserializer);
     switch (tag_) {
       case 0:
-        var var_text = sse_decode_String(deserializer);
+        final var_text = sse_decode_String(deserializer);
         return SimpleDelta_Insert(text: var_text);
       case 1:
-        var var_deleteCount = sse_decode_u_32(deserializer);
+        final var_deleteCount = sse_decode_u_32(deserializer);
         return SimpleDelta_Delete(deleteCount: var_deleteCount);
       case 2:
-        var var_retainCount = sse_decode_u_32(deserializer);
+        final var_retainCount = sse_decode_u_32(deserializer);
         return SimpleDelta_Retain(retainCount: var_retainCount);
       default:
         throw UnimplementedError('');
@@ -385,6 +556,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_String(String self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_prim_u_8_strict(utf8.encoder.convert(self), serializer);
+  }
+
+  @protected
+  void sse_encode_list_prim_u_8_loose(
+    List<int> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    serializer.buffer.putUint8List(
+      self is Uint8List ? self : Uint8List.fromList(self),
+    );
   }
 
   @protected

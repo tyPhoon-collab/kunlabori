@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kunlabori/debug_view.dart';
 import 'package:kunlabori/src/rust/api/interface.dart';
 import 'package:kunlabori/src/rust/api/model.dart';
 import 'package:kunlabori/src/rust/frb_generated.dart';
+import 'package:uuid/uuid.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await RustLib.init();
-  runApp(ProviderScope(child: const MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: const HomePage());
+    return const MaterialApp(home: HomePage());
   }
 }
 
@@ -26,9 +28,9 @@ class HomePage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    const docId = "doc1";
-    final text = useState<String>("");
-    final quillController = useMemoized(() => QuillController.basic());
+    final docId = const Uuid().v4();
+    final text = useState<String>('');
+    final quillController = useMemoized(QuillController.basic);
     final index = useRef<int>(0);
 
     void insert({required String text}) {
@@ -56,13 +58,14 @@ class HomePage extends HookWidget {
           };
           action();
         },
-        onError: (error) {
+        onError: (Object? error) {
           debugPrint('Error in stream: $error');
         },
       );
       return () {
         subscription.cancel();
         quillController.dispose();
+        destroy(id: docId);
       };
     }, const []);
 
@@ -75,6 +78,7 @@ class HomePage extends HookWidget {
             Text(text.value),
             QuillEditor.basic(controller: quillController),
             Editor(docId: docId),
+            DebugView(id: docId),
           ],
         ),
       ),
@@ -83,7 +87,7 @@ class HomePage extends HookWidget {
 }
 
 class Editor extends StatelessWidget {
-  const Editor({super.key, required this.docId});
+  const Editor({required this.docId, super.key});
 
   final String docId;
 
@@ -104,7 +108,7 @@ class Editor extends StatelessWidget {
             position: int.parse(position),
             deleteCount: int.parse(value),
           ),
-          _ => () => {},
+          _ => () {},
         };
 
         try {

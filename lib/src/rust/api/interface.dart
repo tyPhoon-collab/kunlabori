@@ -3,12 +3,15 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
-import '../frb_generated.dart';
-import 'model.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+import 'package:kunlabori/src/rust/api/model.dart';
+import 'package:kunlabori/src/rust/frb_generated.dart';
 
 Stream<SimpleDelta> create({required String id}) =>
     RustLib.instance.api.crateApiInterfaceCreate(id: id);
+
+void destroy({required String id}) =>
+    RustLib.instance.api.crateApiInterfaceDestroy(id: id);
 
 void insert({
   required String id,
@@ -29,3 +32,15 @@ void delete({
   position: position,
   deleteCount: deleteCount,
 );
+
+void merge({required String id, required List<int> update}) =>
+    RustLib.instance.api.crateApiInterfaceMerge(id: id, update: update);
+
+Uint8List timestamp({required String id}) =>
+    RustLib.instance.api.crateApiInterfaceTimestamp(id: id);
+
+Uint8List stateVector({required String id}) =>
+    RustLib.instance.api.crateApiInterfaceStateVector(id: id);
+
+Uint8List diff({required String id, required List<int> since}) =>
+    RustLib.instance.api.crateApiInterfaceDiff(id: id, since: since);

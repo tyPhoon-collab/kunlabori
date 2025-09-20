@@ -3,9 +3,10 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
-import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
+import 'package:kunlabori/src/rust/frb_generated.dart';
+
 part 'model.freezed.dart';
 
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `fmt`
@@ -14,9 +15,13 @@ part 'model.freezed.dart';
 sealed class SimpleDelta with _$SimpleDelta {
   const SimpleDelta._();
 
-  const factory SimpleDelta.insert({required String text}) = SimpleDelta_Insert;
-  const factory SimpleDelta.delete({required int deleteCount}) =
-      SimpleDelta_Delete;
-  const factory SimpleDelta.retain({required int retainCount}) =
-      SimpleDelta_Retain;
+  const factory SimpleDelta.insert({
+    required String text,
+  }) = SimpleDelta_Insert;
+  const factory SimpleDelta.delete({
+    required int deleteCount,
+  }) = SimpleDelta_Delete;
+  const factory SimpleDelta.retain({
+    required int retainCount,
+  }) = SimpleDelta_Retain;
 }

@@ -1,7 +1,11 @@
-use std::any::Any;
+use std::{any::Any, error::Error};
 
 use log::info;
-use yrs::{types::Delta, Doc, GetString, Observable, Out, Subscription, Text, Transact};
+use yrs::{
+    types::Delta,
+    updates::{decoder::Decode, encoder::Encode},
+    Doc, Observable, Out, ReadTxn, StateVector, Subscription, Text, Transact, Update,
+};
 
 use crate::{api::model::SimpleDelta, frb_generated::StreamSink};
 
@@ -60,27 +64,38 @@ impl Document {
         }
     }
 
-    pub fn insert(&mut self, position: u32, text: &str) -> Result<(), Box<dyn Any>> {
+    pub fn insert(&mut self, position: u32, text: &str) {
         let text_ref = self.doc.get_or_insert_text(self.id.clone());
         let mut txn = self.doc.transact_mut();
         text_ref.insert(&mut txn, position, text);
-
-        Ok(())
     }
 
-    pub fn delete(&mut self, position: u32, delete_count: u32) -> Result<(), Box<dyn Any>> {
+    pub fn delete(&mut self, position: u32, delete_count: u32) {
         let text_ref = self.doc.get_or_insert_text(self.id.clone());
         let mut txn = self.doc.transact_mut();
         text_ref.remove_range(&mut txn, position, delete_count);
-
-        Ok(())
     }
 
-    pub fn get(&self) -> Result<String, Box<dyn std::error::Error>> {
-        let text_ref = self.doc.get_or_insert_text(self.id.clone());
+    pub fn timestamp(&self) -> Vec<u8> {
         let txn = self.doc.transact();
-        let text = text_ref.get_string(&txn);
+        txn.state_vector().encode_v1()
+    }
 
-        Ok(text)
+    pub fn state_vector(&self) -> Vec<u8> {
+        let txn = self.doc.transact();
+        txn.state_vector().encode_v1()
+    }
+
+    pub fn diff(&self, since: Vec<u8>) -> Vec<u8> {
+        let since = StateVector::decode_v1(&since).unwrap();
+        let txn = self.doc.transact();
+        txn.encode_diff_v1(&since)
+    }
+
+    pub fn merge(&mut self, update: Vec<u8>) -> Result<(), Box<dyn Error>> {
+        let update = Update::decode_v1(&update).unwrap();
+        let mut txn = self.doc.transact_mut();
+        txn.apply_update(update)?;
+        Ok(())
     }
 }
