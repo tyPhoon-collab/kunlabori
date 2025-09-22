@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:kunlabori/src/rust/api/interface.dart';
+import 'package:web_socket_client/web_socket_client.dart';
 
 class DebugView extends StatelessWidget {
   const DebugView({required this.id, super.key});
@@ -17,6 +18,7 @@ class DebugView extends StatelessWidget {
         _StateVectorDebugView(id: id),
         _DiffDebugView(id: id),
         _MergeDebugView(id: id),
+        const _WebSocketDebugView(),
       ],
     );
   }
@@ -47,29 +49,56 @@ class _TextAndButton extends StatelessWidget {
   }
 }
 
-class _InputAndButton extends StatelessWidget {
+class _InputAndButton extends HookWidget {
   const _InputAndButton({
+    required this.onPressed,
+    required this.buttonText,
+  });
+
+  final void Function(String input) onPressed;
+  final String buttonText;
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = useTextEditingController();
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(controller: controller),
+        ),
+        ElevatedButton(
+          onPressed: () => onPressed(controller.text),
+          child: Text(buttonText),
+        ),
+      ],
+    );
+  }
+}
+
+class _InteractiveView extends HookWidget {
+  const _InteractiveView({
     required this.controller,
     required this.onPressed,
     required this.buttonText,
   });
 
   final TextEditingController controller;
-  final VoidCallback onPressed;
+  final void Function(String input) onPressed;
   final String buttonText;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: TextField(
-            controller: controller,
-          ),
-        ),
-        ElevatedButton(
+        _InputAndButton(
+          buttonText: buttonText,
           onPressed: onPressed,
-          child: Text(buttonText),
+        ),
+        ValueListenableBuilder(
+          valueListenable: controller,
+          builder: (context, value, child) {
+            return Text(value.text);
+          },
         ),
       ],
     );
@@ -143,7 +172,7 @@ class _DiffDebugView extends HookWidget {
   }
 }
 
-class _MergeDebugView extends HookWidget {
+class _MergeDebugView extends StatelessWidget {
   const _MergeDebugView({
     required this.id,
   });
@@ -152,16 +181,44 @@ class _MergeDebugView extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mergeInputController = useTextEditingController();
-
     return _InputAndButton(
-      controller: mergeInputController,
-      onPressed: () {
-        final input = mergeInputController.text;
+      onPressed: (input) {
         final bytes = input.split(',').map((e) => int.parse(e.trim())).toList();
         merge(id: id, update: bytes);
       },
       buttonText: 'Merge',
+    );
+  }
+}
+
+class _WebSocketDebugView extends HookWidget {
+  const _WebSocketDebugView();
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = useTextEditingController();
+    final socket = useMemoized(
+      () => WebSocket(
+        Uri.parse('ws://localhost:8080'),
+        timeout: const Duration(seconds: 5),
+      ),
+    );
+
+    useEffect(() {
+      final subscription = socket.messages.listen((event) {
+        debugPrint('Received: $event');
+        controller.text = event.toString();
+      });
+      return () {
+        subscription.cancel();
+        socket.close();
+      };
+    }, const []);
+
+    return _InteractiveView(
+      controller: controller,
+      onPressed: socket.send,
+      buttonText: 'Send',
     );
   }
 }
