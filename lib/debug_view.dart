@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:kunlabori/provider.dart';
 import 'package:kunlabori/src/rust/api/interface.dart';
 
 class DebugView extends StatelessWidget {
@@ -15,11 +13,9 @@ class DebugView extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const Text('Debug View'),
-        _TimestampDebugView(id: id),
         _StateVectorDebugView(id: id),
         _DiffDebugView(id: id),
         _MergeDebugView(id: id),
-        const _WebSocketDebugView(),
       ],
     );
   }
@@ -106,28 +102,6 @@ class _InteractiveView extends HookWidget {
   }
 }
 
-class _TimestampDebugView extends HookWidget {
-  const _TimestampDebugView({
-    required this.id,
-  });
-
-  final String id;
-
-  @override
-  Widget build(BuildContext context) {
-    final timestampValue = useState('');
-
-    return _TextAndButton(
-      text: timestampValue.value,
-      onPressed: () {
-        final ts = timestamp(id: id);
-        timestampValue.value = ts.toString();
-      },
-      buttonText: 'Get Timestamp',
-    );
-  }
-}
-
 class _StateVectorDebugView extends HookWidget {
   const _StateVectorDebugView({
     required this.id,
@@ -188,33 +162,6 @@ class _MergeDebugView extends StatelessWidget {
         merge(id: id, update: bytes);
       },
       buttonText: 'Merge',
-    );
-  }
-}
-
-class _WebSocketDebugView extends HookConsumerWidget {
-  const _WebSocketDebugView();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final controller = useTextEditingController();
-    final socket = ref.watch(socketProvider);
-
-    useEffect(() {
-      final subscription = socket.messages.listen((event) {
-        debugPrint('Received: $event');
-        controller.text = event.toString();
-      });
-      return () {
-        subscription.cancel();
-        socket.close();
-      };
-    }, const []);
-
-    return _InteractiveView(
-      controller: controller,
-      onPressed: socket.send,
-      buttonText: 'Send',
     );
   }
 }

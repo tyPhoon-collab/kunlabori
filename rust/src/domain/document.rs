@@ -94,11 +94,6 @@ impl Document {
         text_ref.remove_range(&mut txn, position, delete_count);
     }
 
-    pub fn timestamp(&self) -> Vec<u8> {
-        let txn = self.doc.transact();
-        txn.state_vector().encode_v1()
-    }
-
     pub fn state_vector(&self) -> Vec<u8> {
         let txn = self.doc.transact();
         txn.state_vector().encode_v1()

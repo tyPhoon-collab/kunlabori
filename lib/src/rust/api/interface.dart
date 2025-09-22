@@ -36,9 +36,6 @@ void delete({
 void merge({required String id, required List<int> update}) =>
     RustLib.instance.api.crateApiInterfaceMerge(id: id, update: update);
 
-Uint8List timestamp({required String id}) =>
-    RustLib.instance.api.crateApiInterfaceTimestamp(id: id);
-
 Uint8List stateVector({required String id}) =>
     RustLib.instance.api.crateApiInterfaceStateVector(id: id);
 

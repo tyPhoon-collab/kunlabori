@@ -10,7 +10,7 @@ class EditorView extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final insertPositionController = useTextEditingController(text: '0');
-    final insertTextController = useTextEditingController();
+    final insertTextController = useTextEditingController(text: 'hello world');
 
     final deletePositionController = useTextEditingController(text: '0');
     final deleteCountController = useTextEditingController();

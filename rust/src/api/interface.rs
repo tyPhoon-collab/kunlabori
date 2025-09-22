@@ -60,10 +60,6 @@ pub fn merge(id: String, update: Vec<u8>) -> Result<(), String> {
         Ok(())
     })
 }
-#[flutter_rust_bridge::frb(sync)]
-pub fn timestamp(id: String) -> Result<Vec<u8>, String> {
-    with_document(&id, |document| document.timestamp())
-}
 
 #[flutter_rust_bridge::frb(sync)]
 pub fn state_vector(id: String) -> Result<Vec<u8>, String> {

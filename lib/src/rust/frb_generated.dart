@@ -71,7 +71,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => 1493772527;
+  int get rustContentHash => -1604672028;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -108,8 +108,6 @@ abstract class RustLibApi extends BaseApi {
   void crateApiInterfaceMerge({required String id, required List<int> update});
 
   Uint8List crateApiInterfaceStateVector({required String id});
-
-  Uint8List crateApiInterfaceTimestamp({required String id});
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -344,31 +342,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         debugName: 'state_vector',
         argNames: ['id'],
       );
-
-  @override
-  Uint8List crateApiInterfaceTimestamp({required String id}) {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(id, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_list_prim_u_8_strict,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateApiInterfaceTimestampConstMeta,
-        argValues: [id],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateApiInterfaceTimestampConstMeta => const TaskConstMeta(
-    debugName: 'timestamp',
-    argNames: ['id'],
-  );
 
   @protected
   AnyhowException dco_decode_AnyhowException(dynamic raw) {

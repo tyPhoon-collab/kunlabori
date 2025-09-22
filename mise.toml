@@ -11,3 +11,7 @@ env = { RUST_LOG = "info", RUST_BACKTRACE = "1" }
 [tasks."client:build_runner"]
 description = "Run the Flutter build runner"
 run = "dart pub run build_runner build -d"
+
+[tasks."client:watch"]
+description = "Run the Flutter build runner in watch mode"
+run = "dart pub run build_runner watch -d"
