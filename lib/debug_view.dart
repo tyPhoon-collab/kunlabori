@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kunlabori/provider.dart';
 import 'package:kunlabori/src/rust/api/interface.dart';
-import 'package:web_socket_client/web_socket_client.dart';
 
 class DebugView extends StatelessWidget {
   const DebugView({required this.id, super.key});
@@ -191,18 +192,13 @@ class _MergeDebugView extends StatelessWidget {
   }
 }
 
-class _WebSocketDebugView extends HookWidget {
+class _WebSocketDebugView extends HookConsumerWidget {
   const _WebSocketDebugView();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final controller = useTextEditingController();
-    final socket = useMemoized(
-      () => WebSocket(
-        Uri.parse('ws://localhost:8080'),
-        timeout: const Duration(seconds: 5),
-      ),
-    );
+    final socket = ref.watch(socketProvider);
 
     useEffect(() {
       final subscription = socket.messages.listen((event) {

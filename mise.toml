@@ -2,8 +2,12 @@
 flutter = "3.35.3"
 rust = "1.89.0"
 
-[tasks.start-server]
+[tasks."server:start"]
 description = "Start the WebSocket server"
 run = "cargo run"
 dir = "server"
 env = { RUST_LOG = "info", RUST_BACKTRACE = "1" }
+
+[tasks."client:build_runner"]
+description = "Run the Flutter build runner"
+run = "dart pub run build_runner build -d"
