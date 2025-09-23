@@ -10,5 +10,6 @@ pub enum SimpleDelta {
 #[derive(Debug, Clone)]
 pub enum Partial {
     Delta(SimpleDelta),
+    Text(String),
     Update(Vec<u8>),
 }

@@ -55,11 +55,12 @@ extension PartialPatterns on Partial {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Partial_Delta value)?  delta,TResult Function( Partial_Update value)?  update,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Partial_Delta value)?  delta,TResult Function( Partial_Text value)?  text,TResult Function( Partial_Update value)?  update,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case Partial_Delta() when delta != null:
-return delta(_that);case Partial_Update() when update != null:
+return delta(_that);case Partial_Text() when text != null:
+return text(_that);case Partial_Update() when update != null:
 return update(_that);case _:
   return orElse();
 
@@ -78,11 +79,12 @@ return update(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Partial_Delta value)  delta,required TResult Function( Partial_Update value)  update,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Partial_Delta value)  delta,required TResult Function( Partial_Text value)  text,required TResult Function( Partial_Update value)  update,}){
 final _that = this;
 switch (_that) {
 case Partial_Delta():
-return delta(_that);case Partial_Update():
+return delta(_that);case Partial_Text():
+return text(_that);case Partial_Update():
 return update(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -97,11 +99,12 @@ return update(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Partial_Delta value)?  delta,TResult? Function( Partial_Update value)?  update,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Partial_Delta value)?  delta,TResult? Function( Partial_Text value)?  text,TResult? Function( Partial_Update value)?  update,}){
 final _that = this;
 switch (_that) {
 case Partial_Delta() when delta != null:
-return delta(_that);case Partial_Update() when update != null:
+return delta(_that);case Partial_Text() when text != null:
+return text(_that);case Partial_Update() when update != null:
 return update(_that);case _:
   return null;
 
@@ -119,10 +122,11 @@ return update(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( SimpleDelta field0)?  delta,TResult Function( Uint8List field0)?  update,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( SimpleDelta field0)?  delta,TResult Function( String field0)?  text,TResult Function( Uint8List field0)?  update,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case Partial_Delta() when delta != null:
-return delta(_that.field0);case Partial_Update() when update != null:
+return delta(_that.field0);case Partial_Text() when text != null:
+return text(_that.field0);case Partial_Update() when update != null:
 return update(_that.field0);case _:
   return orElse();
 
@@ -141,10 +145,11 @@ return update(_that.field0);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( SimpleDelta field0)  delta,required TResult Function( Uint8List field0)  update,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( SimpleDelta field0)  delta,required TResult Function( String field0)  text,required TResult Function( Uint8List field0)  update,}) {final _that = this;
 switch (_that) {
 case Partial_Delta():
-return delta(_that.field0);case Partial_Update():
+return delta(_that.field0);case Partial_Text():
+return text(_that.field0);case Partial_Update():
 return update(_that.field0);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -159,10 +164,11 @@ return update(_that.field0);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( SimpleDelta field0)?  delta,TResult? Function( Uint8List field0)?  update,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( SimpleDelta field0)?  delta,TResult? Function( String field0)?  text,TResult? Function( Uint8List field0)?  update,}) {final _that = this;
 switch (_that) {
 case Partial_Delta() when delta != null:
-return delta(_that.field0);case Partial_Update() when update != null:
+return delta(_that.field0);case Partial_Text() when text != null:
+return text(_that.field0);case Partial_Update() when update != null:
 return update(_that.field0);case _:
   return null;
 
@@ -244,6 +250,72 @@ $SimpleDeltaCopyWith<$Res> get field0 {
     return _then(_self.copyWith(field0: value));
   });
 }
+}
+
+/// @nodoc
+
+
+class Partial_Text extends Partial {
+  const Partial_Text(this.field0): super._();
+  
+
+@override final  String field0;
+
+/// Create a copy of Partial
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$Partial_TextCopyWith<Partial_Text> get copyWith => _$Partial_TextCopyWithImpl<Partial_Text>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Partial_Text&&(identical(other.field0, field0) || other.field0 == field0));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,field0);
+
+@override
+String toString() {
+  return 'Partial.text(field0: $field0)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $Partial_TextCopyWith<$Res> implements $PartialCopyWith<$Res> {
+  factory $Partial_TextCopyWith(Partial_Text value, $Res Function(Partial_Text) _then) = _$Partial_TextCopyWithImpl;
+@useResult
+$Res call({
+ String field0
+});
+
+
+
+
+}
+/// @nodoc
+class _$Partial_TextCopyWithImpl<$Res>
+    implements $Partial_TextCopyWith<$Res> {
+  _$Partial_TextCopyWithImpl(this._self, this._then);
+
+  final Partial_Text _self;
+  final $Res Function(Partial_Text) _then;
+
+/// Create a copy of Partial
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+  return _then(Partial_Text(
+null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
 }
 
 /// @nodoc

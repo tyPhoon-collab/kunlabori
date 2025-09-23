@@ -18,6 +18,9 @@ sealed class Partial with _$Partial {
   const factory Partial.delta(
     SimpleDelta field0,
   ) = Partial_Delta;
+  const factory Partial.text(
+    String field0,
+  ) = Partial_Text;
   const factory Partial.update(
     Uint8List field0,
   ) = Partial_Update;

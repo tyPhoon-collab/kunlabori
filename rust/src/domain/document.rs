@@ -1,10 +1,10 @@
-use std::error::Error;
+use std::{error::Error, sync::Arc};
 
 use log::info;
 use yrs::{
     types::Delta,
     updates::{decoder::Decode, encoder::Encode},
-    Doc, Observable, Out, ReadTxn, StateVector, Subscription, Text, Transact, Update,
+    Doc, GetString, Observable, Out, ReadTxn, StateVector, Subscription, Text, Transact, Update,
 };
 
 use crate::{
@@ -14,17 +14,14 @@ use crate::{
 
 pub struct Document {
     pub id: String,
-    doc: Doc,
+    doc: Arc<Doc>,
     text_subscription: Subscription,
     update_subscription: Subscription,
 }
 
-unsafe impl Send for Document {}
-unsafe impl Sync for Document {}
-
 impl Document {
     pub fn new(id: String, stream_sink: StreamSink<Partial>) -> Self {
-        let doc = Doc::new();
+        let doc = Arc::new(Doc::new());
         let text_ref = doc.get_or_insert_text(id.clone());
 
         let text_subscription = text_ref.observe({
@@ -65,11 +62,19 @@ impl Document {
         let update_subscription = doc
             .observe_update_v1({
                 let stream_sink = stream_sink.clone();
-                move |_txn, event| {
+                let id = id.clone();
+                move |txn, event| {
                     info!("Update event received");
+
                     stream_sink
                         .add(Partial::Update(event.update.clone()))
                         .unwrap();
+
+                    let text = txn
+                        .get_text(id.as_str())
+                        .map(|t| t.get_string(txn))
+                        .unwrap();
+                    stream_sink.add(Partial::Text(text)).unwrap();
                 }
             })
             .unwrap();

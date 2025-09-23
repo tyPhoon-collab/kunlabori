@@ -351,6 +351,10 @@ impl SseDecode for crate::api::model::Partial {
                 return crate::api::model::Partial::Delta(var_field0);
             }
             1 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::model::Partial::Text(var_field0);
+            }
+            2 => {
                 let mut var_field0 = <Vec<u8>>::sse_decode(deserializer);
                 return crate::api::model::Partial::Update(var_field0);
             }
@@ -464,8 +468,11 @@ impl flutter_rust_bridge::IntoDart for crate::api::model::Partial {
             crate::api::model::Partial::Delta(field0) => {
                 [0.into_dart(), field0.into_into_dart().into_dart()].into_dart()
             }
-            crate::api::model::Partial::Update(field0) => {
+            crate::api::model::Partial::Text(field0) => {
                 [1.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::model::Partial::Update(field0) => {
+                [2.into_dart(), field0.into_into_dart().into_dart()].into_dart()
             }
             _ => {
                 unimplemented!("");
@@ -551,8 +558,12 @@ impl SseEncode for crate::api::model::Partial {
                 <i32>::sse_encode(0, serializer);
                 <crate::api::model::SimpleDelta>::sse_encode(field0, serializer);
             }
-            crate::api::model::Partial::Update(field0) => {
+            crate::api::model::Partial::Text(field0) => {
                 <i32>::sse_encode(1, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::model::Partial::Update(field0) => {
+                <i32>::sse_encode(2, serializer);
                 <Vec<u8>>::sse_encode(field0, serializer);
             }
             _ => {

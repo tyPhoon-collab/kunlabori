@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_quill/flutter_quill.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kunlabori/debug_view.dart';
 import 'package:kunlabori/editor_view.dart';
@@ -12,7 +11,6 @@ import 'package:kunlabori/provider.dart';
 import 'package:kunlabori/src/rust/api/interface.dart';
 import 'package:kunlabori/src/rust/api/model.dart';
 import 'package:kunlabori/src/rust/frb_generated.dart';
-import 'package:uuid/uuid.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,10 +34,9 @@ class HomePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final docId = useMemoized(const Uuid().v4);
+    final docId = useMemoized(() => 'memo');
+    final log = useState<String>('');
     final text = useState<String>('');
-    final quillController = useMemoized(QuillController.basic);
-    final index = useRef<int>(0);
 
     ref.listen(messagesProvider, (previous, next) {
       debugPrint('WebSocket message: $next');
@@ -51,9 +48,7 @@ class HomePage extends HookConsumerWidget {
               ref
                   .read(socketProvider.notifier)
                   .sendMessage(
-                    Message.join(
-                      bytes: stateVector(id: docId),
-                    ),
+                    Message.join(bytes: stateVector(id: docId)),
                   );
             },
             MessageUpdate(:final bytes) => () => merge(
@@ -84,16 +79,6 @@ class HomePage extends HookConsumerWidget {
       }
     });
 
-    void insert({required String text}) {
-      quillController.document.insert(index.value, text);
-      index.value = 0;
-    }
-
-    void delete({required int deleteCount}) {
-      quillController.document.delete(index.value, deleteCount);
-      index.value = 0;
-    }
-
     void sendUpdate(Uint8List bytes) {
       ref
           .read(socketProvider.notifier)
@@ -103,17 +88,12 @@ class HomePage extends HookConsumerWidget {
     useEffect(() {
       final subscription = create(id: docId).listen(
         (partial) {
-          text.value += '$partial\n';
+          debugPrint('Stream partial: $partial');
+          log.value += '$partial\n';
           final action = switch (partial) {
-            Partial_Delta(:final field0) => switch (field0) {
-              SimpleDelta_Insert(:final text) => () => insert(text: text),
-              SimpleDelta_Delete(:final deleteCount) => () => delete(
-                deleteCount: deleteCount,
-              ),
-              SimpleDelta_Retain(:final retainCount) =>
-                () => index.value = retainCount,
-            },
+            Partial_Delta() => () {},
             Partial_Update(:final field0) => () => sendUpdate(field0),
+            Partial_Text(:final field0) => () => text.value = field0,
           };
           action();
         },
@@ -123,7 +103,6 @@ class HomePage extends HookConsumerWidget {
       );
       return () {
         subscription.cancel();
-        quillController.dispose();
         destroy(id: docId);
       };
     }, const []);
@@ -135,8 +114,8 @@ class HomePage extends HookConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Text(log.value),
               Text(text.value),
-              QuillEditor.basic(controller: quillController),
               EditorView(docId: docId),
               DebugView(id: docId),
             ],

@@ -388,6 +388,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           dco_decode_box_autoadd_simple_delta(raw[1]),
         );
       case 1:
+        return Partial_Text(
+          dco_decode_String(raw[1]),
+        );
+      case 2:
         return Partial_Update(
           dco_decode_list_prim_u_8_strict(raw[1]),
         );
@@ -489,6 +493,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final var_field0 = sse_decode_box_autoadd_simple_delta(deserializer);
         return Partial_Delta(var_field0);
       case 1:
+        final var_field0 = sse_decode_String(deserializer);
+        return Partial_Text(var_field0);
+      case 2:
         final var_field0 = sse_decode_list_prim_u_8_strict(deserializer);
         return Partial_Update(var_field0);
       default:
@@ -615,8 +622,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case Partial_Delta(field0: final field0):
         sse_encode_i_32(0, serializer);
         sse_encode_box_autoadd_simple_delta(field0, serializer);
-      case Partial_Update(field0: final field0):
+      case Partial_Text(field0: final field0):
         sse_encode_i_32(1, serializer);
+        sse_encode_String(field0, serializer);
+      case Partial_Update(field0: final field0):
+        sse_encode_i_32(2, serializer);
         sse_encode_list_prim_u_8_strict(field0, serializer);
     }
   }
