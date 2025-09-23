@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:kunlabori/debug_view.dart';
 import 'package:kunlabori/editor_view.dart';
 import 'package:kunlabori/message.dart';
 import 'package:kunlabori/provider.dart';
@@ -117,7 +116,6 @@ class HomePage extends HookConsumerWidget {
               Text(log.value),
               Text(text.value),
               EditorView(docId: docId),
-              DebugView(id: docId),
             ],
           ),
         ),
