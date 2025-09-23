@@ -2,73 +2,60 @@ use log::info;
 
 use crate::{
     api::model::Partial,
-    domain::{
-        app_state::{get_app_state, with_document, with_document_mut},
-        document::Document,
-    },
+    domain::app_state::{create_document, remove_document, with_document, with_document_mut},
     frb_generated::StreamSink,
 };
 
 #[flutter_rust_bridge::frb(sync)]
 pub fn create(id: String, stream_sink: StreamSink<Partial>) -> Result<(), String> {
-    let app_state = get_app_state();
-    let mut documents = app_state.documents.lock().map_err(|e| e.to_string())?;
-
-    if documents.contains_key(&id) {
-        return Err(format!("Document with id {id} already exists"));
-    }
-
-    let document = Document::new(id.clone(), stream_sink);
-    documents.insert(id.clone(), document);
-    Ok(())
+    create_document(id, stream_sink).map_err(|e| e.to_string())
 }
 
 #[flutter_rust_bridge::frb(sync)]
 pub fn destroy(id: String) -> Result<(), String> {
-    let app_state = get_app_state();
-    let mut documents = app_state.documents.lock().map_err(|e| e.to_string())?;
-
-    if documents.remove(&id).is_none() {
-        return Err(format!("Document with id {id} not found"));
-    }
-    Ok(())
+    remove_document(&id).map_err(|e| e.to_string())
 }
 
 #[flutter_rust_bridge::frb(sync)]
 pub fn insert(id: String, position: u32, text: String) -> Result<(), String> {
     with_document_mut(&id, |document| {
-        document.insert(position, &text);
+        document.insert(position, &text)?;
         info!("Inserted text into document with id {id}: pos={position}, text={text}");
         Ok(())
     })
+    .map_err(|e| e.to_string())
 }
 
 #[flutter_rust_bridge::frb(sync)]
 pub fn delete(id: String, position: u32, delete_count: u32) -> Result<(), String> {
     with_document_mut(&id, |document| {
-        document.delete(position, delete_count);
+        document.delete(position, delete_count)?;
         info!("Deleted text from document with id {id}: pos={position}, del={delete_count}");
         Ok(())
     })
+    .map_err(|e| e.to_string())
 }
 
 #[flutter_rust_bridge::frb(sync)]
 pub fn merge(id: String, update: Vec<u8>) -> Result<(), String> {
     with_document_mut(&id, |document| {
-        document.merge(update).map_err(|e| e.to_string())?;
+        document.merge(update)?;
         info!("Merged update into document with id {id}");
         Ok(())
     })
+    .map_err(|e| e.to_string())
 }
 
 #[flutter_rust_bridge::frb(sync)]
 pub fn state_vector(id: String) -> Result<Vec<u8>, String> {
-    with_document(&id, |document| document.state_vector())
+    with_document(&id, |document| document.state_vector()).map_err(|e| e.to_string())
 }
 
 #[flutter_rust_bridge::frb(sync)]
 pub fn diff(id: String, since: Vec<u8>) -> Result<Vec<u8>, String> {
     with_document(&id, |document| document.diff(since))
+        .and_then(|result| result)
+        .map_err(|e| e.to_string())
 }
 
 #[flutter_rust_bridge::frb(init)]

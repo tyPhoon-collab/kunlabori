@@ -9,7 +9,8 @@ crate-type = ["cdylib", "staticlib"]
 [dependencies]
 flutter_rust_bridge = "=2.11.1"
 log = "0.4.28"
-serde_json = "1.0.145"
+serde_json = "1.0"
+thiserror = "2.0"
 yrs = "0.24.0"
 
 [lints.rust]

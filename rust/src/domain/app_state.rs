@@ -3,7 +3,7 @@ use std::{
     sync::{Mutex, OnceLock},
 };
 
-use crate::domain::document::Document;
+use crate::domain::{document::Document, error::DocumentError};
 
 pub struct AppState {
     pub documents: Mutex<HashMap<String, Document>>,
@@ -20,26 +20,70 @@ pub fn get_app_state() -> &'static AppState {
     })
 }
 
-pub fn with_document_mut<F, R>(id: &str, f: F) -> Result<R, String>
+pub fn with_document_mut<F, R>(id: &str, f: F) -> Result<R, DocumentError>
 where
-    F: FnOnce(&mut Document) -> Result<R, String>,
+    F: FnOnce(&mut Document) -> Result<R, DocumentError>,
 {
-    let app_state = get_app_state();
-    let mut documents = app_state.documents.lock().map_err(|e| e.to_string())?;
+    let mut documents = get_app_state()
+        .documents
+        .lock()
+        .map_err(|e| DocumentError::LockError {
+            message: e.to_string(),
+        })?;
     let document = documents
         .get_mut(id)
-        .ok_or_else(|| format!("Document with id {id} not found"))?;
+        .ok_or_else(|| DocumentError::DocumentNotFound { id: id.to_string() })?;
     f(document)
 }
 
-pub fn with_document<F, R>(id: &str, f: F) -> Result<R, String>
+pub fn with_document<F, R>(id: &str, f: F) -> Result<R, DocumentError>
 where
     F: FnOnce(&Document) -> R,
 {
-    let app_state = get_app_state();
-    let documents = app_state.documents.lock().map_err(|e| e.to_string())?;
+    let documents = get_app_state()
+        .documents
+        .lock()
+        .map_err(|e| DocumentError::LockError {
+            message: e.to_string(),
+        })?;
     let document = documents
         .get(id)
-        .ok_or_else(|| format!("Document with id {id} not found"))?;
+        .ok_or_else(|| DocumentError::DocumentNotFound { id: id.to_string() })?;
     Ok(f(document))
+}
+
+pub fn with_documents_mut<F, R>(f: F) -> Result<R, DocumentError>
+where
+    F: FnOnce(&mut HashMap<String, Document>) -> Result<R, DocumentError>,
+{
+    let mut documents = get_app_state()
+        .documents
+        .lock()
+        .map_err(|e| DocumentError::LockError {
+            message: e.to_string(),
+        })?;
+    f(&mut documents)
+}
+
+pub fn create_document(
+    id: String,
+    stream_sink: crate::frb_generated::StreamSink<crate::api::model::Partial>,
+) -> Result<(), DocumentError> {
+    with_documents_mut(|documents| {
+        if documents.contains_key(&id) {
+            return Err(DocumentError::DocumentAlreadyExists { id });
+        }
+        let document = Document::new(id.clone(), stream_sink)?;
+        documents.insert(id, document);
+        Ok(())
+    })
+}
+
+pub fn remove_document(id: &str) -> Result<(), DocumentError> {
+    with_documents_mut(|documents| {
+        documents
+            .remove(id)
+            .ok_or_else(|| DocumentError::DocumentNotFound { id: id.to_string() })?;
+        Ok(())
+    })
 }
