@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
-        "kunlabori"
+        "kunlabori",
+        "thiserror"
     ],
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.expand": false,

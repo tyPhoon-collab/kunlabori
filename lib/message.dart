@@ -8,9 +8,6 @@ part 'message.g.dart';
 
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
 sealed class Message with _$Message {
-  factory Message.fromJson(Map<String, dynamic> json) =>
-      _$MessageFromJson(json);
-
   const factory Message.connected({
     required String addr,
   }) = MessageConnected;
@@ -28,6 +25,9 @@ sealed class Message with _$Message {
   const factory Message.join({
     @Uint8ListConverter() required Uint8List bytes,
   }) = MessageJoin;
+
+  factory Message.fromJson(Map<String, dynamic> json) =>
+      _$MessageFromJson(json);
 }
 
 class Uint8ListConverter implements JsonConverter<Uint8List, String> {

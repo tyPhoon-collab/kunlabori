@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:kunlabori/event_handler.dart';
 import 'package:kunlabori/message.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:web_socket_client/web_socket_client.dart';
@@ -28,4 +29,23 @@ Stream<Message> messages(Ref ref) {
       .map(
         (json) => Message.fromJson(json as Map<String, dynamic>),
       );
+}
+
+@Riverpod(keepAlive: true)
+WebsocketEventHandler websocketEventHandler(Ref ref) {
+  return WebsocketEventHandler(ref.watch(_sendProvider));
+}
+
+@Riverpod(keepAlive: true)
+PartialEventHandler partialEventHandler(Ref ref) {
+  return PartialEventHandler(ref.watch(_sendProvider));
+}
+
+@Riverpod(keepAlive: true)
+void Function(Message) _send(Ref ref) {
+  void send(Message message) {
+    ref.read(socketProvider.notifier).sendMessage(message);
+  }
+
+  return send;
 }
