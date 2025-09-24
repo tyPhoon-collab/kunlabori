@@ -11,7 +11,6 @@ class HomePage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final docId = useMemoized(() => 'memo');
     final insertText = useRef('add');
-    final offset = useRef<int>(0);
     final length = useRef<int>(0);
 
     final focusNode = useFocusNode();
@@ -58,7 +57,7 @@ class HomePage extends HookConsumerWidget {
       int? position,
       String? text,
     }) {
-      final pos = position ?? offset.value;
+      final pos = position ?? index(id: id) ?? 0;
       final txt = text ?? insertText.value;
       debugPrint('inserting "$txt" at $pos');
       insert(id: docId, position: pos, text: txt);
@@ -70,7 +69,7 @@ class HomePage extends HookConsumerWidget {
       int? position,
       int? deleteCount,
     }) {
-      var pos = position ?? offset.value;
+      var pos = position ?? index(id: id) ?? 0;
       var count = deleteCount ?? length.value;
 
       if (count == 0) {
@@ -97,8 +96,10 @@ class HomePage extends HookConsumerWidget {
             style: const TextStyle(fontSize: 30),
             onTap: focusNode.requestFocus,
             onSelectionChanged: (selection, cause) {
-              offset.value = selection.baseOffset;
+              final offset = selection.baseOffset;
               length.value = selection.extentOffset - selection.baseOffset;
+
+              setIndex(id: docId, position: offset);
             },
           ),
         ),

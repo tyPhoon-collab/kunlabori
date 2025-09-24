@@ -41,3 +41,9 @@ Uint8List stateVector({required String id}) =>
 
 Uint8List diff({required String id, required List<int> since}) =>
     RustLib.instance.api.crateApiInterfaceDiff(id: id, since: since);
+
+void setIndex({required String id, required int position}) =>
+    RustLib.instance.api.crateApiInterfaceSetIndex(id: id, position: position);
+
+int? index({required String id}) =>
+    RustLib.instance.api.crateApiInterfaceIndex(id: id);

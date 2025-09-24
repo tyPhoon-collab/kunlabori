@@ -58,6 +58,20 @@ pub fn diff(id: String, since: Vec<u8>) -> Result<Vec<u8>, String> {
         .map_err(|e| e.to_string())
 }
 
+#[flutter_rust_bridge::frb(sync)]
+pub fn set_index(id: String, position: u32) -> Result<(), String> {
+    with_document_mut(&id, |document| {
+        document.set_index(position);
+        Ok(())
+    })
+    .map_err(|e| e.to_string())
+}
+
+#[flutter_rust_bridge::frb(sync)]
+pub fn index(id: String) -> Result<Option<u32>, String> {
+    with_document(&id, |document| document.index()).map_err(|e| e.to_string())
+}
+
 #[flutter_rust_bridge::frb(init)]
 pub fn init_app() {
     // Default utilities - feel free to customize

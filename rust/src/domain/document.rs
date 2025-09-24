@@ -4,8 +4,8 @@ use log::{error, info};
 use yrs::{
     types::Delta,
     updates::{decoder::Decode, encoder::Encode},
-    Doc, GetString, Observable, Out, ReadTxn, StateVector, Subscription, Text, TextRef, Transact,
-    Update,
+    Assoc, Doc, GetString, IndexedSequence, Observable, Out, ReadTxn, StateVector, StickyIndex,
+    Subscription, Text, TextRef, Transact, Update,
 };
 
 use crate::{
@@ -18,6 +18,7 @@ pub struct Document {
     pub id: String,
     doc: Arc<Doc>,
     stream_sink: StreamSink<Partial>,
+    index: Option<StickyIndex>,
     _text_subscription: Box<Subscription>,
     _update_subscription: Box<Subscription>,
 }
@@ -34,6 +35,7 @@ impl Document {
             id,
             doc,
             stream_sink,
+            index: None,
             _text_subscription: Box::new(text_subscription),
             _update_subscription: Box::new(update_subscription),
         })
@@ -134,5 +136,22 @@ impl Document {
             message: format!("Failed to decode state vector: {}", e),
         })?;
         Ok(self.doc.transact().encode_diff_v1(&since))
+    }
+
+    pub fn set_index(&mut self, position: u32) {
+        if let Some(index) = self.doc.get_or_insert_text(self.id.as_str()).sticky_index(
+            &mut self.doc.transact_mut(),
+            position,
+            Assoc::After,
+        ) {
+            self.index = Some(index);
+        }
+    }
+
+    pub fn index(&self) -> Option<u32> {
+        self.index
+            .as_ref()
+            .and_then(|s| s.get_offset(&self.doc.transact()))
+            .map(|offset| offset.index)
     }
 }
