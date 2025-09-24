@@ -70,12 +70,18 @@ class HomePage extends HookConsumerWidget {
       int? position,
       int? deleteCount,
     }) {
-      final pos = position ?? offset.value;
-      final count = deleteCount ?? length.value;
+      var pos = position ?? offset.value;
+      var count = deleteCount ?? length.value;
 
-      if (count <= 0) {
+      if (count == 0) {
         return;
       }
+
+      if (count.isNegative) {
+        pos = pos + count;
+        count = -count;
+      }
+
       debugPrint('deleting at $pos for $count');
       delete(id: id, position: pos, deleteCount: count);
       length.value = 0;
@@ -93,15 +99,6 @@ class HomePage extends HookConsumerWidget {
             onSelectionChanged: (selection, cause) {
               offset.value = selection.baseOffset;
               length.value = selection.extentOffset - selection.baseOffset;
-            },
-            contextMenuBuilder: (context, editableTextState) {
-              final selection = editableTextState.textEditingValue.selection;
-              offset.value = selection.baseOffset;
-              length.value = selection.extentOffset - selection.baseOffset;
-              return AdaptiveTextSelectionToolbar.buttonItems(
-                anchors: editableTextState.contextMenuAnchors,
-                buttonItems: editableTextState.contextMenuButtonItems,
-              );
             },
           ),
         ),
