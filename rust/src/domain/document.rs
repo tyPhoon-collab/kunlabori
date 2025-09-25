@@ -17,6 +17,7 @@ use crate::{
 pub struct Document {
     pub id: String,
     doc: Arc<Doc>,
+    text_ref: Arc<TextRef>,
     stream_sink: StreamSink<Partial>,
     index: Option<StickyIndex>,
     _text_subscription: Box<Subscription>,
@@ -26,7 +27,7 @@ pub struct Document {
 impl Document {
     pub fn new(id: String, stream_sink: StreamSink<Partial>) -> Result<Self, DocumentError> {
         let doc = Arc::new(Doc::new());
-        let text_ref = doc.get_or_insert_text(id.clone());
+        let text_ref = Arc::new(doc.get_or_insert_text(id.clone()));
 
         let text_subscription = Self::setup_text_observer(&text_ref, stream_sink.clone());
         let update_subscription = Self::setup_update_observer(&doc, &id, stream_sink.clone())?;
@@ -34,6 +35,7 @@ impl Document {
         Ok(Self {
             id,
             doc,
+            text_ref,
             stream_sink,
             index: None,
             _text_subscription: Box::new(text_subscription),
@@ -99,20 +101,14 @@ impl Document {
 
     // Core document operations
     pub fn insert(&mut self, position: u32, text: &str) -> Result<(), DocumentError> {
-        self.doc.get_or_insert_text(self.id.as_str()).insert(
-            &mut self.doc.transact_mut(),
-            position,
-            text,
-        );
+        self.text_ref
+            .insert(&mut self.doc.transact_mut(), position, text);
         Ok(())
     }
 
     pub fn delete(&mut self, position: u32, delete_count: u32) -> Result<(), DocumentError> {
-        self.doc.get_or_insert_text(self.id.as_str()).remove_range(
-            &mut self.doc.transact_mut(),
-            position,
-            delete_count,
-        );
+        self.text_ref
+            .remove_range(&mut self.doc.transact_mut(), position, delete_count);
         Ok(())
     }
 
@@ -139,11 +135,10 @@ impl Document {
     }
 
     pub fn set_index(&mut self, position: u32) {
-        if let Some(index) = self.doc.get_or_insert_text(self.id.as_str()).sticky_index(
-            &mut self.doc.transact_mut(),
-            position,
-            Assoc::After,
-        ) {
+        if let Some(index) =
+            self.text_ref
+                .sticky_index(&mut self.doc.transact_mut(), position, Assoc::After)
+        {
             self.index = Some(index);
         }
     }

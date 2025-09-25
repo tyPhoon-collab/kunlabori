@@ -5,6 +5,30 @@ import 'package:kunlabori/collaborative_selectable_text.dart';
 import 'package:kunlabori/event_handler.dart';
 import 'package:kunlabori/provider.dart';
 import 'package:kunlabori/src/rust/api/interface.dart' as rust_api;
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'home_page.g.dart';
+
+@riverpod
+class _CollaboratorIndexes extends _$CollaboratorIndexes {
+  @override
+  Map<String, RemoteSelection> build() {
+    return {};
+  }
+
+  void update(String addr, RemoteSelection selection) {
+    state = {
+      ...state,
+      addr: selection,
+    };
+  }
+
+  void remove(String addr) {
+    state = {
+      ...state,
+    }..remove(addr);
+  }
+}
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -16,9 +40,7 @@ class HomePage extends HookConsumerWidget {
 
     final focusNode = useFocusNode();
     final text = useState<String>('');
-    final collaboratorIndexes = useState<Map<String, RemoteSelection>>(
-      {},
-    );
+    final collaboratorIndexes = ref.watch(_collaboratorIndexesProvider);
 
     final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
       fontFamily: 'monospace',
@@ -27,6 +49,7 @@ class HomePage extends HookConsumerWidget {
 
     ref.listen(messagesProvider, (previous, next) {
       debugPrint('WebSocket message: $next');
+      final notifier = ref.read(_collaboratorIndexesProvider.notifier);
       switch (next) {
         case AsyncData(:final value):
           ref
@@ -34,16 +57,12 @@ class HomePage extends HookConsumerWidget {
               .handle(
                 docId,
                 value,
-                onSelection: (selection) => collaboratorIndexes.value = {
-                  ...collaboratorIndexes.value,
-                  selection.addr: selection,
-                },
-                onUnselected: (addr) => collaboratorIndexes.value = {
-                  ...collaboratorIndexes.value,
-                }..remove(addr),
-                onDisconnected: (addr) => collaboratorIndexes.value = {
-                  ...collaboratorIndexes.value,
-                }..remove(addr),
+                onSelection: (selection) => notifier.update(
+                  selection.addr,
+                  selection,
+                ),
+                onUnselected: notifier.remove,
+                onDisconnected: notifier.remove,
               );
         case AsyncError(:final error, :final stackTrace):
           debugPrint('WebSocket error: $error');
@@ -78,38 +97,6 @@ class HomePage extends HookConsumerWidget {
       };
     }, const []);
 
-    int offset() => ref.read(partialEventHandlerProvider).offset ?? 0;
-    int length() => ref.read(partialEventHandlerProvider).length ?? 0;
-    void setLength(int length) =>
-        ref.read(partialEventHandlerProvider).setLength(docId, length);
-
-    void insert({
-      required String id,
-      int? position,
-      String? text,
-    }) {
-      final pos = position ?? offset();
-      final txt = text ?? insertText.value;
-      debugPrint('inserting "$txt" at $pos');
-      rust_api.insert(id: id, position: pos, text: txt);
-      setLength(0);
-    }
-
-    void delete({
-      required String id,
-      int? position,
-      int? deleteCount,
-    }) {
-      final pos = position ?? offset();
-      final count = deleteCount ?? length();
-
-      if (count == 0) return;
-
-      debugPrint('deleting at $pos for $count');
-      rust_api.delete(id: id, position: pos, deleteCount: count);
-      setLength(0);
-    }
-
     return Scaffold(
       appBar: AppBar(title: const Text('flutter_rust_bridge quickstart')),
       body: Center(
@@ -117,21 +104,21 @@ class HomePage extends HookConsumerWidget {
           child: CollaborativeSelectableText(
             text.value,
             textStyle: textStyle,
-            collaboratorSelections: [
-              for (final MapEntry(:key, :value)
-                  in collaboratorIndexes.value.entries)
-                CollaboratorSelection(
-                  offset: value.offset,
-                  length: value.length,
-                  color:
-                      Colors.primaries[key.codeUnits.fold(
-                            0,
-                            (a, b) => a + b,
-                          ) %
-                          Colors.primaries.length],
-                  name: key,
-                ),
-            ],
+            collaboratorSelections: collaboratorIndexes.entries
+                .map(
+                  (entry) => CollaboratorSelection(
+                    offset: entry.value.offset,
+                    length: entry.value.length,
+                    color:
+                        Colors.primaries[entry.key.codeUnits.fold(
+                              0,
+                              (a, b) => a + b,
+                            ) %
+                            Colors.primaries.length],
+                    name: entry.key,
+                  ),
+                )
+                .toList(),
             onTap: focusNode.requestFocus,
             onSelectionChanged: (selection, cause) {
               var offset = selection.baseOffset;
@@ -150,44 +137,89 @@ class HomePage extends HookConsumerWidget {
         ),
       ),
       persistentFooterButtons: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 8,
-          children: [
-            Expanded(
-              child: TextField(
-                decoration: const InputDecoration(labelText: 'Insert Text'),
-                onChanged: (value) {
-                  insertText.value = value;
-                },
-                focusNode: focusNode,
-                maxLines: null,
-                expands: true,
-              ),
-            ),
+        _Actions(insertText: insertText, focusNode: focusNode, docId: docId),
+      ],
+    );
+  }
+}
 
-            IconButton.filled(
-              onPressed: () {
-                insert(id: docId);
-              },
-              icon: const Icon(Icons.add),
-              tooltip: 'Insert',
-            ),
-            IconButton.filled(
-              onPressed: () {
-                insert(id: docId, text: '\n');
-              },
-              icon: const Icon(Icons.keyboard_return),
-              tooltip: 'New Line',
-            ),
-            IconButton.filled(
-              onPressed: () {
-                delete(id: docId);
-              },
-              icon: const Icon(Icons.delete),
-              tooltip: 'Delete',
-            ),
-          ],
+class _Actions extends HookConsumerWidget {
+  const _Actions({
+    required this.insertText,
+    required this.focusNode,
+    required this.docId,
+  });
+
+  final ObjectRef<String> insertText;
+  final FocusNode focusNode;
+  final String docId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    int offset() => ref.read(partialEventHandlerProvider).offset ?? 0;
+    int length() => ref.read(partialEventHandlerProvider).length ?? 0;
+    void setLength(int length) =>
+        ref.read(partialEventHandlerProvider).setLength(docId, length);
+
+    void insert({
+      required String id,
+      int? position,
+      String? text,
+    }) {
+      final pos = position ?? offset();
+      final txt = text ?? insertText.value;
+      rust_api.insert(id: id, position: pos, text: txt);
+      setLength(0);
+    }
+
+    void delete({
+      required String id,
+      int? position,
+      int? deleteCount,
+    }) {
+      final pos = position ?? offset();
+      final count = deleteCount ?? length();
+      if (count == 0) return;
+      rust_api.delete(id: id, position: pos, deleteCount: count);
+      setLength(0);
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: 8,
+      children: [
+        Expanded(
+          child: TextField(
+            decoration: const InputDecoration(labelText: 'Insert Text'),
+            onChanged: (value) {
+              insertText.value = value;
+            },
+            focusNode: focusNode,
+            maxLines: null,
+            expands: true,
+          ),
+        ),
+
+        IconButton.filled(
+          onPressed: () {
+            insert(id: docId);
+          },
+          icon: const Icon(Icons.add),
+          tooltip: 'Insert',
+        ),
+        IconButton.filled(
+          onPressed: () {
+            insert(id: docId, text: '\n');
+          },
+          icon: const Icon(Icons.keyboard_return),
+          tooltip: 'New Line',
+        ),
+        IconButton.filled(
+          onPressed: () {
+            delete(id: docId);
+          },
+          icon: const Icon(Icons.delete),
+          tooltip: 'Delete',
         ),
       ],
     );

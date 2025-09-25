@@ -47,9 +47,7 @@ class CollaborativeSelectableText extends HookWidget {
     );
 
     final blinkOpacity = useMemoized(
-      // double型のTweenを使用
-      // ignore: prefer_int_literals
-      () => Tween<double>(begin: 1.0, end: 0.2).animate(
+      () => Tween<double>(begin: 1, end: 0.2).animate(
         CurvedAnimation(parent: blinkController, curve: Curves.easeInOut),
       ),
       [blinkController],
