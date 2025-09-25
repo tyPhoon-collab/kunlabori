@@ -6,60 +6,166 @@ part of 'message.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-MessageConnected _$MessageConnectedFromJson(Map<String, dynamic> json) =>
-    MessageConnected(
-      addr: json['addr'] as String,
-      $type: json['type'] as String?,
-    );
-
-Map<String, dynamic> _$MessageConnectedToJson(MessageConnected instance) =>
-    <String, dynamic>{'addr': instance.addr, 'type': instance.$type};
-
-MessageUpdate _$MessageUpdateFromJson(Map<String, dynamic> json) =>
-    MessageUpdate(
+SendMessageUpdate _$SendMessageUpdateFromJson(Map<String, dynamic> json) =>
+    SendMessageUpdate(
       bytes: const Uint8ListConverter().fromJson(json['bytes'] as String),
       $type: json['type'] as String?,
     );
 
-Map<String, dynamic> _$MessageUpdateToJson(MessageUpdate instance) =>
+Map<String, dynamic> _$SendMessageUpdateToJson(SendMessageUpdate instance) =>
     <String, dynamic>{
       'bytes': const Uint8ListConverter().toJson(instance.bytes),
       'type': instance.$type,
     };
 
-MessageRead _$MessageReadFromJson(Map<String, dynamic> json) => MessageRead(
-  bytes: const Uint8ListConverter().fromJson(json['bytes'] as String),
-  from: json['from'] as String,
+SendMessageSelection _$SendMessageSelectionFromJson(
+  Map<String, dynamic> json,
+) => SendMessageSelection(
+  offset: (json['offset'] as num).toInt(),
+  length: (json['length'] as num).toInt(),
   $type: json['type'] as String?,
 );
 
-Map<String, dynamic> _$MessageReadToJson(MessageRead instance) =>
-    <String, dynamic>{
-      'bytes': const Uint8ListConverter().toJson(instance.bytes),
-      'from': instance.from,
-      'type': instance.$type,
-    };
+Map<String, dynamic> _$SendMessageSelectionToJson(
+  SendMessageSelection instance,
+) => <String, dynamic>{
+  'offset': instance.offset,
+  'length': instance.length,
+  'type': instance.$type,
+};
 
-MessageInit _$MessageInitFromJson(Map<String, dynamic> json) => MessageInit(
-  bytes: const Uint8ListConverter().fromJson(json['bytes'] as String),
-  to: json['to'] as String,
-  $type: json['type'] as String?,
-);
+SendMessageUnselect _$SendMessageUnselectFromJson(Map<String, dynamic> json) =>
+    SendMessageUnselect(
+      offset: (json['offset'] as num).toInt(),
+      length: (json['length'] as num).toInt(),
+      $type: json['type'] as String?,
+    );
 
-Map<String, dynamic> _$MessageInitToJson(MessageInit instance) =>
+Map<String, dynamic> _$SendMessageUnselectToJson(
+  SendMessageUnselect instance,
+) => <String, dynamic>{
+  'offset': instance.offset,
+  'length': instance.length,
+  'type': instance.$type,
+};
+
+SendMessageInit _$SendMessageInitFromJson(Map<String, dynamic> json) =>
+    SendMessageInit(
+      bytes: const Uint8ListConverter().fromJson(json['bytes'] as String),
+      to: json['to'] as String,
+      $type: json['type'] as String?,
+    );
+
+Map<String, dynamic> _$SendMessageInitToJson(SendMessageInit instance) =>
     <String, dynamic>{
       'bytes': const Uint8ListConverter().toJson(instance.bytes),
       'to': instance.to,
       'type': instance.$type,
     };
 
-MessageJoin _$MessageJoinFromJson(Map<String, dynamic> json) => MessageJoin(
-  bytes: const Uint8ListConverter().fromJson(json['bytes'] as String),
-  $type: json['type'] as String?,
-);
+SendMessageJoin _$SendMessageJoinFromJson(Map<String, dynamic> json) =>
+    SendMessageJoin(
+      bytes: const Uint8ListConverter().fromJson(json['bytes'] as String),
+      $type: json['type'] as String?,
+    );
 
-Map<String, dynamic> _$MessageJoinToJson(MessageJoin instance) =>
+Map<String, dynamic> _$SendMessageJoinToJson(SendMessageJoin instance) =>
     <String, dynamic>{
       'bytes': const Uint8ListConverter().toJson(instance.bytes),
       'type': instance.$type,
     };
+
+ReceiveMessageUpdate _$ReceiveMessageUpdateFromJson(
+  Map<String, dynamic> json,
+) => ReceiveMessageUpdate(
+  bytes: const Uint8ListConverter().fromJson(json['bytes'] as String),
+  addr: json['addr'] as String,
+  $type: json['type'] as String?,
+);
+
+Map<String, dynamic> _$ReceiveMessageUpdateToJson(
+  ReceiveMessageUpdate instance,
+) => <String, dynamic>{
+  'bytes': const Uint8ListConverter().toJson(instance.bytes),
+  'addr': instance.addr,
+  'type': instance.$type,
+};
+
+ReceiveMessageSelection _$ReceiveMessageSelectionFromJson(
+  Map<String, dynamic> json,
+) => ReceiveMessageSelection(
+  offset: (json['offset'] as num).toInt(),
+  length: (json['length'] as num).toInt(),
+  addr: json['addr'] as String,
+  $type: json['type'] as String?,
+);
+
+Map<String, dynamic> _$ReceiveMessageSelectionToJson(
+  ReceiveMessageSelection instance,
+) => <String, dynamic>{
+  'offset': instance.offset,
+  'length': instance.length,
+  'addr': instance.addr,
+  'type': instance.$type,
+};
+
+ReceiveMessageUnselect _$ReceiveMessageUnselectFromJson(
+  Map<String, dynamic> json,
+) => ReceiveMessageUnselect(
+  addr: json['addr'] as String,
+  $type: json['type'] as String?,
+);
+
+Map<String, dynamic> _$ReceiveMessageUnselectToJson(
+  ReceiveMessageUnselect instance,
+) => <String, dynamic>{'addr': instance.addr, 'type': instance.$type};
+
+ReceiveMessageRead _$ReceiveMessageReadFromJson(Map<String, dynamic> json) =>
+    ReceiveMessageRead(
+      bytes: const Uint8ListConverter().fromJson(json['bytes'] as String),
+      from: json['from'] as String,
+      $type: json['type'] as String?,
+    );
+
+Map<String, dynamic> _$ReceiveMessageReadToJson(ReceiveMessageRead instance) =>
+    <String, dynamic>{
+      'bytes': const Uint8ListConverter().toJson(instance.bytes),
+      'from': instance.from,
+      'type': instance.$type,
+    };
+
+ReceiveMessageInit _$ReceiveMessageInitFromJson(Map<String, dynamic> json) =>
+    ReceiveMessageInit(
+      bytes: const Uint8ListConverter().fromJson(json['bytes'] as String),
+      to: json['to'] as String,
+      $type: json['type'] as String?,
+    );
+
+Map<String, dynamic> _$ReceiveMessageInitToJson(ReceiveMessageInit instance) =>
+    <String, dynamic>{
+      'bytes': const Uint8ListConverter().toJson(instance.bytes),
+      'to': instance.to,
+      'type': instance.$type,
+    };
+
+ReceiveMessageConnected _$ReceiveMessageConnectedFromJson(
+  Map<String, dynamic> json,
+) => ReceiveMessageConnected(
+  addr: json['addr'] as String,
+  $type: json['type'] as String?,
+);
+
+Map<String, dynamic> _$ReceiveMessageConnectedToJson(
+  ReceiveMessageConnected instance,
+) => <String, dynamic>{'addr': instance.addr, 'type': instance.$type};
+
+ReceiveMessageDisconnected _$ReceiveMessageDisconnectedFromJson(
+  Map<String, dynamic> json,
+) => ReceiveMessageDisconnected(
+  addr: json['addr'] as String,
+  $type: json['type'] as String?,
+);
+
+Map<String, dynamic> _$ReceiveMessageDisconnectedToJson(
+  ReceiveMessageDisconnected instance,
+) => <String, dynamic>{'addr': instance.addr, 'type': instance.$type};

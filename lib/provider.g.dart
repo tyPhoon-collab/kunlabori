@@ -40,7 +40,7 @@ final class SocketProvider extends $NotifierProvider<Socket, WebSocket> {
   }
 }
 
-String _$socketHash() => r'24352537f61bbdec0028a47db23ba4edee1fc97a';
+String _$socketHash() => r'84ab08b6c6966b99b258be7e3fa4f89ef122db1f';
 
 abstract class _$Socket extends $Notifier<WebSocket> {
   WebSocket build();
@@ -65,8 +65,13 @@ abstract class _$Socket extends $Notifier<WebSocket> {
 const messagesProvider = MessagesProvider._();
 
 final class MessagesProvider
-    extends $FunctionalProvider<AsyncValue<Message>, Message, Stream<Message>>
-    with $FutureModifier<Message>, $StreamProvider<Message> {
+    extends
+        $FunctionalProvider<
+          AsyncValue<ReceiveMessage>,
+          ReceiveMessage,
+          Stream<ReceiveMessage>
+        >
+    with $FutureModifier<ReceiveMessage>, $StreamProvider<ReceiveMessage> {
   const MessagesProvider._()
     : super(
         from: null,
@@ -83,16 +88,17 @@ final class MessagesProvider
 
   @$internal
   @override
-  $StreamProviderElement<Message> $createElement($ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+  $StreamProviderElement<ReceiveMessage> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
-  Stream<Message> create(Ref ref) {
+  Stream<ReceiveMessage> create(Ref ref) {
     return messages(ref);
   }
 }
 
-String _$messagesHash() => r'c56fb0bde9fd433e0f0eeed089e65423e329cee2';
+String _$messagesHash() => r'f492123b77c3b12ae4c126f1dd22c7860fdc2a75';
 
 @ProviderFor(websocketEventHandler)
 const websocketEventHandlerProvider = WebsocketEventHandlerProvider._();
@@ -196,11 +202,11 @@ const _sendProvider = _SendProvider._();
 final class _SendProvider
     extends
         $FunctionalProvider<
-          void Function(Message),
-          void Function(Message),
-          void Function(Message)
+          void Function(SendMessage),
+          void Function(SendMessage),
+          void Function(SendMessage)
         >
-    with $Provider<void Function(Message)> {
+    with $Provider<void Function(SendMessage)> {
   const _SendProvider._()
     : super(
         from: null,
@@ -217,22 +223,22 @@ final class _SendProvider
 
   @$internal
   @override
-  $ProviderElement<void Function(Message)> $createElement(
+  $ProviderElement<void Function(SendMessage)> $createElement(
     $ProviderPointer pointer,
   ) => $ProviderElement(pointer);
 
   @override
-  void Function(Message) create(Ref ref) {
+  void Function(SendMessage) create(Ref ref) {
     return _send(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(void Function(Message) value) {
+  Override overrideWithValue(void Function(SendMessage) value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<void Function(Message)>(value),
+      providerOverride: $SyncValueProvider<void Function(SendMessage)>(value),
     );
   }
 }
 
-String _$_sendHash() => r'0028c753c8f90fd6f9bc46850e4c55c36f9953e8';
+String _$_sendHash() => r'80e71107a83786b34d827006d98578ff200c06a8';

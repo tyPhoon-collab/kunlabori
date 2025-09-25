@@ -15,19 +15,19 @@ class Socket extends _$Socket {
     return WebSocket(uri, timeout: const Duration(seconds: 5));
   }
 
-  void sendMessage(Message message) {
+  void sendMessage(SendMessage message) {
     final jsonString = jsonEncode(message.toJson());
     state.send(jsonString);
   }
 }
 
 @Riverpod(keepAlive: true)
-Stream<Message> messages(Ref ref) {
+Stream<ReceiveMessage> messages(Ref ref) {
   final socket = ref.watch(socketProvider);
   return socket.messages
       .map((event) => jsonDecode(event as String))
       .map(
-        (json) => Message.fromJson(json as Map<String, dynamic>),
+        (json) => ReceiveMessage.fromJson(json as Map<String, dynamic>),
       );
 }
 
@@ -42,8 +42,8 @@ PartialEventHandler partialEventHandler(Ref ref) {
 }
 
 @Riverpod(keepAlive: true)
-void Function(Message) _send(Ref ref) {
-  void send(Message message) {
+void Function(SendMessage) _send(Ref ref) {
+  void send(SendMessage message) {
     ref.read(socketProvider.notifier).sendMessage(message);
   }
 

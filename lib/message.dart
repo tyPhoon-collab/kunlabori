@@ -7,27 +7,71 @@ part 'message.freezed.dart';
 part 'message.g.dart';
 
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
-sealed class Message with _$Message {
-  const factory Message.connected({
-    required String addr,
-  }) = MessageConnected;
-  const factory Message.update({
+sealed class SendMessage with _$SendMessage {
+  const factory SendMessage.update({
     @Uint8ListConverter() required Uint8List bytes,
-  }) = MessageUpdate;
-  const factory Message.read({
-    @Uint8ListConverter() required Uint8List bytes,
-    required String from,
-  }) = MessageRead;
-  const factory Message.init({
+  }) = SendMessageUpdate;
+
+  const factory SendMessage.selection({
+    required int offset,
+    required int length,
+  }) = SendMessageSelection;
+
+  const factory SendMessage.unselect({
+    required int offset,
+    required int length,
+  }) = SendMessageUnselect;
+
+  const factory SendMessage.init({
     @Uint8ListConverter() required Uint8List bytes,
     required String to,
-  }) = MessageInit;
-  const factory Message.join({
-    @Uint8ListConverter() required Uint8List bytes,
-  }) = MessageJoin;
+  }) = SendMessageInit;
 
-  factory Message.fromJson(Map<String, dynamic> json) =>
-      _$MessageFromJson(json);
+  const factory SendMessage.join({
+    @Uint8ListConverter() required Uint8List bytes,
+  }) = SendMessageJoin;
+
+  factory SendMessage.fromJson(Map<String, dynamic> json) =>
+      _$SendMessageFromJson(json);
+}
+
+@Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
+sealed class ReceiveMessage with _$ReceiveMessage {
+  const factory ReceiveMessage.update({
+    @Uint8ListConverter() required Uint8List bytes,
+    required String addr,
+  }) = ReceiveMessageUpdate;
+
+  const factory ReceiveMessage.selection({
+    required int offset,
+    required int length,
+    required String addr,
+  }) = ReceiveMessageSelection;
+
+  const factory ReceiveMessage.unselect({
+    required String addr,
+  }) = ReceiveMessageUnselect;
+
+  const factory ReceiveMessage.read({
+    @Uint8ListConverter() required Uint8List bytes,
+    required String from,
+  }) = ReceiveMessageRead;
+
+  const factory ReceiveMessage.init({
+    @Uint8ListConverter() required Uint8List bytes,
+    required String to,
+  }) = ReceiveMessageInit;
+
+  const factory ReceiveMessage.connected({
+    required String addr,
+  }) = ReceiveMessageConnected;
+
+  const factory ReceiveMessage.disconnected({
+    required String addr,
+  }) = ReceiveMessageDisconnected;
+
+  factory ReceiveMessage.fromJson(Map<String, dynamic> json) =>
+      _$ReceiveMessageFromJson(json);
 }
 
 class Uint8ListConverter implements JsonConverter<Uint8List, String> {

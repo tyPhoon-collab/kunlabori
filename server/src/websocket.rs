@@ -14,9 +14,44 @@ use crate::{
 /// Update メッセージを処理
 fn handle_update_message(peer_service: &PeerService, addr: SocketAddr, bytes: String) {
     info!("Broadcasting update from {}", addr);
-    let update_msg = SendMessage::Update { bytes };
+    let update_msg = SendMessage::Update {
+        bytes,
+        addr: addr.to_string(),
+    };
     if let Err(e) = peer_service.broadcast(addr, &update_msg, true) {
         warn!("Failed to broadcast update: {}", e);
+    }
+}
+
+/// Selection メッセージを処理
+fn handle_selection_message(
+    peer_service: &PeerService,
+    addr: SocketAddr,
+    offset: u32,
+    length: u32,
+) {
+    info!(
+        "Received selection from {}: offset={}, length={}",
+        addr, offset, length
+    );
+    let selection_msg = SendMessage::Selection {
+        offset,
+        length,
+        addr: addr.to_string(),
+    };
+    if let Err(e) = peer_service.broadcast(addr, &selection_msg, true) {
+        warn!("Failed to broadcast selection: {}", e);
+    }
+}
+
+/// Unselect メッセージを処理
+fn handle_unselect_message(peer_service: &PeerService, addr: SocketAddr) {
+    info!("Received unselect from {}", addr);
+    let unselect_msg = SendMessage::Unselect {
+        addr: addr.to_string(),
+    };
+    if let Err(e) = peer_service.broadcast(addr, &unselect_msg, true) {
+        warn!("Failed to broadcast unselect: {}", e);
     }
 }
 
@@ -90,6 +125,12 @@ pub async fn handle_connection(peer_service: PeerService, raw_stream: TcpStream,
             ReceiveMessage::Update { bytes } => {
                 handle_update_message(&peer_service, addr, bytes);
             }
+            ReceiveMessage::Selection { offset, length } => {
+                handle_selection_message(&peer_service, addr, offset, length);
+            }
+            ReceiveMessage::Unselect {} => {
+                handle_unselect_message(&peer_service, addr);
+            }
             ReceiveMessage::Join { bytes } => {
                 handle_join_message(&peer_service, addr, bytes);
             }
@@ -117,6 +158,15 @@ pub async fn handle_connection(peer_service: PeerService, raw_stream: TcpStream,
     }
 
     info!("{} disconnected", &addr);
+
+    // Send disconnect message
+    let disconnect_msg = SendMessage::Disconnected {
+        addr: addr.to_string(),
+    };
+    if let Err(e) = peer_service.broadcast(addr, &disconnect_msg, true) {
+        warn!("Failed to broadcast disconnect message: {}", e);
+    }
+
     if let Err(e) = peer_service.remove_peer(addr) {
         error!("Failed to remove peer {}: {}", addr, e);
     }

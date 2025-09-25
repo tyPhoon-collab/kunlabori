@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kunlabori/collaborative_selectable_text.dart';
+import 'package:kunlabori/event_handler.dart';
 import 'package:kunlabori/provider.dart';
-import 'package:kunlabori/src/rust/api/interface.dart';
+import 'package:kunlabori/src/rust/api/interface.dart' as rust_api;
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -10,17 +12,39 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final docId = useMemoized(() => 'memo');
-    final insertText = useRef('add');
-    final length = useRef<int>(0);
+    final insertText = useRef('');
 
     final focusNode = useFocusNode();
     final text = useState<String>('');
+    final collaboratorIndexes = useState<Map<String, RemoteSelection>>(
+      {},
+    );
+
+    final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
+      fontFamily: 'monospace',
+      fontSize: 24,
+    );
 
     ref.listen(messagesProvider, (previous, next) {
       debugPrint('WebSocket message: $next');
       switch (next) {
         case AsyncData(:final value):
-          ref.read(websocketEventHandlerProvider).handle(docId, value);
+          ref
+              .read(websocketEventHandlerProvider)
+              .handle(
+                docId,
+                value,
+                onSelection: (selection) => collaboratorIndexes.value = {
+                  ...collaboratorIndexes.value,
+                  selection.addr: selection,
+                },
+                onUnselected: (addr) => collaboratorIndexes.value = {
+                  ...collaboratorIndexes.value,
+                }..remove(addr),
+                onDisconnected: (addr) => collaboratorIndexes.value = {
+                  ...collaboratorIndexes.value,
+                }..remove(addr),
+              );
         case AsyncError(:final error, :final stackTrace):
           debugPrint('WebSocket error: $error');
           debugPrintStack(stackTrace: stackTrace);
@@ -30,76 +54,97 @@ class HomePage extends HookConsumerWidget {
     });
 
     useEffect(() {
-      final subscription = create(id: docId).listen(
-        (partial) {
-          debugPrint('Stream partial: $partial');
-          ref
-              .read(partialEventHandlerProvider)
-              .handle(
-                docId,
-                partial,
-                onText: (text_) => text.value = text_,
-              );
-        },
-        onError: (Object? error) {
-          debugPrint('Error in stream: $error');
-        },
-      );
+      final subscription = rust_api
+          .create(id: docId)
+          .listen(
+            (partial) {
+              debugPrint('Stream partial: $partial');
+              ref
+                  .read(partialEventHandlerProvider)
+                  .handle(
+                    docId,
+                    partial,
+                    onText: (text_) => text.value = text_,
+                  );
+            },
+            onError: (Object? error) {
+              debugPrint('Error in stream: $error');
+            },
+          );
 
       return () {
         subscription.cancel();
-        destroy(id: docId);
+        rust_api.destroy(id: docId);
       };
     }, const []);
 
-    void insert_({
+    int offset() => ref.read(partialEventHandlerProvider).offset ?? 0;
+    int length() => ref.read(partialEventHandlerProvider).length ?? 0;
+    void setLength(int length) =>
+        ref.read(partialEventHandlerProvider).setLength(docId, length);
+
+    void insert({
       required String id,
       int? position,
       String? text,
     }) {
-      final pos = position ?? index(id: id) ?? 0;
+      final pos = position ?? offset();
       final txt = text ?? insertText.value;
       debugPrint('inserting "$txt" at $pos');
-      insert(id: docId, position: pos, text: txt);
-      length.value = 0;
+      rust_api.insert(id: id, position: pos, text: txt);
+      setLength(0);
     }
 
-    void delete_({
+    void delete({
       required String id,
       int? position,
       int? deleteCount,
     }) {
-      var pos = position ?? index(id: id) ?? 0;
-      var count = deleteCount ?? length.value;
+      final pos = position ?? offset();
+      final count = deleteCount ?? length();
 
-      if (count == 0) {
-        return;
-      }
-
-      if (count.isNegative) {
-        pos = pos + count;
-        count = -count;
-      }
+      if (count == 0) return;
 
       debugPrint('deleting at $pos for $count');
-      delete(id: id, position: pos, deleteCount: count);
-      length.value = 0;
+      rust_api.delete(id: id, position: pos, deleteCount: count);
+      setLength(0);
     }
 
     return Scaffold(
       appBar: AppBar(title: const Text('flutter_rust_bridge quickstart')),
       body: Center(
         child: SingleChildScrollView(
-          child: SelectableText(
+          child: CollaborativeSelectableText(
             text.value,
-            showCursor: true,
-            style: const TextStyle(fontSize: 30),
+            textStyle: textStyle,
+            collaboratorSelections: [
+              for (final MapEntry(:key, :value)
+                  in collaboratorIndexes.value.entries)
+                CollaboratorSelection(
+                  offset: value.offset,
+                  length: value.length,
+                  color:
+                      Colors.primaries[key.codeUnits.fold(
+                            0,
+                            (a, b) => a + b,
+                          ) %
+                          Colors.primaries.length],
+                  name: key,
+                ),
+            ],
             onTap: focusNode.requestFocus,
             onSelectionChanged: (selection, cause) {
-              final offset = selection.baseOffset;
-              length.value = selection.extentOffset - selection.baseOffset;
+              var offset = selection.baseOffset;
+              var length = selection.extentOffset - offset;
 
-              setIndex(id: docId, position: offset);
+              if (length.isNegative) {
+                offset = offset + length;
+                length = -length;
+              }
+
+              ref
+                  .read(partialEventHandlerProvider)
+                  .setSelection(docId, offset: offset, length: length);
             },
           ),
         ),
@@ -123,21 +168,21 @@ class HomePage extends HookConsumerWidget {
 
             IconButton.filled(
               onPressed: () {
-                insert_(id: docId);
+                insert(id: docId);
               },
               icon: const Icon(Icons.add),
               tooltip: 'Insert',
             ),
             IconButton.filled(
               onPressed: () {
-                insert_(id: docId, text: '\n');
+                insert(id: docId, text: '\n');
               },
               icon: const Icon(Icons.keyboard_return),
               tooltip: 'New Line',
             ),
             IconButton.filled(
               onPressed: () {
-                delete_(id: docId);
+                delete(id: docId);
               },
               icon: const Icon(Icons.delete),
               tooltip: 'Delete',
