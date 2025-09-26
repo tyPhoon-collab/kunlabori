@@ -1,7 +1,9 @@
 import 'dart:convert';
 
-import 'package:kunlabori/event_handler.dart';
-import 'package:kunlabori/message.dart';
+import 'package:kunlabori/application/event_handler/partial_event_handler.dart';
+import 'package:kunlabori/application/event_handler/websocket_event_handler.dart';
+import 'package:kunlabori/domain/model/client_event.dart';
+import 'package:kunlabori/domain/model/message.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 
@@ -43,19 +45,45 @@ Stream<ReceiveMessage> messages(Ref ref) {
 
 @Riverpod(keepAlive: true)
 WebsocketEventHandler websocketEventHandler(Ref ref) {
-  return WebsocketEventHandler(ref.watch(_sendProvider));
+  return WebsocketEventHandler(
+    send: ref.watch(_sendProvider),
+    sink: ref.watch(_sinkProvider),
+  );
 }
 
 @Riverpod(keepAlive: true)
 PartialEventHandler partialEventHandler(Ref ref) {
-  return PartialEventHandler(ref.watch(_sendProvider));
+  return PartialEventHandler(
+    send: ref.watch(_sendProvider),
+    sink: ref.watch(_sinkProvider),
+  );
 }
 
 @Riverpod(keepAlive: true)
-void Function(SendMessage) _send(Ref ref) {
+class Event extends _$Event {
+  @override
+  ClientEvent build() => const ClientEventInit();
+
+  void add(ClientEvent event) => state = event;
+}
+
+typedef Send = void Function(SendMessage message);
+typedef Sink = void Function(ClientEvent event);
+
+@Riverpod(keepAlive: true)
+Send _send(Ref ref) {
   void send(SendMessage message) {
     ref.read(socketProvider.notifier).sendMessage(message);
   }
 
   return send;
+}
+
+@Riverpod(keepAlive: true)
+Sink _sink(Ref ref) {
+  void sink(ClientEvent event) {
+    ref.read(eventProvider.notifier).add(event);
+  }
+
+  return sink;
 }

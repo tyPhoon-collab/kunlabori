@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kunlabori/collaborative_selectable_text.dart';
-import 'package:kunlabori/event_handler.dart';
+import 'package:kunlabori/domain/model/client_event.dart';
 import 'package:kunlabori/provider.dart';
 import 'package:kunlabori/settings_page.dart';
 import 'package:kunlabori/src/rust/api/interface.dart' as rust_api;
@@ -13,11 +13,11 @@ part 'home_page.g.dart';
 @riverpod
 class _CollaboratorIndexes extends _$CollaboratorIndexes {
   @override
-  Map<String, RemoteSelection> build() {
+  Map<String, Selection> build() {
     return {};
   }
 
-  void update(String addr, RemoteSelection selection) {
+  void update(String addr, Selection selection) {
     state = {
       ...state,
       addr: selection,
@@ -33,10 +33,9 @@ class _CollaboratorIndexes extends _$CollaboratorIndexes {
   void setSelection(String id, Selection selection) {
     update(
       'you',
-      (
+      Selection(
         start: selection.start,
         end: selection.end,
-        addr: 'you',
       ),
     );
 
@@ -55,6 +54,27 @@ class HomePage extends HookConsumerWidget {
     final text = useState<String>('');
     final collaboratorIndexes = ref.watch(_collaboratorIndexesProvider);
 
+    ref.listen(eventProvider, (previous, next) {
+      final notifier = ref.read(_collaboratorIndexesProvider.notifier);
+
+      switch (next) {
+        case ClientEventSelected(:final selection, :final addr):
+          notifier.update(
+            addr,
+            selection,
+          );
+        case ClientEventDisconnected(:final addr):
+        case ClientEventUnselected(:final addr):
+          notifier.remove(addr);
+        case ClientEventText():
+          text.value = next.text;
+        case ClientEventMoved(:final selection):
+          notifier.setSelection(docId, selection);
+        default:
+          break;
+      }
+    });
+
     final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
       fontFamily: 'monospace',
       fontSize: 24,
@@ -62,21 +82,9 @@ class HomePage extends HookConsumerWidget {
 
     ref.listen(messagesProvider, (previous, next) {
       debugPrint('WebSocket message: $next');
-      final notifier = ref.read(_collaboratorIndexesProvider.notifier);
       switch (next) {
         case AsyncData(:final value):
-          ref
-              .read(websocketEventHandlerProvider)
-              .handle(
-                docId,
-                value,
-                onSelection: (selection) => notifier.update(
-                  selection.addr,
-                  selection,
-                ),
-                onUnselected: notifier.remove,
-                onDisconnected: notifier.remove,
-              );
+          ref.read(websocketEventHandlerProvider).handle(docId, value);
         case AsyncError(:final error, :final stackTrace):
           debugPrint('WebSocket error: $error');
           debugPrintStack(stackTrace: stackTrace);
@@ -91,18 +99,7 @@ class HomePage extends HookConsumerWidget {
           .listen(
             (partial) {
               debugPrint('Stream partial: $partial');
-              ref
-                  .read(partialEventHandlerProvider)
-                  .handle(
-                    docId,
-                    partial,
-                    onText: (text_) => text.value = text_,
-                    onSelection: (selection) {
-                      ref
-                          .read(_collaboratorIndexesProvider.notifier)
-                          .setSelection(docId, selection);
-                    },
-                  );
+              ref.read(partialEventHandlerProvider).handle(docId, partial);
             },
             onError: (Object? error) {
               debugPrint('Error in stream: $error');

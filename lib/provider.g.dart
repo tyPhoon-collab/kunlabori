@@ -198,7 +198,7 @@ final class WebsocketEventHandlerProvider
 }
 
 String _$websocketEventHandlerHash() =>
-    r'f1f15eb1edfa5f5b9cba6f99d85627485bc06111';
+    r'da282ece055fbb2aba739c7189010c0e24645248';
 
 @ProviderFor(partialEventHandler)
 const partialEventHandlerProvider = PartialEventHandlerProvider._();
@@ -246,19 +246,65 @@ final class PartialEventHandlerProvider
 }
 
 String _$partialEventHandlerHash() =>
-    r'2060fe4843a9a341e63089dc2a3d6ed61478d449';
+    r'a6eaf3f2e14466f435a8d75271b7c30a5b7b6c2a';
+
+@ProviderFor(Event)
+const eventProvider = EventProvider._();
+
+final class EventProvider extends $NotifierProvider<Event, ClientEvent> {
+  const EventProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'eventProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$eventHash();
+
+  @$internal
+  @override
+  Event create() => Event();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ClientEvent value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ClientEvent>(value),
+    );
+  }
+}
+
+String _$eventHash() => r'2dfe02d19e2c1781f0f9c877c34fbd9f7a2c9626';
+
+abstract class _$Event extends $Notifier<ClientEvent> {
+  ClientEvent build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<ClientEvent, ClientEvent>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<ClientEvent, ClientEvent>,
+              ClientEvent,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
 
 @ProviderFor(_send)
 const _sendProvider = _SendProvider._();
 
-final class _SendProvider
-    extends
-        $FunctionalProvider<
-          void Function(SendMessage),
-          void Function(SendMessage),
-          void Function(SendMessage)
-        >
-    with $Provider<void Function(SendMessage)> {
+final class _SendProvider extends $FunctionalProvider<Send, Send, Send>
+    with $Provider<Send> {
   const _SendProvider._()
     : super(
         from: null,
@@ -275,22 +321,61 @@ final class _SendProvider
 
   @$internal
   @override
-  $ProviderElement<void Function(SendMessage)> $createElement(
-    $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
+  $ProviderElement<Send> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
-  void Function(SendMessage) create(Ref ref) {
+  Send create(Ref ref) {
     return _send(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(void Function(SendMessage) value) {
+  Override overrideWithValue(Send value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<void Function(SendMessage)>(value),
+      providerOverride: $SyncValueProvider<Send>(value),
     );
   }
 }
 
-String _$_sendHash() => r'80e71107a83786b34d827006d98578ff200c06a8';
+String _$_sendHash() => r'fefba1300d67bdceb60931750ded869ed755e65f';
+
+@ProviderFor(_sink)
+const _sinkProvider = _SinkProvider._();
+
+final class _SinkProvider extends $FunctionalProvider<Sink, Sink, Sink>
+    with $Provider<Sink> {
+  const _SinkProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'_sinkProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$_sinkHash();
+
+  @$internal
+  @override
+  $ProviderElement<Sink> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  Sink create(Ref ref) {
+    return _sink(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Sink value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Sink>(value),
+    );
+  }
+}
+
+String _$_sinkHash() => r'6118cfce8d6d127289c358223a2da275c29ef29e';

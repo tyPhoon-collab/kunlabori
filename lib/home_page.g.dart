@@ -13,8 +13,7 @@ part of 'home_page.dart';
 const _collaboratorIndexesProvider = _CollaboratorIndexesProvider._();
 
 final class _CollaboratorIndexesProvider
-    extends
-        $NotifierProvider<_CollaboratorIndexes, Map<String, RemoteSelection>> {
+    extends $NotifierProvider<_CollaboratorIndexes, Map<String, Selection>> {
   const _CollaboratorIndexesProvider._()
     : super(
         from: null,
@@ -34,35 +33,30 @@ final class _CollaboratorIndexesProvider
   _CollaboratorIndexes create() => _CollaboratorIndexes();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(Map<String, RemoteSelection> value) {
+  Override overrideWithValue(Map<String, Selection> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<Map<String, RemoteSelection>>(value),
+      providerOverride: $SyncValueProvider<Map<String, Selection>>(value),
     );
   }
 }
 
 String _$_collaboratorIndexesHash() =>
-    r'7c42b6f1ff888966632aadfd0c4962718186c67a';
+    r'7d8d0e5ffb8d7512ab55d307062c38fe27bd1e8b';
 
-abstract class _$CollaboratorIndexes
-    extends $Notifier<Map<String, RemoteSelection>> {
-  Map<String, RemoteSelection> build();
+abstract class _$CollaboratorIndexes extends $Notifier<Map<String, Selection>> {
+  Map<String, Selection> build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
     final ref =
-        this.ref
-            as $Ref<Map<String, RemoteSelection>, Map<String, RemoteSelection>>;
+        this.ref as $Ref<Map<String, Selection>, Map<String, Selection>>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<
-                Map<String, RemoteSelection>,
-                Map<String, RemoteSelection>
-              >,
-              Map<String, RemoteSelection>,
+              AnyNotifier<Map<String, Selection>, Map<String, Selection>>,
+              Map<String, Selection>,
               Object?,
               Object?
             >;
