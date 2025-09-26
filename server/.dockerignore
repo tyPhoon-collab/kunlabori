@@ -1,0 +1,21 @@
+# Ignore build outputs and VCS metadata
+/target
+**/target
+/.git
+.git
+.git/
+.gitignore
+
+# IDE/editor
+**/*.iml
+**/.idea/
+**/.vscode/
+**/.DS_Store
+
+# Docker context noise
+Dockerfile
+.dockerignore
+
+# Env files
+.env
+*.env
