@@ -3,9 +3,9 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
+import '../frb_generated.dart';
+import 'model.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
-import 'package:kunlabori/src/rust/api/model.dart';
-import 'package:kunlabori/src/rust/frb_generated.dart';
 
 Stream<Partial> create({required String id}) =>
     RustLib.instance.api.crateApiInterfaceCreate(id: id);
@@ -42,8 +42,12 @@ Uint8List stateVector({required String id}) =>
 Uint8List diff({required String id, required List<int> since}) =>
     RustLib.instance.api.crateApiInterfaceDiff(id: id, since: since);
 
-void setIndex({required String id, required int position}) =>
-    RustLib.instance.api.crateApiInterfaceSetIndex(id: id, position: position);
+void setSelection({required String id, required int start, required int end}) =>
+    RustLib.instance.api.crateApiInterfaceSetSelection(
+      id: id,
+      start: start,
+      end: end,
+    );
 
-int? index({required String id}) =>
-    RustLib.instance.api.crateApiInterfaceIndex(id: id);
+(int, int)? selection({required String id}) =>
+    RustLib.instance.api.crateApiInterfaceSelection(id: id);

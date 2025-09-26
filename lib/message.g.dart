@@ -21,16 +21,16 @@ Map<String, dynamic> _$SendMessageUpdateToJson(SendMessageUpdate instance) =>
 SendMessageSelection _$SendMessageSelectionFromJson(
   Map<String, dynamic> json,
 ) => SendMessageSelection(
-  offset: (json['offset'] as num).toInt(),
-  length: (json['length'] as num).toInt(),
+  start: (json['start'] as num).toInt(),
+  end: (json['end'] as num).toInt(),
   $type: json['type'] as String?,
 );
 
 Map<String, dynamic> _$SendMessageSelectionToJson(
   SendMessageSelection instance,
 ) => <String, dynamic>{
-  'offset': instance.offset,
-  'length': instance.length,
+  'start': instance.start,
+  'end': instance.end,
   'type': instance.$type,
 };
 
@@ -86,8 +86,8 @@ Map<String, dynamic> _$ReceiveMessageUpdateToJson(
 ReceiveMessageSelection _$ReceiveMessageSelectionFromJson(
   Map<String, dynamic> json,
 ) => ReceiveMessageSelection(
-  offset: (json['offset'] as num).toInt(),
-  length: (json['length'] as num).toInt(),
+  start: (json['start'] as num).toInt(),
+  end: (json['end'] as num).toInt(),
   addr: json['addr'] as String,
   $type: json['type'] as String?,
 );
@@ -95,8 +95,8 @@ ReceiveMessageSelection _$ReceiveMessageSelectionFromJson(
 Map<String, dynamic> _$ReceiveMessageSelectionToJson(
   ReceiveMessageSelection instance,
 ) => <String, dynamic>{
-  'offset': instance.offset,
-  'length': instance.length,
+  'start': instance.start,
+  'end': instance.end,
   'addr': instance.addr,
   'type': instance.$type,
 };

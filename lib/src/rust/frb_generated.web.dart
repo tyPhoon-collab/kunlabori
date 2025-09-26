@@ -6,13 +6,12 @@
 // Static analysis wrongly picks the IO variant, thus ignore this
 // ignore_for_file: argument_type_not_assignable
 
+import 'api/interface.dart';
+import 'api/model.dart';
 import 'dart:async';
 import 'dart:convert';
-
+import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_web.dart';
-import 'package:kunlabori/src/rust/api/interface.dart';
-import 'package:kunlabori/src/rust/api/model.dart';
-import 'package:kunlabori/src/rust/frb_generated.dart';
 
 abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RustLibApiImplPlatform({
@@ -35,10 +34,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool dco_decode_bool(dynamic raw);
 
   @protected
-  SimpleDelta dco_decode_box_autoadd_simple_delta(dynamic raw);
+  (int, int) dco_decode_box_autoadd_record_u_32_u_32(dynamic raw);
 
   @protected
-  int dco_decode_box_autoadd_u_32(dynamic raw);
+  SimpleDelta dco_decode_box_autoadd_simple_delta(dynamic raw);
 
   @protected
   List<int> dco_decode_list_prim_u_8_loose(dynamic raw);
@@ -47,10 +46,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
   @protected
-  int? dco_decode_opt_box_autoadd_u_32(dynamic raw);
+  (int, int)? dco_decode_opt_box_autoadd_record_u_32_u_32(dynamic raw);
 
   @protected
   Partial dco_decode_partial(dynamic raw);
+
+  @protected
+  (int, int) dco_decode_record_u_32_u_32(dynamic raw);
 
   @protected
   SimpleDelta dco_decode_simple_delta(dynamic raw);
@@ -79,10 +81,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
-  SimpleDelta sse_decode_box_autoadd_simple_delta(SseDeserializer deserializer);
+  (int, int) sse_decode_box_autoadd_record_u_32_u_32(
+    SseDeserializer deserializer,
+  );
 
   @protected
-  int sse_decode_box_autoadd_u_32(SseDeserializer deserializer);
+  SimpleDelta sse_decode_box_autoadd_simple_delta(SseDeserializer deserializer);
 
   @protected
   List<int> sse_decode_list_prim_u_8_loose(SseDeserializer deserializer);
@@ -91,10 +95,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
-  int? sse_decode_opt_box_autoadd_u_32(SseDeserializer deserializer);
+  (int, int)? sse_decode_opt_box_autoadd_record_u_32_u_32(
+    SseDeserializer deserializer,
+  );
 
   @protected
   Partial sse_decode_partial(SseDeserializer deserializer);
+
+  @protected
+  (int, int) sse_decode_record_u_32_u_32(SseDeserializer deserializer);
 
   @protected
   SimpleDelta sse_decode_simple_delta(SseDeserializer deserializer);
@@ -130,13 +139,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
-  void sse_encode_box_autoadd_simple_delta(
-    SimpleDelta self,
+  void sse_encode_box_autoadd_record_u_32_u_32(
+    (int, int) self,
     SseSerializer serializer,
   );
 
   @protected
-  void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer);
+  void sse_encode_box_autoadd_simple_delta(
+    SimpleDelta self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_prim_u_8_loose(List<int> self, SseSerializer serializer);
@@ -148,10 +160,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_opt_box_autoadd_u_32(int? self, SseSerializer serializer);
+  void sse_encode_opt_box_autoadd_record_u_32_u_32(
+    (int, int)? self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_partial(Partial self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_record_u_32_u_32((int, int) self, SseSerializer serializer);
 
   @protected
   void sse_encode_simple_delta(SimpleDelta self, SseSerializer serializer);

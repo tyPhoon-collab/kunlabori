@@ -59,17 +59,17 @@ pub fn diff(id: String, since: Vec<u8>) -> Result<Vec<u8>, String> {
 }
 
 #[flutter_rust_bridge::frb(sync)]
-pub fn set_index(id: String, position: u32) -> Result<(), String> {
+pub fn set_selection(id: String, start: u32, end: u32) -> Result<(), String> {
     with_document_mut(&id, |document| {
-        document.set_index(position);
+        document.set_selection(start, end);
         Ok(())
     })
     .map_err(|e| e.to_string())
 }
 
 #[flutter_rust_bridge::frb(sync)]
-pub fn index(id: String) -> Result<Option<u32>, String> {
-    with_document(&id, |document| document.index()).map_err(|e| e.to_string())
+pub fn selection(id: String) -> Result<Option<(u32, u32)>, String> {
+    with_document(&id, |document| document.selection()).map_err(|e| e.to_string())
 }
 
 #[flutter_rust_bridge::frb(init)]

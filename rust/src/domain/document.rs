@@ -23,7 +23,8 @@ pub struct Document {
     doc: Arc<Doc>,
     text_ref: Arc<TextRef>,
     stream_sink: StreamSink<Partial>,
-    index: Option<StickyIndex>,
+    start: Option<StickyIndex>,
+    end: Option<StickyIndex>,
     _text_subscription: Box<Subscription>,
     _update_subscription: Box<Subscription>,
 }
@@ -42,7 +43,8 @@ impl Document {
             doc,
             text_ref,
             stream_sink,
-            index: None,
+            start: None,
+            end: None,
             _text_subscription: Box::new(text_subscription),
             _update_subscription: Box::new(update_subscription),
         })
@@ -148,20 +150,32 @@ impl Document {
         Ok(self.doc.transact().encode_diff_v1(&since))
     }
 
-    pub fn set_index(&mut self, position: u32) {
+    pub fn set_selection(&mut self, start: u32, end: u32) {
         if let Some(index) = self.text_ref.sticky_index(
             &mut self.doc.transact_mut_with(ORIGIN_LOCAL),
-            position,
+            start,
             Assoc::Before,
         ) {
-            self.index = Some(index);
+            self.start = Some(index);
+        }
+
+        if let Some(index) = self.text_ref.sticky_index(
+            &mut self.doc.transact_mut_with(ORIGIN_LOCAL),
+            end,
+            Assoc::After,
+        ) {
+            self.end = Some(index);
         }
     }
 
-    pub fn index(&self) -> Option<u32> {
-        self.index
-            .as_ref()
-            .and_then(|s| s.get_offset(&self.doc.transact()))
-            .map(|offset| offset.index)
+    pub fn selection(&self) -> Option<(u32, u32)> {
+        let txn = self.doc.transact();
+
+        let start = self.start.as_ref().and_then(|idx| idx.get_offset(&txn));
+        let end = self.end.as_ref().and_then(|idx| idx.get_offset(&txn));
+        match (start, end) {
+            (Some(s), Some(e)) => Some((s.index, e.index)),
+            _ => None,
+        }
     }
 }

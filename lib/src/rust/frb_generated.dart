@@ -3,21 +3,21 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
+import 'api/interface.dart';
+import 'api/model.dart';
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
-import 'package:kunlabori/src/rust/api/interface.dart';
-import 'package:kunlabori/src/rust/api/model.dart';
-import 'package:kunlabori/src/rust/frb_generated.dart';
-import 'package:kunlabori/src/rust/frb_generated.io.dart'
+import 'frb_generated.dart';
+import 'frb_generated.io.dart'
     if (dart.library.js_interop) 'frb_generated.web.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 /// Main entrypoint of the Rust API
 class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
-  RustLib._();
   @internal
   static final instance = RustLib._();
+
+  RustLib._();
 
   /// Initialize flutter_rust_bridge
   static Future<void> init({
@@ -71,7 +71,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => 64497044;
+  int get rustContentHash => 728839466;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -97,8 +97,6 @@ abstract class RustLibApi extends BaseApi {
     required List<int> since,
   });
 
-  int? crateApiInterfaceIndex({required String id});
-
   Future<void> crateApiInterfaceInitApp();
 
   void crateApiInterfaceInsert({
@@ -109,7 +107,13 @@ abstract class RustLibApi extends BaseApi {
 
   void crateApiInterfaceMerge({required String id, required List<int> update});
 
-  void crateApiInterfaceSetIndex({required String id, required int position});
+  (int, int)? crateApiInterfaceSelection({required String id});
+
+  void crateApiInterfaceSetSelection({
+    required String id,
+    required int start,
+    required int end,
+  });
 
   Uint8List crateApiInterfaceStateVector({required String id});
 }
@@ -146,8 +150,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   TaskConstMeta get kCrateApiInterfaceCreateConstMeta => const TaskConstMeta(
-    debugName: 'create',
-    argNames: ['id', 'streamSink'],
+    debugName: "create",
+    argNames: ["id", "streamSink"],
   );
 
   @override
@@ -177,8 +181,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   TaskConstMeta get kCrateApiInterfaceDeleteConstMeta => const TaskConstMeta(
-    debugName: 'delete',
-    argNames: ['id', 'position', 'deleteCount'],
+    debugName: "delete",
+    argNames: ["id", "position", "deleteCount"],
   );
 
   @override
@@ -202,8 +206,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   TaskConstMeta get kCrateApiInterfaceDestroyConstMeta => const TaskConstMeta(
-    debugName: 'destroy',
-    argNames: ['id'],
+    debugName: "destroy",
+    argNames: ["id"],
   );
 
   @override
@@ -231,33 +235,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   TaskConstMeta get kCrateApiInterfaceDiffConstMeta => const TaskConstMeta(
-    debugName: 'diff',
-    argNames: ['id', 'since'],
-  );
-
-  @override
-  int? crateApiInterfaceIndex({required String id}) {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(id, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 5)!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_opt_box_autoadd_u_32,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateApiInterfaceIndexConstMeta,
-        argValues: [id],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateApiInterfaceIndexConstMeta => const TaskConstMeta(
-    debugName: 'index',
-    argNames: ['id'],
+    debugName: "diff",
+    argNames: ["id", "since"],
   );
 
   @override
@@ -269,7 +248,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 6,
+            funcId: 5,
             port: port_,
           );
         },
@@ -285,7 +264,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   TaskConstMeta get kCrateApiInterfaceInitAppConstMeta => const TaskConstMeta(
-    debugName: 'init_app',
+    debugName: "init_app",
     argNames: [],
   );
 
@@ -302,7 +281,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_String(id, serializer);
           sse_encode_u_32(position, serializer);
           sse_encode_String(text, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -316,8 +295,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   TaskConstMeta get kCrateApiInterfaceInsertConstMeta => const TaskConstMeta(
-    debugName: 'insert',
-    argNames: ['id', 'position', 'text'],
+    debugName: "insert",
+    argNames: ["id", "position", "text"],
   );
 
   @override
@@ -328,7 +307,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(id, serializer);
           sse_encode_list_prim_u_8_loose(update, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -342,35 +321,66 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   TaskConstMeta get kCrateApiInterfaceMergeConstMeta => const TaskConstMeta(
-    debugName: 'merge',
-    argNames: ['id', 'update'],
+    debugName: "merge",
+    argNames: ["id", "update"],
   );
 
   @override
-  void crateApiInterfaceSetIndex({required String id, required int position}) {
+  (int, int)? crateApiInterfaceSelection({required String id}) {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(id, serializer);
-          sse_encode_u_32(position, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_opt_box_autoadd_record_u_32_u_32,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiInterfaceSelectionConstMeta,
+        argValues: [id],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiInterfaceSelectionConstMeta => const TaskConstMeta(
+    debugName: "selection",
+    argNames: ["id"],
+  );
+
+  @override
+  void crateApiInterfaceSetSelection({
+    required String id,
+    required int start,
+    required int end,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(id, serializer);
+          sse_encode_u_32(start, serializer);
+          sse_encode_u_32(end, serializer);
           return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: sse_decode_String,
         ),
-        constMeta: kCrateApiInterfaceSetIndexConstMeta,
-        argValues: [id, position],
+        constMeta: kCrateApiInterfaceSetSelectionConstMeta,
+        argValues: [id, start, end],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiInterfaceSetIndexConstMeta => const TaskConstMeta(
-    debugName: 'set_index',
-    argNames: ['id', 'position'],
-  );
+  TaskConstMeta get kCrateApiInterfaceSetSelectionConstMeta =>
+      const TaskConstMeta(
+        debugName: "set_selection",
+        argNames: ["id", "start", "end"],
+      );
 
   @override
   Uint8List crateApiInterfaceStateVector({required String id}) {
@@ -394,8 +404,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiInterfaceStateVectorConstMeta =>
       const TaskConstMeta(
-        debugName: 'state_vector',
-        argNames: ['id'],
+        debugName: "state_vector",
+        argNames: ["id"],
       );
 
   @protected
@@ -423,15 +433,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  SimpleDelta dco_decode_box_autoadd_simple_delta(dynamic raw) {
+  (int, int) dco_decode_box_autoadd_record_u_32_u_32(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return dco_decode_simple_delta(raw);
+    return raw as (int, int);
   }
 
   @protected
-  int dco_decode_box_autoadd_u_32(dynamic raw) {
+  SimpleDelta dco_decode_box_autoadd_simple_delta(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return raw as int;
+    return dco_decode_simple_delta(raw);
   }
 
   @protected
@@ -447,9 +457,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  int? dco_decode_opt_box_autoadd_u_32(dynamic raw) {
+  (int, int)? dco_decode_opt_box_autoadd_record_u_32_u_32(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return raw == null ? null : dco_decode_box_autoadd_u_32(raw);
+    return raw == null ? null : dco_decode_box_autoadd_record_u_32_u_32(raw);
   }
 
   @protected
@@ -469,8 +479,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           dco_decode_list_prim_u_8_strict(raw[1]),
         );
       default:
-        throw Exception('unreachable');
+        throw Exception("unreachable");
     }
+  }
+
+  @protected
+  (int, int) dco_decode_record_u_32_u_32(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2) {
+      throw Exception('Expected 2 elements, got ${arr.length}');
+    }
+    return (
+      dco_decode_u_32(arr[0]),
+      dco_decode_u_32(arr[1]),
+    );
   }
 
   @protected
@@ -493,7 +516,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           remote: dco_decode_bool(raw[2]),
         );
       default:
-        throw Exception('unreachable');
+        throw Exception("unreachable");
     }
   }
 
@@ -518,7 +541,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    final inner = sse_decode_String(deserializer);
+    var inner = sse_decode_String(deserializer);
     return AnyhowException(inner);
   }
 
@@ -533,7 +556,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   String sse_decode_String(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    final inner = sse_decode_list_prim_u_8_strict(deserializer);
+    var inner = sse_decode_list_prim_u_8_strict(deserializer);
     return utf8.decoder.convert(inner);
   }
 
@@ -544,39 +567,43 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  (int, int) sse_decode_box_autoadd_record_u_32_u_32(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_record_u_32_u_32(deserializer));
+  }
+
+  @protected
   SimpleDelta sse_decode_box_autoadd_simple_delta(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return sse_decode_simple_delta(deserializer);
-  }
-
-  @protected
-  int sse_decode_box_autoadd_u_32(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return sse_decode_u_32(deserializer);
+    return (sse_decode_simple_delta(deserializer));
   }
 
   @protected
   List<int> sse_decode_list_prim_u_8_loose(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    final len_ = sse_decode_i_32(deserializer);
+    var len_ = sse_decode_i_32(deserializer);
     return deserializer.buffer.getUint8List(len_);
   }
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    final len_ = sse_decode_i_32(deserializer);
+    var len_ = sse_decode_i_32(deserializer);
     return deserializer.buffer.getUint8List(len_);
   }
 
   @protected
-  int? sse_decode_opt_box_autoadd_u_32(SseDeserializer deserializer) {
+  (int, int)? sse_decode_opt_box_autoadd_record_u_32_u_32(
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     if (sse_decode_bool(deserializer)) {
-      return sse_decode_box_autoadd_u_32(deserializer);
+      return (sse_decode_box_autoadd_record_u_32_u_32(deserializer));
     } else {
       return null;
     }
@@ -586,16 +613,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Partial sse_decode_partial(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
-    final tag_ = sse_decode_i_32(deserializer);
+    var tag_ = sse_decode_i_32(deserializer);
     switch (tag_) {
       case 0:
-        final var_field0 = sse_decode_box_autoadd_simple_delta(deserializer);
+        var var_field0 = sse_decode_box_autoadd_simple_delta(deserializer);
         return Partial_Delta(var_field0);
       case 1:
-        final var_field0 = sse_decode_String(deserializer);
+        var var_field0 = sse_decode_String(deserializer);
         return Partial_Text(var_field0);
       case 2:
-        final var_field0 = sse_decode_list_prim_u_8_strict(deserializer);
+        var var_field0 = sse_decode_list_prim_u_8_strict(deserializer);
         return Partial_Update(var_field0);
       default:
         throw UnimplementedError('');
@@ -603,22 +630,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  (int, int) sse_decode_record_u_32_u_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_field0 = sse_decode_u_32(deserializer);
+    var var_field1 = sse_decode_u_32(deserializer);
+    return (var_field0, var_field1);
+  }
+
+  @protected
   SimpleDelta sse_decode_simple_delta(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
-    final tag_ = sse_decode_i_32(deserializer);
+    var tag_ = sse_decode_i_32(deserializer);
     switch (tag_) {
       case 0:
-        final var_text = sse_decode_String(deserializer);
-        final var_remote = sse_decode_bool(deserializer);
+        var var_text = sse_decode_String(deserializer);
+        var var_remote = sse_decode_bool(deserializer);
         return SimpleDelta_Insert(text: var_text, remote: var_remote);
       case 1:
-        final var_count = sse_decode_u_32(deserializer);
-        final var_remote = sse_decode_bool(deserializer);
+        var var_count = sse_decode_u_32(deserializer);
+        var var_remote = sse_decode_bool(deserializer);
         return SimpleDelta_Delete(count: var_count, remote: var_remote);
       case 2:
-        final var_count = sse_decode_u_32(deserializer);
-        final var_remote = sse_decode_bool(deserializer);
+        var var_count = sse_decode_u_32(deserializer);
+        var var_remote = sse_decode_bool(deserializer);
         return SimpleDelta_Retain(count: var_count, remote: var_remote);
       default:
         throw UnimplementedError('');
@@ -687,18 +722,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_record_u_32_u_32(
+    (int, int) self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_record_u_32_u_32(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_simple_delta(
     SimpleDelta self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_simple_delta(self, serializer);
-  }
-
-  @protected
-  void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_u_32(self, serializer);
   }
 
   @protected
@@ -724,12 +762,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_opt_box_autoadd_u_32(int? self, SseSerializer serializer) {
+  void sse_encode_opt_box_autoadd_record_u_32_u_32(
+    (int, int)? self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     sse_encode_bool(self != null, serializer);
     if (self != null) {
-      sse_encode_box_autoadd_u_32(self, serializer);
+      sse_encode_box_autoadd_record_u_32_u_32(self, serializer);
     }
   }
 
@@ -747,6 +788,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_i_32(2, serializer);
         sse_encode_list_prim_u_8_strict(field0, serializer);
     }
+  }
+
+  @protected
+  void sse_encode_record_u_32_u_32((int, int) self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self.$1, serializer);
+    sse_encode_u_32(self.$2, serializer);
   }
 
   @protected

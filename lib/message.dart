@@ -13,8 +13,8 @@ sealed class SendMessage with _$SendMessage {
   }) = SendMessageUpdate;
 
   const factory SendMessage.selection({
-    required int offset,
-    required int length,
+    required int start,
+    required int end,
   }) = SendMessageSelection;
 
   const factory SendMessage.unselect() = SendMessageUnselect;
@@ -40,8 +40,8 @@ sealed class ReceiveMessage with _$ReceiveMessage {
   }) = ReceiveMessageUpdate;
 
   const factory ReceiveMessage.selection({
-    required int offset,
-    required int length,
+    required int start,
+    required int end,
     required String addr,
   }) = ReceiveMessageSelection;
 

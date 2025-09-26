@@ -24,19 +24,14 @@ fn handle_update_message(peer_service: &PeerService, addr: SocketAddr, bytes: St
 }
 
 /// Selection メッセージを処理
-fn handle_selection_message(
-    peer_service: &PeerService,
-    addr: SocketAddr,
-    offset: u32,
-    length: u32,
-) {
+fn handle_selection_message(peer_service: &PeerService, addr: SocketAddr, start: u32, end: u32) {
     info!(
-        "Received selection from {}: offset={}, length={}",
-        addr, offset, length
+        "Received selection from {}: start={}, end={}",
+        addr, start, end
     );
     let selection_msg = SendMessage::Selection {
-        offset,
-        length,
+        start,
+        end,
         addr: addr.to_string(),
     };
     if let Err(e) = peer_service.broadcast(addr, &selection_msg, true) {
@@ -125,8 +120,8 @@ pub async fn handle_connection(peer_service: PeerService, raw_stream: TcpStream,
             ReceiveMessage::Update { bytes } => {
                 handle_update_message(&peer_service, addr, bytes);
             }
-            ReceiveMessage::Selection { offset, length } => {
-                handle_selection_message(&peer_service, addr, offset, length);
+            ReceiveMessage::Selection { start, end } => {
+                handle_selection_message(&peer_service, addr, start, end);
             }
             ReceiveMessage::Unselect {} => {
                 handle_unselect_message(&peer_service, addr);

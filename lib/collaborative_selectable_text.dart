@@ -3,13 +3,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 class CollaboratorSelection {
   CollaboratorSelection({
-    required this.offset,
-    required this.length,
+    required this.start,
+    required this.end,
     required this.color,
     required this.name,
   });
-  final int offset;
-  final int length;
+  final int start;
+  final int end;
   final Color color;
   final String name;
 }
@@ -87,8 +87,8 @@ class CollaborativeSelectableText extends HookWidget {
       for (final selection in collaboratorSelections) {
         final boxes = textPainter.getBoxesForSelection(
           TextSelection(
-            baseOffset: selection.offset,
-            extentOffset: selection.offset + selection.length,
+            baseOffset: selection.start,
+            extentOffset: selection.end,
           ),
         );
         for (final box in boxes) {
@@ -114,7 +114,7 @@ class CollaborativeSelectableText extends HookWidget {
       final widgets = <Widget>[];
       for (final selection in collaboratorSelections) {
         final caretOffset = textPainter.getOffsetForCaret(
-          TextPosition(offset: selection.offset),
+          TextPosition(offset: selection.start),
           Rect.zero,
         );
         widgets.add(

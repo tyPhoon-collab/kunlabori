@@ -30,19 +30,17 @@ class _CollaboratorIndexes extends _$CollaboratorIndexes {
     }..remove(addr);
   }
 
-  void setSelection(String id, int offset, int length) {
+  void setSelection(String id, Selection selection) {
     update(
       'you',
       (
-        offset: offset,
-        length: length,
+        start: selection.start,
+        end: selection.end,
         addr: 'you',
       ),
     );
 
-    ref
-        .read(partialEventHandlerProvider)
-        .setSelection(id, offset: offset, length: length);
+    ref.read(partialEventHandlerProvider).setSelection(id, selection);
   }
 }
 
@@ -63,7 +61,7 @@ class HomePage extends HookConsumerWidget {
     );
 
     ref.listen(messagesProvider, (previous, next) {
-      // debugPrint('WebSocket message: $next');
+      debugPrint('WebSocket message: $next');
       final notifier = ref.read(_collaboratorIndexesProvider.notifier);
       switch (next) {
         case AsyncData(:final value):
@@ -92,7 +90,7 @@ class HomePage extends HookConsumerWidget {
           .create(id: docId)
           .listen(
             (partial) {
-              // debugPrint('Stream partial: $partial');
+              debugPrint('Stream partial: $partial');
               ref
                   .read(partialEventHandlerProvider)
                   .handle(
@@ -102,11 +100,7 @@ class HomePage extends HookConsumerWidget {
                     onSelection: (selection) {
                       ref
                           .read(_collaboratorIndexesProvider.notifier)
-                          .setSelection(
-                            docId,
-                            selection.offset,
-                            selection.length,
-                          );
+                          .setSelection(docId, selection);
                     },
                   );
             },
@@ -146,8 +140,8 @@ class HomePage extends HookConsumerWidget {
             collaboratorSelections: collaboratorIndexes.entries
                 .map(
                   (entry) => CollaboratorSelection(
-                    offset: entry.value.offset,
-                    length: entry.value.length,
+                    start: entry.value.start,
+                    end: entry.value.end,
                     color:
                         Colors.primaries[entry.key.codeUnits.fold(
                               0,
@@ -160,20 +154,11 @@ class HomePage extends HookConsumerWidget {
                 .toList(),
             onTap: focusNode.requestFocus,
             onSelectionChanged: (selection, cause) {
-              var offset = selection.baseOffset;
-              var length = selection.extentOffset - offset;
-
-              if (length.isNegative) {
-                offset = offset + length;
-                length = -length;
-              }
-
               ref
                   .read(_collaboratorIndexesProvider.notifier)
                   .setSelection(
                     docId,
-                    offset,
-                    length,
+                    Selection(start: selection.start, end: selection.end),
                   );
             },
           ),
@@ -197,7 +182,7 @@ class _Actions extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    int offset() => ref.read(partialEventHandlerProvider).offset ?? 0;
+    int start() => ref.read(partialEventHandlerProvider).start ?? 0;
     int length() => ref.read(partialEventHandlerProvider).length ?? 0;
     final controller = useTextEditingController();
 
@@ -206,7 +191,7 @@ class _Actions extends HookConsumerWidget {
       int? position,
       String? text,
     }) {
-      final pos = position ?? offset();
+      final pos = position ?? start();
       final txt = text ?? controller.text;
 
       if (txt.isEmpty) return;
@@ -214,7 +199,7 @@ class _Actions extends HookConsumerWidget {
       rust_api.insert(id: id, position: pos, text: txt);
       ref
           .read(_collaboratorIndexesProvider.notifier)
-          .setSelection(id, pos + txt.length, 0);
+          .setSelection(id, Selection.same(pos + txt.length));
       controller.clear();
     }
 
@@ -223,11 +208,13 @@ class _Actions extends HookConsumerWidget {
       int? position,
       int? deleteCount,
     }) {
-      final pos = position ?? offset();
+      final pos = position ?? start();
       final count = deleteCount ?? length();
       if (count == 0) return;
       rust_api.delete(id: id, position: pos, deleteCount: count);
-      ref.read(_collaboratorIndexesProvider.notifier).setSelection(id, pos, 0);
+      ref
+          .read(_collaboratorIndexesProvider.notifier)
+          .setSelection(id, Selection.same(pos));
     }
 
     return Row(
