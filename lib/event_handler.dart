@@ -73,13 +73,6 @@ final class PartialEventHandler {
     _send(SendMessage.selection(offset: offset, length: length));
   }
 
-  void setLength(String id, int length) {
-    if (_selection case final selection? when selection.length != length) {
-      _selection = (offset: selection.offset, length: length);
-      _send(SendMessage.selection(offset: selection.offset, length: length));
-    }
-  }
-
   void handle(
     String id,
     Partial partial, {

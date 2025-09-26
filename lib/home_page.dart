@@ -28,6 +28,21 @@ class _CollaboratorIndexes extends _$CollaboratorIndexes {
       ...state,
     }..remove(addr);
   }
+
+  void setSelection(String id, int offset, int length) {
+    update(
+      'you',
+      (
+        offset: offset,
+        length: length,
+        addr: 'you',
+      ),
+    );
+
+    ref
+        .read(partialEventHandlerProvider)
+        .setSelection(id, offset: offset, length: length);
+  }
 }
 
 class HomePage extends HookConsumerWidget {
@@ -36,7 +51,6 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final docId = useMemoized(() => 'memo');
-    final insertText = useRef('');
 
     final focusNode = useFocusNode();
     final text = useState<String>('');
@@ -130,14 +144,18 @@ class HomePage extends HookConsumerWidget {
               }
 
               ref
-                  .read(partialEventHandlerProvider)
-                  .setSelection(docId, offset: offset, length: length);
+                  .read(_collaboratorIndexesProvider.notifier)
+                  .setSelection(
+                    docId,
+                    offset,
+                    length,
+                  );
             },
           ),
         ),
       ),
       persistentFooterButtons: [
-        _Actions(insertText: insertText, focusNode: focusNode, docId: docId),
+        _Actions(focusNode: focusNode, docId: docId),
       ],
     );
   }
@@ -145,12 +163,10 @@ class HomePage extends HookConsumerWidget {
 
 class _Actions extends HookConsumerWidget {
   const _Actions({
-    required this.insertText,
     required this.focusNode,
     required this.docId,
   });
 
-  final ObjectRef<String> insertText;
   final FocusNode focusNode;
   final String docId;
 
@@ -158,8 +174,7 @@ class _Actions extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     int offset() => ref.read(partialEventHandlerProvider).offset ?? 0;
     int length() => ref.read(partialEventHandlerProvider).length ?? 0;
-    void setLength(int length) =>
-        ref.read(partialEventHandlerProvider).setLength(docId, length);
+    final controller = useTextEditingController();
 
     void insert({
       required String id,
@@ -167,9 +182,15 @@ class _Actions extends HookConsumerWidget {
       String? text,
     }) {
       final pos = position ?? offset();
-      final txt = text ?? insertText.value;
+      final txt = text ?? controller.text;
+
+      if (txt.isEmpty) return;
+
       rust_api.insert(id: id, position: pos, text: txt);
-      setLength(0);
+      ref
+          .read(_collaboratorIndexesProvider.notifier)
+          .setSelection(id, pos + txt.length, 0);
+      controller.clear();
     }
 
     void delete({
@@ -181,7 +202,7 @@ class _Actions extends HookConsumerWidget {
       final count = deleteCount ?? length();
       if (count == 0) return;
       rust_api.delete(id: id, position: pos, deleteCount: count);
-      setLength(0);
+      ref.read(_collaboratorIndexesProvider.notifier).setSelection(id, pos, 0);
     }
 
     return Row(
@@ -190,10 +211,8 @@ class _Actions extends HookConsumerWidget {
       children: [
         Expanded(
           child: TextField(
+            controller: controller,
             decoration: const InputDecoration(labelText: 'Insert Text'),
-            onChanged: (value) {
-              insertText.value = value;
-            },
             focusNode: focusNode,
             maxLines: null,
             expands: true,

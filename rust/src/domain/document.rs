@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use log::{error, info};
+use log::{debug, error, info};
 use yrs::{
     types::Delta,
     updates::{decoder::Decode, encoder::Encode},
@@ -50,6 +50,7 @@ impl Document {
 
     fn setup_text_observer(text_ref: &TextRef, stream_sink: StreamSink<Partial>) -> Subscription {
         text_ref.observe(move |txn, event| {
+            debug!("Text event received");
             let remote = matches!(txn.origin(), Some(o) if o.as_ref() == ORIGIN_REMOTE.as_bytes());
             for delta in event.delta(txn).iter() {
                 let partial = match delta {
@@ -86,7 +87,7 @@ impl Document {
         stream_sink: StreamSink<Partial>,
     ) -> Result<Subscription, DocumentError> {
         doc.observe_update_v1(move |txn, event| {
-            info!("Update event received");
+            debug!("Update event received");
 
             // Send update
             if let Err(e) = stream_sink.add(Partial::Update(event.update.clone())) {
@@ -151,7 +152,7 @@ impl Document {
         if let Some(index) = self.text_ref.sticky_index(
             &mut self.doc.transact_mut_with(ORIGIN_LOCAL),
             position,
-            Assoc::After,
+            Assoc::Before,
         ) {
             self.index = Some(index);
         }

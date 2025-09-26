@@ -144,7 +144,6 @@ class CollaborativeSelectableText extends HookWidget {
             SelectableText(
               text,
               style: textStyle,
-              showCursor: true,
               onTap: onTap,
               onSelectionChanged: onSelectionChanged,
             ),
