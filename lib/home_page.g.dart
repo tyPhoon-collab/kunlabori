@@ -9,28 +9,28 @@ part of 'home_page.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(_CollaboratorIndexes)
-const _collaboratorIndexesProvider = _CollaboratorIndexesProvider._();
+@ProviderFor(CollaboratorIndexes)
+const collaboratorIndexesProvider = CollaboratorIndexesProvider._();
 
-final class _CollaboratorIndexesProvider
-    extends $NotifierProvider<_CollaboratorIndexes, Map<String, Selection>> {
-  const _CollaboratorIndexesProvider._()
+final class CollaboratorIndexesProvider
+    extends $NotifierProvider<CollaboratorIndexes, Map<String, Selection>> {
+  const CollaboratorIndexesProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'_collaboratorIndexesProvider',
+        name: r'collaboratorIndexesProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$_collaboratorIndexesHash();
+  String debugGetCreateSourceHash() => _$collaboratorIndexesHash();
 
   @$internal
   @override
-  _CollaboratorIndexes create() => _CollaboratorIndexes();
+  CollaboratorIndexes create() => CollaboratorIndexes();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(Map<String, Selection> value) {
@@ -41,8 +41,8 @@ final class _CollaboratorIndexesProvider
   }
 }
 
-String _$_collaboratorIndexesHash() =>
-    r'7d8d0e5ffb8d7512ab55d307062c38fe27bd1e8b';
+String _$collaboratorIndexesHash() =>
+    r'3d19ed6fb1f25cbb5772528f19a20214361d3483';
 
 abstract class _$CollaboratorIndexes extends $Notifier<Map<String, Selection>> {
   Map<String, Selection> build();
