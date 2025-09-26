@@ -9,6 +9,58 @@ part of 'provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(SocketUrl)
+const socketUrlProvider = SocketUrlProvider._();
+
+final class SocketUrlProvider extends $NotifierProvider<SocketUrl, String> {
+  const SocketUrlProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'socketUrlProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$socketUrlHash();
+
+  @$internal
+  @override
+  SocketUrl create() => SocketUrl();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String>(value),
+    );
+  }
+}
+
+String _$socketUrlHash() => r'14d4b8ac770e8caeb28ce3eae09cc773af992174';
+
+abstract class _$SocketUrl extends $Notifier<String> {
+  String build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<String, String>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String, String>,
+              String,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
 @ProviderFor(Socket)
 const socketProvider = SocketProvider._();
 
@@ -40,7 +92,7 @@ final class SocketProvider extends $NotifierProvider<Socket, WebSocket> {
   }
 }
 
-String _$socketHash() => r'84ab08b6c6966b99b258be7e3fa4f89ef122db1f';
+String _$socketHash() => r'0ad852803903e2044e42a890abd1b30d19f46c72';
 
 abstract class _$Socket extends $Notifier<WebSocket> {
   WebSocket build();

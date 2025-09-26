@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kunlabori/collaborative_selectable_text.dart';
 import 'package:kunlabori/event_handler.dart';
 import 'package:kunlabori/provider.dart';
+import 'package:kunlabori/settings_page.dart';
 import 'package:kunlabori/src/rust/api/interface.dart' as rust_api;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -105,14 +106,29 @@ class HomePage extends HookConsumerWidget {
             },
           );
 
-      return () {
-        eventSubscription.cancel();
+      return () async {
+        await eventSubscription.cancel();
         rust_api.destroy(id: docId);
       };
     }, const []);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('flutter_rust_bridge quickstart')),
+      appBar: AppBar(
+        title: const Text('flutter_rust_bridge quickstart'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => const SettingsPage(),
+                ),
+              );
+            },
+            tooltip: 'Settings',
+          ),
+        ],
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: CollaborativeSelectableText(

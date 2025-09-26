@@ -8,11 +8,21 @@ import 'package:web_socket_client/web_socket_client.dart';
 part 'provider.g.dart';
 
 @Riverpod(keepAlive: true)
+class SocketUrl extends _$SocketUrl {
+  @override
+  String build() => 'ws://localhost:8080';
+
+  void setUrl(String value) => state = value;
+}
+
+@Riverpod(keepAlive: true)
 class Socket extends _$Socket {
   @override
   WebSocket build() {
-    final uri = Uri.parse('ws://localhost:8080');
-    return WebSocket(uri, timeout: const Duration(seconds: 5));
+    final uri = Uri.parse(ref.watch(socketUrlProvider));
+    final webSocket = WebSocket(uri, timeout: const Duration(seconds: 5));
+    ref.onDispose(webSocket.close);
+    return webSocket;
   }
 
   void sendMessage(SendMessage message) {
