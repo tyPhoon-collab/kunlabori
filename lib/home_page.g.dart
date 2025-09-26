@@ -43,7 +43,7 @@ final class _CollaboratorIndexesProvider
 }
 
 String _$_collaboratorIndexesHash() =>
-    r'44df7ff2e11be1cf1f1746c656d5cbb8c3045359';
+    r'695c4484be0b71ea348cd6b59b6bd250f61126ab';
 
 abstract class _$CollaboratorIndexes
     extends $Notifier<Map<String, RemoteSelection>> {

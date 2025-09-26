@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use log::{debug, error, info};
+use log::{debug, error};
 use yrs::{
     types::Delta,
     updates::{decoder::Decode, encoder::Encode},
@@ -10,7 +10,7 @@ use yrs::{
 
 use crate::{
     api::model::{Partial, SimpleDelta},
-    domain::DocumentError,
+    domain::error::DocumentError,
     frb_generated::StreamSink,
 };
 
