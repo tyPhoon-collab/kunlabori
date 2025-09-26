@@ -35,19 +35,11 @@ Map<String, dynamic> _$SendMessageSelectionToJson(
 };
 
 SendMessageUnselect _$SendMessageUnselectFromJson(Map<String, dynamic> json) =>
-    SendMessageUnselect(
-      offset: (json['offset'] as num).toInt(),
-      length: (json['length'] as num).toInt(),
-      $type: json['type'] as String?,
-    );
+    SendMessageUnselect($type: json['type'] as String?);
 
 Map<String, dynamic> _$SendMessageUnselectToJson(
   SendMessageUnselect instance,
-) => <String, dynamic>{
-  'offset': instance.offset,
-  'length': instance.length,
-  'type': instance.$type,
-};
+) => <String, dynamic>{'type': instance.$type};
 
 SendMessageInit _$SendMessageInitFromJson(Map<String, dynamic> json) =>
     SendMessageInit(

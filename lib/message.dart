@@ -17,10 +17,7 @@ sealed class SendMessage with _$SendMessage {
     required int length,
   }) = SendMessageSelection;
 
-  const factory SendMessage.unselect({
-    required int offset,
-    required int length,
-  }) = SendMessageUnselect;
+  const factory SendMessage.unselect() = SendMessageUnselect;
 
   const factory SendMessage.init({
     @Uint8ListConverter() required Uint8List bytes,

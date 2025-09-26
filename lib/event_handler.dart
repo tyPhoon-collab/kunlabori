@@ -78,6 +78,7 @@ final class PartialEventHandler {
     Partial partial, {
     void Function(SimpleDelta delta)? onDelta,
     void Function(String text)? onText,
+    void Function(({int offset, int length}) selection)? onSelection,
   }) {
     final action = switch (partial) {
       Partial_Delta(:final field0) => () => onDelta?.call(field0),
@@ -88,20 +89,16 @@ final class PartialEventHandler {
         if (_selection case final selection? when selection.offset != i) {
           if (i == null) {
             _selection = null;
-            _send(
-              SendMessage.unselect(
-                offset: selection.offset,
-                length: selection.length,
-              ),
-            );
+            _send(const SendMessage.unselect());
           } else {
-            _selection = (offset: i, length: _selection!.length);
+            final newSelection = (offset: i, length: selection.length);
             _send(
               SendMessage.selection(
-                offset: _selection!.offset,
-                length: _selection!.length,
+                offset: newSelection.offset,
+                length: newSelection.length,
               ),
             );
+            onSelection?.call(newSelection);
           }
         }
       },

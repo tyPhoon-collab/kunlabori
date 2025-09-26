@@ -166,12 +166,12 @@ return join(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function(@Uint8ListConverter()  Uint8List bytes)?  update,TResult Function( int offset,  int length)?  selection,TResult Function( int offset,  int length)?  unselect,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String to)?  init,TResult Function(@Uint8ListConverter()  Uint8List bytes)?  join,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function(@Uint8ListConverter()  Uint8List bytes)?  update,TResult Function( int offset,  int length)?  selection,TResult Function()?  unselect,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String to)?  init,TResult Function(@Uint8ListConverter()  Uint8List bytes)?  join,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case SendMessageUpdate() when update != null:
 return update(_that.bytes);case SendMessageSelection() when selection != null:
 return selection(_that.offset,_that.length);case SendMessageUnselect() when unselect != null:
-return unselect(_that.offset,_that.length);case SendMessageInit() when init != null:
+return unselect();case SendMessageInit() when init != null:
 return init(_that.bytes,_that.to);case SendMessageJoin() when join != null:
 return join(_that.bytes);case _:
   return orElse();
@@ -191,12 +191,12 @@ return join(_that.bytes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function(@Uint8ListConverter()  Uint8List bytes)  update,required TResult Function( int offset,  int length)  selection,required TResult Function( int offset,  int length)  unselect,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String to)  init,required TResult Function(@Uint8ListConverter()  Uint8List bytes)  join,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function(@Uint8ListConverter()  Uint8List bytes)  update,required TResult Function( int offset,  int length)  selection,required TResult Function()  unselect,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String to)  init,required TResult Function(@Uint8ListConverter()  Uint8List bytes)  join,}) {final _that = this;
 switch (_that) {
 case SendMessageUpdate():
 return update(_that.bytes);case SendMessageSelection():
 return selection(_that.offset,_that.length);case SendMessageUnselect():
-return unselect(_that.offset,_that.length);case SendMessageInit():
+return unselect();case SendMessageInit():
 return init(_that.bytes,_that.to);case SendMessageJoin():
 return join(_that.bytes);}
 }
@@ -212,12 +212,12 @@ return join(_that.bytes);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function(@Uint8ListConverter()  Uint8List bytes)?  update,TResult? Function( int offset,  int length)?  selection,TResult? Function( int offset,  int length)?  unselect,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String to)?  init,TResult? Function(@Uint8ListConverter()  Uint8List bytes)?  join,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function(@Uint8ListConverter()  Uint8List bytes)?  update,TResult? Function( int offset,  int length)?  selection,TResult? Function()?  unselect,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String to)?  init,TResult? Function(@Uint8ListConverter()  Uint8List bytes)?  join,}) {final _that = this;
 switch (_that) {
 case SendMessageUpdate() when update != null:
 return update(_that.bytes);case SendMessageSelection() when selection != null:
 return selection(_that.offset,_that.length);case SendMessageUnselect() when unselect != null:
-return unselect(_that.offset,_that.length);case SendMessageInit() when init != null:
+return unselect();case SendMessageInit() when init != null:
 return init(_that.bytes,_that.to);case SendMessageJoin() when join != null:
 return join(_that.bytes);case _:
   return null;
@@ -379,21 +379,15 @@ as int,
 @JsonSerializable()
 
 class SendMessageUnselect implements SendMessage {
-  const SendMessageUnselect({required this.offset, required this.length, final  String? $type}): $type = $type ?? 'unselect';
+  const SendMessageUnselect({final  String? $type}): $type = $type ?? 'unselect';
   factory SendMessageUnselect.fromJson(Map<String, dynamic> json) => _$SendMessageUnselectFromJson(json);
 
- final  int offset;
- final  int length;
+
 
 @JsonKey(name: 'type')
 final String $type;
 
 
-/// Create a copy of SendMessage
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$SendMessageUnselectCopyWith<SendMessageUnselect> get copyWith => _$SendMessageUnselectCopyWithImpl<SendMessageUnselect>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
@@ -402,53 +396,23 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SendMessageUnselect&&(identical(other.offset, offset) || other.offset == offset)&&(identical(other.length, length) || other.length == length));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SendMessageUnselect);
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,offset,length);
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'SendMessage.unselect(offset: $offset, length: $length)';
+  return 'SendMessage.unselect()';
 }
 
 
 }
 
-/// @nodoc
-abstract mixin class $SendMessageUnselectCopyWith<$Res> implements $SendMessageCopyWith<$Res> {
-  factory $SendMessageUnselectCopyWith(SendMessageUnselect value, $Res Function(SendMessageUnselect) _then) = _$SendMessageUnselectCopyWithImpl;
-@useResult
-$Res call({
- int offset, int length
-});
 
 
-
-
-}
-/// @nodoc
-class _$SendMessageUnselectCopyWithImpl<$Res>
-    implements $SendMessageUnselectCopyWith<$Res> {
-  _$SendMessageUnselectCopyWithImpl(this._self, this._then);
-
-  final SendMessageUnselect _self;
-  final $Res Function(SendMessageUnselect) _then;
-
-/// Create a copy of SendMessage
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? offset = null,Object? length = null,}) {
-  return _then(SendMessageUnselect(
-offset: null == offset ? _self.offset : offset // ignore: cast_nullable_to_non_nullable
-as int,length: null == length ? _self.length : length // ignore: cast_nullable_to_non_nullable
-as int,
-  ));
-}
-
-
-}
 
 /// @nodoc
 @JsonSerializable()

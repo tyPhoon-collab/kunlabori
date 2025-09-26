@@ -99,6 +99,15 @@ class HomePage extends HookConsumerWidget {
                     docId,
                     partial,
                     onText: (text_) => text.value = text_,
+                    onSelection: (selection) {
+                      ref
+                          .read(_collaboratorIndexesProvider.notifier)
+                          .setSelection(
+                            docId,
+                            selection.offset,
+                            selection.length,
+                          );
+                    },
                   );
             },
             onError: (Object? error) {
