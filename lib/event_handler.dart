@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:kunlabori/message.dart';
 import 'package:kunlabori/src/rust/api/interface.dart' as rust_api;
 import 'package:kunlabori/src/rust/api/model.dart';
@@ -7,6 +6,7 @@ typedef Send = void Function(SendMessage message);
 typedef RemoteSelection = ({int offset, int length, String addr});
 typedef OnSelection = void Function(RemoteSelection selection);
 typedef OnUnselected = void Function(String addr);
+typedef OnConnected = void Function(String addr);
 typedef OnDisconnected = void Function(String addr);
 
 final class WebsocketEventHandler {
@@ -17,31 +17,31 @@ final class WebsocketEventHandler {
   void handle(
     String id,
     ReceiveMessage message, {
-    required OnSelection onSelection,
-    required OnUnselected onUnselected,
-    required OnDisconnected onDisconnected,
+    OnSelection? onSelection,
+    OnUnselected? onUnselected,
+    OnConnected? onConnected,
+    OnDisconnected? onDisconnected,
   }) {
     final action = switch (message) {
       ReceiveMessageConnected(:final addr) => () {
-        debugPrint('Connected to $addr');
         _send(
           SendMessage.join(bytes: rust_api.stateVector(id: id)),
         );
+        onConnected?.call(addr);
       },
       ReceiveMessageDisconnected(:final addr) => () {
-        debugPrint('Disconnected from $addr');
-        onDisconnected(addr);
+        onDisconnected?.call(addr);
       },
       ReceiveMessageUpdate(:final bytes) => () => rust_api.merge(
         id: id,
         update: bytes,
       ),
       ReceiveMessageSelection(:final offset, :final length, :final addr) =>
-        () => onSelection(
+        () => onSelection?.call(
           (offset: offset, length: length, addr: addr),
         ),
       ReceiveMessageUnselect(:final addr) => () {
-        onUnselected(addr);
+        onUnselected?.call(addr);
       },
       ReceiveMessageRead(:final bytes, :final from) => () => _send(
         SendMessage.init(
@@ -83,10 +83,12 @@ final class PartialEventHandler {
   void handle(
     String id,
     Partial partial, {
-    required void Function(String text) onText,
+    void Function(SimpleDelta delta)? onDelta,
+    void Function(String text)? onText,
   }) {
     final action = switch (partial) {
-      Partial_Delta() => () {},
+      Partial_Delta(:final field0) => () => onDelta?.call(field0),
+      Partial_Text(:final field0) => () => onText?.call(field0),
       Partial_Update(:final field0) => () {
         _send(SendMessage.update(bytes: field0));
         final i = rust_api.index(id: id);
@@ -110,7 +112,6 @@ final class PartialEventHandler {
           }
         }
       },
-      Partial_Text(:final field0) => () => onText(field0),
     };
     action();
   }

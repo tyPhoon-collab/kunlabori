@@ -32,11 +32,14 @@ sealed class SimpleDelta with _$SimpleDelta {
 
   const factory SimpleDelta.insert({
     required String text,
+    required bool remote,
   }) = SimpleDelta_Insert;
   const factory SimpleDelta.delete({
-    required int deleteCount,
+    required int count,
+    required bool remote,
   }) = SimpleDelta_Delete;
   const factory SimpleDelta.retain({
-    required int retainCount,
+    required int count,
+    required bool remote,
   }) = SimpleDelta_Retain;
 }

@@ -390,6 +390,13 @@ impl SseDecode for String {
     }
 }
 
+impl SseDecode for bool {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_u8().unwrap() != 0
+    }
+}
+
 impl SseDecode for Vec<u8> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -444,18 +451,26 @@ impl SseDecode for crate::api::model::SimpleDelta {
         match tag_ {
             0 => {
                 let mut var_text = <String>::sse_decode(deserializer);
-                return crate::api::model::SimpleDelta::Insert { text: var_text };
+                let mut var_remote = <bool>::sse_decode(deserializer);
+                return crate::api::model::SimpleDelta::Insert {
+                    text: var_text,
+                    remote: var_remote,
+                };
             }
             1 => {
-                let mut var_deleteCount = <u32>::sse_decode(deserializer);
+                let mut var_count = <u32>::sse_decode(deserializer);
+                let mut var_remote = <bool>::sse_decode(deserializer);
                 return crate::api::model::SimpleDelta::Delete {
-                    delete_count: var_deleteCount,
+                    count: var_count,
+                    remote: var_remote,
                 };
             }
             2 => {
-                let mut var_retainCount = <u32>::sse_decode(deserializer);
+                let mut var_count = <u32>::sse_decode(deserializer);
+                let mut var_remote = <bool>::sse_decode(deserializer);
                 return crate::api::model::SimpleDelta::Retain {
-                    retain_count: var_retainCount,
+                    count: var_count,
+                    remote: var_remote,
                 };
             }
             _ => {
@@ -488,13 +503,6 @@ impl SseDecode for i32 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         deserializer.cursor.read_i32::<NativeEndian>().unwrap()
-    }
-}
-
-impl SseDecode for bool {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        deserializer.cursor.read_u8().unwrap() != 0
     }
 }
 
@@ -564,15 +572,24 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::model::Partial> for crate::ap
 impl flutter_rust_bridge::IntoDart for crate::api::model::SimpleDelta {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self {
-            crate::api::model::SimpleDelta::Insert { text } => {
-                [0.into_dart(), text.into_into_dart().into_dart()].into_dart()
-            }
-            crate::api::model::SimpleDelta::Delete { delete_count } => {
-                [1.into_dart(), delete_count.into_into_dart().into_dart()].into_dart()
-            }
-            crate::api::model::SimpleDelta::Retain { retain_count } => {
-                [2.into_dart(), retain_count.into_into_dart().into_dart()].into_dart()
-            }
+            crate::api::model::SimpleDelta::Insert { text, remote } => [
+                0.into_dart(),
+                text.into_into_dart().into_dart(),
+                remote.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            crate::api::model::SimpleDelta::Delete { count, remote } => [
+                1.into_dart(),
+                count.into_into_dart().into_dart(),
+                remote.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            crate::api::model::SimpleDelta::Retain { count, remote } => [
+                2.into_dart(),
+                count.into_into_dart().into_dart(),
+                remote.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
             _ => {
                 unimplemented!("");
             }
@@ -611,6 +628,13 @@ impl SseEncode for String {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <Vec<u8>>::sse_encode(self.into_bytes(), serializer);
+    }
+}
+
+impl SseEncode for bool {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_u8(self as _).unwrap();
     }
 }
 
@@ -661,17 +685,20 @@ impl SseEncode for crate::api::model::SimpleDelta {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         match self {
-            crate::api::model::SimpleDelta::Insert { text } => {
+            crate::api::model::SimpleDelta::Insert { text, remote } => {
                 <i32>::sse_encode(0, serializer);
                 <String>::sse_encode(text, serializer);
+                <bool>::sse_encode(remote, serializer);
             }
-            crate::api::model::SimpleDelta::Delete { delete_count } => {
+            crate::api::model::SimpleDelta::Delete { count, remote } => {
                 <i32>::sse_encode(1, serializer);
-                <u32>::sse_encode(delete_count, serializer);
+                <u32>::sse_encode(count, serializer);
+                <bool>::sse_encode(remote, serializer);
             }
-            crate::api::model::SimpleDelta::Retain { retain_count } => {
+            crate::api::model::SimpleDelta::Retain { count, remote } => {
                 <i32>::sse_encode(2, serializer);
-                <u32>::sse_encode(retain_count, serializer);
+                <u32>::sse_encode(count, serializer);
+                <bool>::sse_encode(remote, serializer);
             }
             _ => {
                 unimplemented!("");
@@ -703,13 +730,6 @@ impl SseEncode for i32 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         serializer.cursor.write_i32::<NativeEndian>(self).unwrap();
-    }
-}
-
-impl SseEncode for bool {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        serializer.cursor.write_u8(self as _).unwrap();
     }
 }
 

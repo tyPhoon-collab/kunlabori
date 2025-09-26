@@ -48,7 +48,7 @@ class HomePage extends HookConsumerWidget {
     );
 
     ref.listen(messagesProvider, (previous, next) {
-      debugPrint('WebSocket message: $next');
+      // debugPrint('WebSocket message: $next');
       final notifier = ref.read(_collaboratorIndexesProvider.notifier);
       switch (next) {
         case AsyncData(:final value):
@@ -73,11 +73,11 @@ class HomePage extends HookConsumerWidget {
     });
 
     useEffect(() {
-      final subscription = rust_api
+      final eventSubscription = rust_api
           .create(id: docId)
           .listen(
             (partial) {
-              debugPrint('Stream partial: $partial');
+              // debugPrint('Stream partial: $partial');
               ref
                   .read(partialEventHandlerProvider)
                   .handle(
@@ -92,7 +92,7 @@ class HomePage extends HookConsumerWidget {
           );
 
       return () {
-        subscription.cancel();
+        eventSubscription.cancel();
         rust_api.destroy(id: docId);
       };
     }, const []);

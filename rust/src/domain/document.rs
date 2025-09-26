@@ -14,6 +14,10 @@ use crate::{
     frb_generated::StreamSink,
 };
 
+// Origin keys used for tagging transactions
+const ORIGIN_LOCAL: &str = "local";
+const ORIGIN_REMOTE: &str = "remote";
+
 pub struct Document {
     pub id: String,
     doc: Arc<Doc>,
@@ -30,7 +34,8 @@ impl Document {
         let text_ref = Arc::new(doc.get_or_insert_text(id.clone()));
 
         let text_subscription = Self::setup_text_observer(&text_ref, stream_sink.clone());
-        let update_subscription = Self::setup_update_observer(&doc, &id, stream_sink.clone())?;
+        let update_subscription =
+            Self::setup_update_observer(&doc, id.clone(), stream_sink.clone())?;
 
         Ok(Self {
             id,
@@ -45,6 +50,7 @@ impl Document {
 
     fn setup_text_observer(text_ref: &TextRef, stream_sink: StreamSink<Partial>) -> Subscription {
         text_ref.observe(move |txn, event| {
+            let remote = matches!(txn.origin(), Some(o) if o.as_ref() == ORIGIN_REMOTE.as_bytes());
             for delta in event.delta(txn).iter() {
                 let partial = match delta {
                     Delta::Inserted(value, _) => {
@@ -55,13 +61,15 @@ impl Document {
                                 continue;
                             }
                         };
-                        Partial::Delta(SimpleDelta::Insert { text })
+                        Partial::Delta(SimpleDelta::Insert { text, remote })
                     }
-                    Delta::Deleted(delete_count) => Partial::Delta(SimpleDelta::Delete {
-                        delete_count: *delete_count,
+                    Delta::Deleted(count) => Partial::Delta(SimpleDelta::Delete {
+                        count: *count,
+                        remote,
                     }),
-                    Delta::Retain(retain_count, _) => Partial::Delta(SimpleDelta::Retain {
-                        retain_count: *retain_count,
+                    Delta::Retain(count, _) => Partial::Delta(SimpleDelta::Retain {
+                        count: *count,
+                        remote,
                     }),
                 };
 
@@ -74,10 +82,9 @@ impl Document {
 
     fn setup_update_observer(
         doc: &Arc<Doc>,
-        id: &str,
+        id: String,
         stream_sink: StreamSink<Partial>,
     ) -> Result<Subscription, DocumentError> {
-        let id_clone = id.to_string();
         doc.observe_update_v1(move |txn, event| {
             info!("Update event received");
 
@@ -87,7 +94,7 @@ impl Document {
             }
 
             // Send current text
-            if let Some(text) = txn.get_text(id_clone.as_str()) {
+            if let Some(text) = txn.get_text(id.as_str()) {
                 let text_string = text.get_string(txn);
                 if let Err(e) = stream_sink.add(Partial::Text(text_string)) {
                     error!("Failed to send text: {}", e);
@@ -101,14 +108,20 @@ impl Document {
 
     // Core document operations
     pub fn insert(&mut self, position: u32, text: &str) -> Result<(), DocumentError> {
-        self.text_ref
-            .insert(&mut self.doc.transact_mut(), position, text);
+        self.text_ref.insert(
+            &mut self.doc.transact_mut_with(ORIGIN_LOCAL),
+            position,
+            text,
+        );
         Ok(())
     }
 
     pub fn delete(&mut self, position: u32, delete_count: u32) -> Result<(), DocumentError> {
-        self.text_ref
-            .remove_range(&mut self.doc.transact_mut(), position, delete_count);
+        self.text_ref.remove_range(
+            &mut self.doc.transact_mut_with(ORIGIN_LOCAL),
+            position,
+            delete_count,
+        );
         Ok(())
     }
 
@@ -116,7 +129,7 @@ impl Document {
         let update = Update::decode_v1(&update).map_err(|e| DocumentError::DecodeError {
             message: format!("Failed to decode update: {}", e),
         })?;
-        let mut txn = self.doc.transact_mut();
+        let mut txn = self.doc.transact_mut_with(ORIGIN_REMOTE);
         txn.apply_update(update)
             .map_err(|e| DocumentError::UpdateError {
                 message: format!("Failed to apply update: {}", e),
@@ -135,10 +148,11 @@ impl Document {
     }
 
     pub fn set_index(&mut self, position: u32) {
-        if let Some(index) =
-            self.text_ref
-                .sticky_index(&mut self.doc.transact_mut(), position, Assoc::After)
-        {
+        if let Some(index) = self.text_ref.sticky_index(
+            &mut self.doc.transact_mut_with(ORIGIN_LOCAL),
+            position,
+            Assoc::After,
+        ) {
             self.index = Some(index);
         }
     }

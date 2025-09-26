@@ -1,9 +1,9 @@
 #[flutter_rust_bridge::frb]
 #[derive(Debug, Clone)]
 pub enum SimpleDelta {
-    Insert { text: String },
-    Delete { delete_count: u32 },
-    Retain { retain_count: u32 },
+    Insert { text: String, remote: bool },
+    Delete { count: u32, remote: bool },
+    Retain { count: u32, remote: bool },
 }
 
 #[flutter_rust_bridge::frb]

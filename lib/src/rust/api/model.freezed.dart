@@ -387,30 +387,61 @@ as Uint8List,
 /// @nodoc
 mixin _$SimpleDelta {
 
-
+ bool get remote;
+/// Create a copy of SimpleDelta
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SimpleDeltaCopyWith<SimpleDelta> get copyWith => _$SimpleDeltaCopyWithImpl<SimpleDelta>(this as SimpleDelta, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SimpleDelta);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SimpleDelta&&(identical(other.remote, remote) || other.remote == remote));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,remote);
 
 @override
 String toString() {
-  return 'SimpleDelta()';
+  return 'SimpleDelta(remote: $remote)';
 }
 
 
 }
 
 /// @nodoc
-class $SimpleDeltaCopyWith<$Res>  {
-$SimpleDeltaCopyWith(SimpleDelta _, $Res Function(SimpleDelta) __);
+abstract mixin class $SimpleDeltaCopyWith<$Res>  {
+  factory $SimpleDeltaCopyWith(SimpleDelta value, $Res Function(SimpleDelta) _then) = _$SimpleDeltaCopyWithImpl;
+@useResult
+$Res call({
+ bool remote
+});
+
+
+
+
+}
+/// @nodoc
+class _$SimpleDeltaCopyWithImpl<$Res>
+    implements $SimpleDeltaCopyWith<$Res> {
+  _$SimpleDeltaCopyWithImpl(this._self, this._then);
+
+  final SimpleDelta _self;
+  final $Res Function(SimpleDelta) _then;
+
+/// Create a copy of SimpleDelta
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? remote = null,}) {
+  return _then(_self.copyWith(
+remote: null == remote ? _self.remote : remote // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
 }
 
 
@@ -495,12 +526,12 @@ return retain(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String text)?  insert,TResult Function( int deleteCount)?  delete,TResult Function( int retainCount)?  retain,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String text,  bool remote)?  insert,TResult Function( int count,  bool remote)?  delete,TResult Function( int count,  bool remote)?  retain,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case SimpleDelta_Insert() when insert != null:
-return insert(_that.text);case SimpleDelta_Delete() when delete != null:
-return delete(_that.deleteCount);case SimpleDelta_Retain() when retain != null:
-return retain(_that.retainCount);case _:
+return insert(_that.text,_that.remote);case SimpleDelta_Delete() when delete != null:
+return delete(_that.count,_that.remote);case SimpleDelta_Retain() when retain != null:
+return retain(_that.count,_that.remote);case _:
   return orElse();
 
 }
@@ -518,12 +549,12 @@ return retain(_that.retainCount);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String text)  insert,required TResult Function( int deleteCount)  delete,required TResult Function( int retainCount)  retain,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String text,  bool remote)  insert,required TResult Function( int count,  bool remote)  delete,required TResult Function( int count,  bool remote)  retain,}) {final _that = this;
 switch (_that) {
 case SimpleDelta_Insert():
-return insert(_that.text);case SimpleDelta_Delete():
-return delete(_that.deleteCount);case SimpleDelta_Retain():
-return retain(_that.retainCount);}
+return insert(_that.text,_that.remote);case SimpleDelta_Delete():
+return delete(_that.count,_that.remote);case SimpleDelta_Retain():
+return retain(_that.count,_that.remote);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -537,12 +568,12 @@ return retain(_that.retainCount);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String text)?  insert,TResult? Function( int deleteCount)?  delete,TResult? Function( int retainCount)?  retain,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String text,  bool remote)?  insert,TResult? Function( int count,  bool remote)?  delete,TResult? Function( int count,  bool remote)?  retain,}) {final _that = this;
 switch (_that) {
 case SimpleDelta_Insert() when insert != null:
-return insert(_that.text);case SimpleDelta_Delete() when delete != null:
-return delete(_that.deleteCount);case SimpleDelta_Retain() when retain != null:
-return retain(_that.retainCount);case _:
+return insert(_that.text,_that.remote);case SimpleDelta_Delete() when delete != null:
+return delete(_that.count,_that.remote);case SimpleDelta_Retain() when retain != null:
+return retain(_that.count,_that.remote);case _:
   return null;
 
 }
@@ -554,14 +585,15 @@ return retain(_that.retainCount);case _:
 
 
 class SimpleDelta_Insert extends SimpleDelta {
-  const SimpleDelta_Insert({required this.text}): super._();
+  const SimpleDelta_Insert({required this.text, required this.remote}): super._();
   
 
  final  String text;
+@override final  bool remote;
 
 /// Create a copy of SimpleDelta
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $SimpleDelta_InsertCopyWith<SimpleDelta_Insert> get copyWith => _$SimpleDelta_InsertCopyWithImpl<SimpleDelta_Insert>(this, _$identity);
 
@@ -569,16 +601,16 @@ $SimpleDelta_InsertCopyWith<SimpleDelta_Insert> get copyWith => _$SimpleDelta_In
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SimpleDelta_Insert&&(identical(other.text, text) || other.text == text));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SimpleDelta_Insert&&(identical(other.text, text) || other.text == text)&&(identical(other.remote, remote) || other.remote == remote));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,text);
+int get hashCode => Object.hash(runtimeType,text,remote);
 
 @override
 String toString() {
-  return 'SimpleDelta.insert(text: $text)';
+  return 'SimpleDelta.insert(text: $text, remote: $remote)';
 }
 
 
@@ -587,9 +619,9 @@ String toString() {
 /// @nodoc
 abstract mixin class $SimpleDelta_InsertCopyWith<$Res> implements $SimpleDeltaCopyWith<$Res> {
   factory $SimpleDelta_InsertCopyWith(SimpleDelta_Insert value, $Res Function(SimpleDelta_Insert) _then) = _$SimpleDelta_InsertCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
- String text
+ String text, bool remote
 });
 
 
@@ -606,10 +638,11 @@ class _$SimpleDelta_InsertCopyWithImpl<$Res>
 
 /// Create a copy of SimpleDelta
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? text = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? text = null,Object? remote = null,}) {
   return _then(SimpleDelta_Insert(
 text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String,
+as String,remote: null == remote ? _self.remote : remote // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -620,14 +653,15 @@ as String,
 
 
 class SimpleDelta_Delete extends SimpleDelta {
-  const SimpleDelta_Delete({required this.deleteCount}): super._();
+  const SimpleDelta_Delete({required this.count, required this.remote}): super._();
   
 
- final  int deleteCount;
+ final  int count;
+@override final  bool remote;
 
 /// Create a copy of SimpleDelta
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $SimpleDelta_DeleteCopyWith<SimpleDelta_Delete> get copyWith => _$SimpleDelta_DeleteCopyWithImpl<SimpleDelta_Delete>(this, _$identity);
 
@@ -635,16 +669,16 @@ $SimpleDelta_DeleteCopyWith<SimpleDelta_Delete> get copyWith => _$SimpleDelta_De
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SimpleDelta_Delete&&(identical(other.deleteCount, deleteCount) || other.deleteCount == deleteCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SimpleDelta_Delete&&(identical(other.count, count) || other.count == count)&&(identical(other.remote, remote) || other.remote == remote));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,deleteCount);
+int get hashCode => Object.hash(runtimeType,count,remote);
 
 @override
 String toString() {
-  return 'SimpleDelta.delete(deleteCount: $deleteCount)';
+  return 'SimpleDelta.delete(count: $count, remote: $remote)';
 }
 
 
@@ -653,9 +687,9 @@ String toString() {
 /// @nodoc
 abstract mixin class $SimpleDelta_DeleteCopyWith<$Res> implements $SimpleDeltaCopyWith<$Res> {
   factory $SimpleDelta_DeleteCopyWith(SimpleDelta_Delete value, $Res Function(SimpleDelta_Delete) _then) = _$SimpleDelta_DeleteCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
- int deleteCount
+ int count, bool remote
 });
 
 
@@ -672,10 +706,11 @@ class _$SimpleDelta_DeleteCopyWithImpl<$Res>
 
 /// Create a copy of SimpleDelta
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? deleteCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? count = null,Object? remote = null,}) {
   return _then(SimpleDelta_Delete(
-deleteCount: null == deleteCount ? _self.deleteCount : deleteCount // ignore: cast_nullable_to_non_nullable
-as int,
+count: null == count ? _self.count : count // ignore: cast_nullable_to_non_nullable
+as int,remote: null == remote ? _self.remote : remote // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -686,14 +721,15 @@ as int,
 
 
 class SimpleDelta_Retain extends SimpleDelta {
-  const SimpleDelta_Retain({required this.retainCount}): super._();
+  const SimpleDelta_Retain({required this.count, required this.remote}): super._();
   
 
- final  int retainCount;
+ final  int count;
+@override final  bool remote;
 
 /// Create a copy of SimpleDelta
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $SimpleDelta_RetainCopyWith<SimpleDelta_Retain> get copyWith => _$SimpleDelta_RetainCopyWithImpl<SimpleDelta_Retain>(this, _$identity);
 
@@ -701,16 +737,16 @@ $SimpleDelta_RetainCopyWith<SimpleDelta_Retain> get copyWith => _$SimpleDelta_Re
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SimpleDelta_Retain&&(identical(other.retainCount, retainCount) || other.retainCount == retainCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SimpleDelta_Retain&&(identical(other.count, count) || other.count == count)&&(identical(other.remote, remote) || other.remote == remote));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,retainCount);
+int get hashCode => Object.hash(runtimeType,count,remote);
 
 @override
 String toString() {
-  return 'SimpleDelta.retain(retainCount: $retainCount)';
+  return 'SimpleDelta.retain(count: $count, remote: $remote)';
 }
 
 
@@ -719,9 +755,9 @@ String toString() {
 /// @nodoc
 abstract mixin class $SimpleDelta_RetainCopyWith<$Res> implements $SimpleDeltaCopyWith<$Res> {
   factory $SimpleDelta_RetainCopyWith(SimpleDelta_Retain value, $Res Function(SimpleDelta_Retain) _then) = _$SimpleDelta_RetainCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
- int retainCount
+ int count, bool remote
 });
 
 
@@ -738,10 +774,11 @@ class _$SimpleDelta_RetainCopyWithImpl<$Res>
 
 /// Create a copy of SimpleDelta
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? retainCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? count = null,Object? remote = null,}) {
   return _then(SimpleDelta_Retain(
-retainCount: null == retainCount ? _self.retainCount : retainCount // ignore: cast_nullable_to_non_nullable
-as int,
+count: null == count ? _self.count : count // ignore: cast_nullable_to_non_nullable
+as int,remote: null == remote ? _self.remote : remote // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

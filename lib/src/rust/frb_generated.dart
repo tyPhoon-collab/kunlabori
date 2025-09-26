@@ -417,6 +417,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  bool dco_decode_bool(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as bool;
+  }
+
+  @protected
   SimpleDelta dco_decode_box_autoadd_simple_delta(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_simple_delta(raw);
@@ -474,14 +480,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 0:
         return SimpleDelta_Insert(
           text: dco_decode_String(raw[1]),
+          remote: dco_decode_bool(raw[2]),
         );
       case 1:
         return SimpleDelta_Delete(
-          deleteCount: dco_decode_u_32(raw[1]),
+          count: dco_decode_u_32(raw[1]),
+          remote: dco_decode_bool(raw[2]),
         );
       case 2:
         return SimpleDelta_Retain(
-          retainCount: dco_decode_u_32(raw[1]),
+          count: dco_decode_u_32(raw[1]),
+          remote: dco_decode_bool(raw[2]),
         );
       default:
         throw Exception('unreachable');
@@ -526,6 +535,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     final inner = sse_decode_list_prim_u_8_strict(deserializer);
     return utf8.decoder.convert(inner);
+  }
+
+  @protected
+  bool sse_decode_bool(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getUint8() != 0;
   }
 
   @protected
@@ -595,13 +610,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     switch (tag_) {
       case 0:
         final var_text = sse_decode_String(deserializer);
-        return SimpleDelta_Insert(text: var_text);
+        final var_remote = sse_decode_bool(deserializer);
+        return SimpleDelta_Insert(text: var_text, remote: var_remote);
       case 1:
-        final var_deleteCount = sse_decode_u_32(deserializer);
-        return SimpleDelta_Delete(deleteCount: var_deleteCount);
+        final var_count = sse_decode_u_32(deserializer);
+        final var_remote = sse_decode_bool(deserializer);
+        return SimpleDelta_Delete(count: var_count, remote: var_remote);
       case 2:
-        final var_retainCount = sse_decode_u_32(deserializer);
-        return SimpleDelta_Retain(retainCount: var_retainCount);
+        final var_count = sse_decode_u_32(deserializer);
+        final var_remote = sse_decode_bool(deserializer);
+        return SimpleDelta_Retain(count: var_count, remote: var_remote);
       default:
         throw UnimplementedError('');
     }
@@ -628,12 +646,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   int sse_decode_i_32(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getInt32();
-  }
-
-  @protected
-  bool sse_decode_bool(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return deserializer.buffer.getUint8() != 0;
   }
 
   @protected
@@ -666,6 +678,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_String(String self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_prim_u_8_strict(utf8.encoder.convert(self), serializer);
+  }
+
+  @protected
+  void sse_encode_bool(bool self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putUint8(self ? 1 : 0);
   }
 
   @protected
@@ -735,15 +753,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_simple_delta(SimpleDelta self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     switch (self) {
-      case SimpleDelta_Insert(text: final text):
+      case SimpleDelta_Insert(text: final text, remote: final remote):
         sse_encode_i_32(0, serializer);
         sse_encode_String(text, serializer);
-      case SimpleDelta_Delete(deleteCount: final deleteCount):
+        sse_encode_bool(remote, serializer);
+      case SimpleDelta_Delete(count: final count, remote: final remote):
         sse_encode_i_32(1, serializer);
-        sse_encode_u_32(deleteCount, serializer);
-      case SimpleDelta_Retain(retainCount: final retainCount):
+        sse_encode_u_32(count, serializer);
+        sse_encode_bool(remote, serializer);
+      case SimpleDelta_Retain(count: final count, remote: final remote):
         sse_encode_i_32(2, serializer);
-        sse_encode_u_32(retainCount, serializer);
+        sse_encode_u_32(count, serializer);
+        sse_encode_bool(remote, serializer);
     }
   }
 
@@ -768,11 +789,5 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_i_32(int self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putInt32(self);
-  }
-
-  @protected
-  void sse_encode_bool(bool self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    serializer.buffer.putUint8(self ? 1 : 0);
   }
 }
