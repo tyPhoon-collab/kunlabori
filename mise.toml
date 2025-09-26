@@ -6,7 +6,7 @@ rust = "1.89.0"
 description = "Start the WebSocket server"
 run = "cargo run"
 dir = "server"
-env = { RUST_LOG = "info", RUST_BACKTRACE = "1" }
+env = { RUST_LOG = "info", RUST_BACKTRACE = "1", PORT = "8080", HOST = "localhost" }
 
 [tasks."client:build_runner"]
 description = "Run the Flutter build runner"

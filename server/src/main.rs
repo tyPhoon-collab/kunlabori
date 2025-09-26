@@ -14,7 +14,11 @@ async fn main() -> ServerResult<()> {
     let peer_service = PeerService::new();
 
     // TCPリスナーを開始
-    let addr = "127.0.0.1:8080".to_string();
+    let addr = format!(
+        "{}:{}",
+        std::env::var("HOST").unwrap_or_else(|_| "127.0.0.1".into()),
+        std::env::var("PORT").unwrap_or_else(|_| "8080".into())
+    );
     let listener = TcpListener::bind(&addr).await?;
     info!("Kunlabori server listening on: {}", addr);
 
