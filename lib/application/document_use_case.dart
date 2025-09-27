@@ -32,7 +32,7 @@ class DocumentUseCase {
     final pos = position ?? start();
     final count = deleteCount ?? length();
 
-    if (count == 0) return;
+    if (count <= 0) return;
     if (pos < 0) return;
 
     controller.delete(id: id, position: pos, deleteCount: count);
@@ -50,7 +50,7 @@ class DocumentUseCase {
       return;
     } else {
       // 選択範囲がない場合は1文字削除
-      if (pos <= 1) return;
+      if (pos <= 0) return;
       controller.delete(id: id, position: pos - 1, deleteCount: 1);
     }
   }
