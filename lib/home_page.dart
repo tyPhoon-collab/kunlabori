@@ -130,7 +130,7 @@ class HomePage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('flutter_rust_bridge quickstart'),
+        title: const Text('Kunlabori'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
