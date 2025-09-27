@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:kunlabori/application/controller/document_controller.dart';
 import 'package:kunlabori/application/event_handler/partial_event_handler.dart';
 import 'package:kunlabori/application/event_handler/websocket_event_handler.dart';
@@ -13,7 +14,9 @@ part 'provider.g.dart';
 @Riverpod(keepAlive: true)
 class SocketUrl extends _$SocketUrl {
   @override
-  String build() => 'ws://localhost:8080';
+  String build() => kReleaseMode
+      ? 'https://neighbouring-kass-typhoon-07a541cd.koyeb.app/'
+      : 'ws://localhost:8080';
 
   void setUrl(String value) => state = value;
 }
