@@ -4,7 +4,7 @@ import 'package:kunlabori/home_page.dart';
 import 'package:kunlabori/src/rust/api/interface.dart' as rust_api;
 
 class DocumentController {
-  DocumentController(this.ref);
+  const DocumentController(this.ref);
   final Ref ref;
 
   void insert({

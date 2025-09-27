@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kunlabori/action_view.dart';
@@ -7,6 +8,7 @@ import 'package:kunlabori/domain/model/client_event.dart';
 import 'package:kunlabori/provider.dart';
 import 'package:kunlabori/settings_page.dart';
 import 'package:kunlabori/src/rust/api/interface.dart' as rust_api;
+import 'package:kunlabori/use_case_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_page.g.dart';
@@ -50,10 +52,12 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final docId = useMemoized(() => 'memo');
-
+    final focusCounter = useRef<int>(0);
     final focusNode = useFocusNode();
     final text = useState<String>('');
+
     final collaboratorIndexes = ref.watch(collaboratorIndexesProvider);
+    final useCase = ref.read(documentUseCaseProvider);
 
     ref.listen(eventProvider, (previous, next) {
       final notifier = ref.read(collaboratorIndexesProvider.notifier);
@@ -133,30 +137,49 @@ class HomePage extends HookConsumerWidget {
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: CollaborativeSelectableText(
-            text.value,
-            textStyle: textStyle,
-            collaboratorSelections: collaboratorIndexes.entries.map(
-              (entry) {
-                final collaboratorColor = _colorFromAddress(entry.key);
-                return CollaboratorSelection(
-                  start: entry.value.start,
-                  end: entry.value.end,
-                  color: collaboratorColor,
-                  name: entry.key,
-                );
-              },
-            ).toList(),
-            onTap: focusNode.requestFocus,
-            onSelectionChanged: (selection, cause) {
-              debugPrint('Selection changed: $selection');
-              ref
-                  .read(collaboratorIndexesProvider.notifier)
-                  .setSelection(
-                    docId,
-                    Selection(start: selection.start, end: selection.end),
-                  );
+          child: Focus(
+            onKeyEvent: (node, event) {
+              if (event is KeyDownEvent) {
+                if (event.logicalKey == LogicalKeyboardKey.enter) {
+                  useCase.enter(id: docId);
+                } else if (event.logicalKey == LogicalKeyboardKey.backspace) {
+                  useCase.backspace(id: docId);
+                }
+              }
+              return KeyEventResult.ignored;
             },
+            child: CollaborativeSelectableText(
+              text.value,
+              textStyle: textStyle,
+              collaboratorSelections: collaboratorIndexes.entries.map(
+                (entry) {
+                  final collaboratorColor = _colorFromAddress(entry.key);
+                  return CollaboratorSelection(
+                    start: entry.value.start,
+                    end: entry.value.end,
+                    color: collaboratorColor,
+                    name: entry.key,
+                  );
+                },
+              ).toList(),
+              onTap: () {
+                focusCounter.value += 1;
+                if (focusCounter.value.isOdd) {
+                  focusNode.requestFocus();
+                } else {
+                  focusNode.unfocus();
+                }
+              },
+              onSelectionChanged: (selection, cause) {
+                debugPrint('Selection changed: $selection');
+                ref
+                    .read(collaboratorIndexesProvider.notifier)
+                    .setSelection(
+                      docId,
+                      Selection(start: selection.start, end: selection.end),
+                    );
+              },
+            ),
           ),
         ),
       ),

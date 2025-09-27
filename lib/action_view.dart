@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:kunlabori/provider.dart';
+import 'package:kunlabori/use_case_provider.dart';
 
 class ActionView extends HookConsumerWidget {
   const ActionView({
@@ -15,38 +15,8 @@ class ActionView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    int start() => ref.read(partialEventHandlerProvider).start ?? 0;
-    int length() => ref.read(partialEventHandlerProvider).length ?? 0;
     final controller = useTextEditingController();
-    final documentController = ref.read(documentControllerProvider);
-
-    void insert({
-      required String id,
-      int? position,
-      String? text,
-    }) {
-      final pos = position ?? start();
-      final txt = text ?? controller.text;
-      documentController.insert(
-        id: id,
-        position: pos,
-        text: txt,
-      );
-    }
-
-    void delete({
-      required String id,
-      int? position,
-      int? deleteCount,
-    }) {
-      final pos = position ?? start();
-      final count = deleteCount ?? length();
-      documentController.delete(
-        id: id,
-        position: pos,
-        deleteCount: count,
-      );
-    }
+    final useCase = ref.read(documentUseCaseProvider);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -64,22 +34,23 @@ class ActionView extends HookConsumerWidget {
 
         IconButton.filled(
           onPressed: () {
-            insert(id: docId);
+            useCase.insert(id: docId, text: controller.text);
             controller.clear();
+            focusNode.requestFocus();
           },
           icon: const Icon(Icons.add),
           tooltip: 'Insert',
         ),
         IconButton.filled(
           onPressed: () {
-            insert(id: docId, text: '\n');
+            useCase.enter(id: docId);
           },
           icon: const Icon(Icons.keyboard_return),
           tooltip: 'New Line',
         ),
         IconButton.filled(
           onPressed: () {
-            delete(id: docId);
+            useCase.delete(id: docId);
           },
           icon: const Icon(Icons.delete),
           tooltip: 'Delete',
