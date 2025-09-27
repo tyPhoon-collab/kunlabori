@@ -28,4 +28,7 @@ run = "firebase deploy --only hosting"
 
 [tasks."build:web"]
 description = "Build the Flutter web app"
-run = "flutter_rust_bridge_codegen build-web --release"
+run = [
+    "flutter_rust_bridge_codegen build-web --release",
+    "flutter build web --wasm --release",
+]
