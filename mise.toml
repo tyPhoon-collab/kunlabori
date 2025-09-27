@@ -2,6 +2,7 @@
 flutter = "3.35.3"
 rust = "1.89.0"
 "npm:serve" = "14.2.5"
+"npm:firebase-tools" = "14.17.0"
 
 [tasks."server:start"]
 description = "Start the WebSocket server"
@@ -20,6 +21,10 @@ run = "dart pub run build_runner build -d"
 [tasks."client:watch"]
 description = "Run the Flutter build runner in watch mode"
 run = "dart pub run build_runner watch -d"
+
+[tasks."client:deploy"]
+description = "Deploy the Flutter web app to Firebase Hosting"
+run = "firebase deploy --only hosting"
 
 [tasks."build:web"]
 description = "Build the Flutter web app"
