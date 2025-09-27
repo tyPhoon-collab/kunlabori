@@ -1,6 +1,7 @@
 [tools]
 flutter = "3.35.3"
 rust = "1.89.0"
+"npm:serve" = "14.2.5"
 
 [tasks."server:start"]
 description = "Start the WebSocket server"
@@ -8,10 +9,18 @@ run = "cargo run"
 dir = "server"
 env = { RUST_LOG = "info", RUST_BACKTRACE = "1", PORT = "8080", HOST = "localhost" }
 
-[tasks."client:build_runner"]
+[tasks."server:serve"]
+description = "Serve the client build"
+run = "serve build/web -c serve.json"
+
+[tasks."client:build"]
 description = "Run the Flutter build runner"
 run = "dart pub run build_runner build -d"
 
 [tasks."client:watch"]
 description = "Run the Flutter build runner in watch mode"
 run = "dart pub run build_runner watch -d"
+
+[tasks."build:web"]
+description = "Build the Flutter web app"
+run = "flutter_rust_bridge_codegen build-web --release"
