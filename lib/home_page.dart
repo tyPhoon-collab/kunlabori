@@ -60,44 +60,39 @@ class HomePage extends HookConsumerWidget {
     final collaboratorIndexes = ref.watch(collaboratorIndexesProvider);
     final useCase = ref.read(documentUseCaseProvider);
 
-    ref.listen(eventProvider, (previous, next) {
-      final notifier = ref.read(collaboratorIndexesProvider.notifier);
+    ref
+      ..listen(eventProvider, (previous, next) {
+        final notifier = ref.read(collaboratorIndexesProvider.notifier);
 
-      switch (next) {
-        case ClientEventSelected(:final selection, :final addr):
-          notifier.update(
-            addr,
-            selection,
-          );
-        case ClientEventDisconnected(:final addr):
-        case ClientEventUnselected(:final addr):
-          notifier.remove(addr);
-        case ClientEventText():
-          text.value = next.text;
-        case ClientEventMoved(:final selection):
-          notifier.setSelection(docId, selection);
-        default:
-          break;
-      }
-    });
-
-    final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
-      fontFamily: 'monospace',
-      fontSize: 24,
-    );
-
-    ref.listen(messagesProvider, (previous, next) {
-      // debugPrint('WebSocket message: $next');
-      switch (next) {
-        case AsyncData(:final value):
-          ref.read(websocketEventHandlerProvider).handle(docId, value);
-        case AsyncError(:final error, :final stackTrace):
-          debugPrint('WebSocket error: $error');
-          debugPrintStack(stackTrace: stackTrace);
-        case AsyncLoading():
-          debugPrint('WebSocket loading...');
-      }
-    });
+        switch (next) {
+          case ClientEventSelected(:final selection, :final addr):
+            notifier.update(
+              addr,
+              selection,
+            );
+          case ClientEventDisconnected(:final addr):
+          case ClientEventUnselected(:final addr):
+            notifier.remove(addr);
+          case ClientEventText():
+            text.value = next.text;
+          case ClientEventMoved(:final selection):
+            notifier.setSelection(docId, selection);
+          default:
+            break;
+        }
+      })
+      ..listen(messagesProvider, (previous, next) {
+        // debugPrint('WebSocket message: $next');
+        switch (next) {
+          case AsyncData(:final value):
+            ref.read(websocketEventHandlerProvider).handle(docId, value);
+          case AsyncError(:final error, :final stackTrace):
+            debugPrint('WebSocket error: $error');
+            debugPrintStack(stackTrace: stackTrace);
+          case AsyncLoading():
+            debugPrint('WebSocket loading...');
+        }
+      });
 
     useEffect(() {
       final eventSubscription = rust_api
@@ -117,6 +112,21 @@ class HomePage extends HookConsumerWidget {
         rust_api.destroy(id: docId);
       };
     }, const []);
+
+    final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
+      fontFamily: 'monospace',
+      fontSize: 24,
+    );
+
+    void unfocus() {
+      focusNode.unfocus();
+      isActionViewActive.value = false;
+    }
+
+    void focus() {
+      focusNode.requestFocus();
+      isActionViewActive.value = true;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -143,11 +153,11 @@ class HomePage extends HookConsumerWidget {
               child: Focus(
                 onKeyEvent: (node, event) {
                   if (event is KeyDownEvent) {
-                    if (event.logicalKey == LogicalKeyboardKey.enter) {
-                      useCase.enter(id: docId);
-                    } else if (event.logicalKey ==
-                        LogicalKeyboardKey.backspace) {
-                      useCase.backspace(id: docId);
+                    switch (event.logicalKey) {
+                      case LogicalKeyboardKey.enter:
+                        useCase.enter(id: docId);
+                      case LogicalKeyboardKey.backspace:
+                        useCase.backspace(id: docId);
                     }
                   }
                   return KeyEventResult.ignored;
@@ -168,11 +178,9 @@ class HomePage extends HookConsumerWidget {
                   ).toList(),
                   onTap: () {
                     if (!isActionViewActive.value) {
-                      focusNode.requestFocus();
-                      isActionViewActive.value = true;
+                      focus();
                     } else {
-                      focusNode.unfocus();
-                      isActionViewActive.value = false;
+                      unfocus();
                     }
                   },
                   onSelectionChanged: (selection, cause) {
@@ -192,10 +200,7 @@ class HomePage extends HookConsumerWidget {
           if (isActionViewActive.value)
             ActionView(
               controller: controller,
-              onClose: () {
-                isActionViewActive.value = false;
-                focusNode.unfocus();
-              },
+              onClose: unfocus,
               focusNode: focusNode,
               docId: docId,
             ),
