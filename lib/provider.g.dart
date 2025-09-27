@@ -248,6 +248,54 @@ final class PartialEventHandlerProvider
 String _$partialEventHandlerHash() =>
     r'a6eaf3f2e14466f435a8d75271b7c30a5b7b6c2a';
 
+@ProviderFor(documentController)
+const documentControllerProvider = DocumentControllerProvider._();
+
+final class DocumentControllerProvider
+    extends
+        $FunctionalProvider<
+          DocumentController,
+          DocumentController,
+          DocumentController
+        >
+    with $Provider<DocumentController> {
+  const DocumentControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'documentControllerProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$documentControllerHash();
+
+  @$internal
+  @override
+  $ProviderElement<DocumentController> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  DocumentController create(Ref ref) {
+    return documentController(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DocumentController value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DocumentController>(value),
+    );
+  }
+}
+
+String _$documentControllerHash() =>
+    r'dba9b187eca87346ae35d8960f86bb16ead7b32b';
+
 @ProviderFor(Event)
 const eventProvider = EventProvider._();
 

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:kunlabori/domain/model/client_event.dart';
-import 'package:kunlabori/home_page.dart';
 import 'package:kunlabori/provider.dart';
-import 'package:kunlabori/src/rust/api/interface.dart' as rust_api;
 
 class ActionView extends HookConsumerWidget {
   const ActionView({
@@ -21,6 +18,7 @@ class ActionView extends HookConsumerWidget {
     int start() => ref.read(partialEventHandlerProvider).start ?? 0;
     int length() => ref.read(partialEventHandlerProvider).length ?? 0;
     final controller = useTextEditingController();
+    final documentController = ref.read(documentControllerProvider);
 
     void insert({
       required String id,
@@ -29,14 +27,11 @@ class ActionView extends HookConsumerWidget {
     }) {
       final pos = position ?? start();
       final txt = text ?? controller.text;
-
-      if (txt.isEmpty) return;
-
-      rust_api.insert(id: id, position: pos, text: txt);
-      ref
-          .read(collaboratorIndexesProvider.notifier)
-          .setSelection(id, Selection.same(pos + txt.length));
-      controller.clear();
+      documentController.insert(
+        id: id,
+        position: pos,
+        text: txt,
+      );
     }
 
     void delete({
@@ -46,11 +41,11 @@ class ActionView extends HookConsumerWidget {
     }) {
       final pos = position ?? start();
       final count = deleteCount ?? length();
-      if (count == 0) return;
-      rust_api.delete(id: id, position: pos, deleteCount: count);
-      ref
-          .read(collaboratorIndexesProvider.notifier)
-          .setSelection(id, Selection.same(pos));
+      documentController.delete(
+        id: id,
+        position: pos,
+        deleteCount: count,
+      );
     }
 
     return Row(
@@ -70,6 +65,7 @@ class ActionView extends HookConsumerWidget {
         IconButton.filled(
           onPressed: () {
             insert(id: docId);
+            controller.clear();
           },
           icon: const Icon(Icons.add),
           tooltip: 'Insert',

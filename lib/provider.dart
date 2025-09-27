@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:kunlabori/application/controller/document_controller.dart';
 import 'package:kunlabori/application/event_handler/partial_event_handler.dart';
 import 'package:kunlabori/application/event_handler/websocket_event_handler.dart';
 import 'package:kunlabori/domain/model/client_event.dart';
@@ -57,6 +58,11 @@ PartialEventHandler partialEventHandler(Ref ref) {
     send: ref.watch(_sendProvider),
     sink: ref.watch(_sinkProvider),
   );
+}
+
+@Riverpod(keepAlive: true)
+DocumentController documentController(Ref ref) {
+  return DocumentController(ref);
 }
 
 @Riverpod(keepAlive: true)

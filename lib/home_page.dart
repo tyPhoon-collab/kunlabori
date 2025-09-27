@@ -136,21 +136,17 @@ class HomePage extends HookConsumerWidget {
           child: CollaborativeSelectableText(
             text.value,
             textStyle: textStyle,
-            collaboratorSelections: collaboratorIndexes.entries
-                .map(
-                  (entry) => CollaboratorSelection(
-                    start: entry.value.start,
-                    end: entry.value.end,
-                    color:
-                        Colors.primaries[entry.key.codeUnits.fold(
-                              0,
-                              (a, b) => a + b,
-                            ) %
-                            Colors.primaries.length],
-                    name: entry.key,
-                  ),
-                )
-                .toList(),
+            collaboratorSelections: collaboratorIndexes.entries.map(
+              (entry) {
+                final collaboratorColor = _colorFromAddress(entry.key);
+                return CollaboratorSelection(
+                  start: entry.value.start,
+                  end: entry.value.end,
+                  color: collaboratorColor,
+                  name: entry.key,
+                );
+              },
+            ).toList(),
             onTap: focusNode.requestFocus,
             onSelectionChanged: (selection, cause) {
               debugPrint('Selection changed: $selection');
@@ -168,5 +164,10 @@ class HomePage extends HookConsumerWidget {
         ActionView(focusNode: focusNode, docId: docId),
       ],
     );
+  }
+
+  Color _colorFromAddress(String addr) {
+    return Colors.primaries[addr.codeUnits.fold(0, (a, b) => a + b) %
+        Colors.primaries.length];
   }
 }
