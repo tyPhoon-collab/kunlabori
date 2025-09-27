@@ -4,8 +4,8 @@ use log::{debug, error};
 use yrs::{
     types::Delta,
     updates::{decoder::Decode, encoder::Encode},
-    Assoc, Doc, GetString, IndexedSequence, Observable, Out, ReadTxn, StateVector, StickyIndex,
-    Subscription, Text, TextRef, Transact, Update,
+    Assoc, Doc, GetString, IndexedSequence, Observable, OffsetKind, Options, Out, ReadTxn,
+    StateVector, StickyIndex, Subscription, Text, TextRef, Transact, Update,
 };
 
 use crate::{
@@ -31,7 +31,10 @@ pub struct Document {
 
 impl Document {
     pub fn new(id: String, stream_sink: StreamSink<Partial>) -> Result<Self, DocumentError> {
-        let doc = Arc::new(Doc::new());
+        let doc = Arc::new(Doc::with_options(Options {
+            offset_kind: OffsetKind::Utf16,
+            ..Options::default()
+        }));
         let text_ref = Arc::new(doc.get_or_insert_text(id.clone()));
 
         let text_subscription = Self::setup_text_observer(&text_ref, stream_sink.clone());
