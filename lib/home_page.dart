@@ -52,9 +52,10 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final docId = useMemoized(() => 'memo');
-    final focusCounter = useRef<int>(0);
     final focusNode = useFocusNode();
     final text = useState<String>('');
+    final isActionViewActive = useState<bool>(true);
+    final controller = useTextEditingController();
 
     final collaboratorIndexes = ref.watch(collaboratorIndexesProvider);
     final useCase = ref.read(documentUseCaseProvider);
@@ -134,58 +135,81 @@ class HomePage extends HookConsumerWidget {
           ),
         ],
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Focus(
-            onKeyEvent: (node, event) {
-              if (event is KeyDownEvent) {
-                if (event.logicalKey == LogicalKeyboardKey.enter) {
-                  useCase.enter(id: docId);
-                } else if (event.logicalKey == LogicalKeyboardKey.backspace) {
-                  useCase.backspace(id: docId);
-                }
-              }
-              return KeyEventResult.ignored;
-            },
-            child: CollaborativeSelectableText(
-              text.value,
-              textStyle: textStyle,
-              collaboratorSelections: collaboratorIndexes.entries.map(
-                (entry) {
-                  final collaboratorColor = _colorFromAddress(entry.key);
-                  return CollaboratorSelection(
-                    start: entry.value.start,
-                    end: entry.value.end,
-                    color: collaboratorColor,
-                    name: entry.key,
-                  );
+      body: Stack(
+        children: [
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Focus(
+                onKeyEvent: (node, event) {
+                  if (event is KeyDownEvent) {
+                    if (event.logicalKey == LogicalKeyboardKey.enter) {
+                      useCase.enter(id: docId);
+                    } else if (event.logicalKey ==
+                        LogicalKeyboardKey.backspace) {
+                      useCase.backspace(id: docId);
+                    }
+                  }
+                  return KeyEventResult.ignored;
                 },
-              ).toList(),
-              onTap: () {
-                focusCounter.value += 1;
-                if (focusCounter.value.isOdd) {
-                  focusNode.requestFocus();
-                } else {
-                  focusNode.unfocus();
-                }
-              },
-              onSelectionChanged: (selection, cause) {
-                debugPrint('Selection changed: $selection');
-                ref
-                    .read(collaboratorIndexesProvider.notifier)
-                    .setSelection(
-                      docId,
-                      Selection(start: selection.start, end: selection.end),
-                    );
-              },
+                child: CollaborativeSelectableText(
+                  text.value,
+                  textStyle: textStyle,
+                  collaboratorSelections: collaboratorIndexes.entries.map(
+                    (entry) {
+                      final collaboratorColor = _colorFromAddress(entry.key);
+                      return CollaboratorSelection(
+                        start: entry.value.start,
+                        end: entry.value.end,
+                        color: collaboratorColor,
+                        name: entry.key,
+                      );
+                    },
+                  ).toList(),
+                  onTap: () {
+                    if (!isActionViewActive.value) {
+                      focusNode.requestFocus();
+                      isActionViewActive.value = true;
+                    } else {
+                      focusNode.unfocus();
+                      isActionViewActive.value = false;
+                    }
+                  },
+                  onSelectionChanged: (selection, cause) {
+                    debugPrint('Selection changed: $selection');
+                    ref
+                        .read(collaboratorIndexesProvider.notifier)
+                        .setSelection(
+                          docId,
+                          Selection(start: selection.start, end: selection.end),
+                        );
+                  },
+                ),
+              ),
             ),
           ),
+          // Draggable ActionView window
+          if (isActionViewActive.value)
+            ActionView(
+              controller: controller,
+              onClose: () {
+                isActionViewActive.value = false;
+                focusNode.unfocus();
+              },
+              focusNode: focusNode,
+              docId: docId,
+            ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          isActionViewActive.value = !isActionViewActive.value;
+        },
+        tooltip: 'Toggle Action View',
+        child: Icon(
+          isActionViewActive.value ? Icons.keyboard_hide : Icons.keyboard,
         ),
       ),
-      persistentFooterButtons: [
-        ActionView(focusNode: focusNode, docId: docId),
-      ],
     );
   }
 

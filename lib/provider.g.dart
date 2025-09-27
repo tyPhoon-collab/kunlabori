@@ -40,7 +40,7 @@ final class SocketUrlProvider extends $NotifierProvider<SocketUrl, String> {
   }
 }
 
-String _$socketUrlHash() => r'14d4b8ac770e8caeb28ce3eae09cc773af992174';
+String _$socketUrlHash() => r'd1166380e3dd8dc9bafdeec112fd6a35b92c4afa';
 
 abstract class _$SocketUrl extends $Notifier<String> {
   String build();
