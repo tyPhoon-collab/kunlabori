@@ -202,24 +202,27 @@ class HomePage extends HookConsumerWidget {
                 ),
               ),
             ),
-            if (isActionViewActive.value)
+            if (isActionViewActive.value) ...[
+              const Divider(),
               ActionView(
                 controller: controller,
                 focusNode: focusNode,
                 docId: docId,
+                onClose: unfocus,
               ),
+            ],
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          isActionViewActive.value = !isActionViewActive.value;
-        },
-        tooltip: 'Toggle Action View',
-        child: Icon(
-          isActionViewActive.value ? Icons.keyboard_hide : Icons.keyboard,
-        ),
-      ),
+      floatingActionButton: !isActionViewActive.value
+          ? FloatingActionButton(
+              onPressed: () {
+                isActionViewActive.value = true;
+              },
+              tooltip: 'Toggle Action View',
+              child: const Icon(Icons.keyboard_rounded),
+            )
+          : null,
     );
   }
 

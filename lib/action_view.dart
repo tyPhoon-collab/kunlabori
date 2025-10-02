@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kunlabori/use_case_provider.dart';
 
-/// ボトムシート形式のアクションパネル
 class ActionView extends ConsumerWidget {
   const ActionView({
     required this.controller,
     required this.focusNode,
     required this.docId,
+    this.onClose,
     super.key,
   });
 
   final TextEditingController controller;
   final FocusNode focusNode;
   final String docId;
+  final VoidCallback? onClose;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,6 +23,7 @@ class ActionView extends ConsumerWidget {
         controller: controller,
         focusNode: focusNode,
         docId: docId,
+        onClose: onClose,
       ),
     );
   }
@@ -32,11 +34,13 @@ class _Body extends ConsumerWidget {
     required this.controller,
     required this.focusNode,
     required this.docId,
+    this.onClose,
   });
 
   final TextEditingController controller;
   final FocusNode focusNode;
   final String docId;
+  final VoidCallback? onClose;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,7 +55,7 @@ class _Body extends ConsumerWidget {
           TextField(
             controller: controller,
             decoration: InputDecoration(
-              labelText: 'テキスト',
+              labelText: '挿入するテキスト',
               hintText: '入力してください',
               prefixIcon: const Icon(Icons.text_fields_rounded, size: 20),
               border: OutlineInputBorder(
@@ -59,8 +63,6 @@ class _Body extends ConsumerWidget {
               ),
             ),
             focusNode: focusNode,
-            maxLines: 2,
-            style: const TextStyle(fontSize: 14),
             textInputAction: TextInputAction.done,
             onSubmitted: (value) {
               if (value.isNotEmpty) {
@@ -74,7 +76,7 @@ class _Body extends ConsumerWidget {
             alignment: MainAxisAlignment.spaceEvenly,
             children: [
               _ActionButton(
-                icon: Icons.add_circle_outline_rounded,
+                icon: Icons.add_rounded,
                 label: '挿入',
                 onPressed: () {
                   if (controller.text.isNotEmpty) {
@@ -98,6 +100,11 @@ class _Body extends ConsumerWidget {
                   useCase.backspace(id: docId);
                 },
               ),
+              _ActionButton(
+                icon: Icons.close_rounded,
+                label: '閉じる',
+                onPressed: onClose,
+              ),
             ],
           ),
         ],
@@ -110,36 +117,19 @@ class _ActionButton extends StatelessWidget {
   const _ActionButton({
     required this.icon,
     required this.label,
-    required this.onPressed,
+    this.onPressed,
   });
 
   final IconData icon;
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton.filledTonal(
-          onPressed: onPressed,
-          icon: Icon(icon, size: 22),
-          style: IconButton.styleFrom(
-            minimumSize: const Size(48, 48),
-          ),
-          tooltip: label,
-        ),
-        const SizedBox(height: 6),
-        Text(
-          label,
-          style: textTheme.labelSmall?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
+    return IconButton.filledTonal(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 24),
+      tooltip: label,
     );
   }
 }
