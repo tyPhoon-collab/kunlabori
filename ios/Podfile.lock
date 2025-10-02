@@ -1,45 +1,27 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_keyboard_visibility_temp_fork (0.0.1):
-    - Flutter
   - integration_test (0.0.1):
     - Flutter
-  - quill_native_bridge_ios (0.0.1):
-    - Flutter
   - rust_lib_kunlabori (0.0.1):
-    - Flutter
-  - url_launcher_ios (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_keyboard_visibility_temp_fork (from `.symlinks/plugins/flutter_keyboard_visibility_temp_fork/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
-  - quill_native_bridge_ios (from `.symlinks/plugins/quill_native_bridge_ios/ios`)
   - rust_lib_kunlabori (from `.symlinks/plugins/rust_lib_kunlabori/ios`)
-  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_keyboard_visibility_temp_fork:
-    :path: ".symlinks/plugins/flutter_keyboard_visibility_temp_fork/ios"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
-  quill_native_bridge_ios:
-    :path: ".symlinks/plugins/quill_native_bridge_ios/ios"
   rust_lib_kunlabori:
     :path: ".symlinks/plugins/rust_lib_kunlabori/ios"
-  url_launcher_ios:
-    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_keyboard_visibility_temp_fork: 95b2d534bacf6ac62e7fcbe5c2a9e2c2a17ce06f
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
-  quill_native_bridge_ios: f47af4b14e7757968486641656c5d23250cee521
   rust_lib_kunlabori: c953f039fad3da2229a65ebcb7cedb59620d0c5e
-  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
 
 PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
 
