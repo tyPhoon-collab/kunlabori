@@ -112,7 +112,7 @@ class HomePage extends HookConsumerWidget {
     }, const []);
 
     final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
-      fontSize: 24,
+      fontSize: 20,
       height: 1.5,
     );
 
