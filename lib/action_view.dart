@@ -55,7 +55,7 @@ class _Body extends ConsumerWidget {
           TextField(
             controller: controller,
             decoration: InputDecoration(
-              labelText: '挿入するテキスト',
+              labelText: 'カーソル位置に挿入するテキスト',
               hintText: '入力してください',
               prefixIcon: const Icon(Icons.text_fields_rounded, size: 20),
               border: OutlineInputBorder(
