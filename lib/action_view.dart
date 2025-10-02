@@ -95,7 +95,7 @@ class _Body extends ConsumerWidget {
                 icon: Icons.backspace_outlined,
                 label: '削除',
                 onPressed: () {
-                  useCase.delete(id: docId);
+                  useCase.backspace(id: docId);
                 },
               ),
             ],

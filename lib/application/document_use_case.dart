@@ -24,20 +24,6 @@ class DocumentUseCase {
     controller.insert(id: id, position: pos, text: text);
   }
 
-  void delete({
-    required String id,
-    int? position,
-    int? deleteCount,
-  }) {
-    final pos = position ?? start();
-    final count = deleteCount ?? length();
-
-    if (count <= 0) return;
-    if (pos < 0) return;
-
-    controller.delete(id: id, position: pos, deleteCount: count);
-  }
-
   void backspace({
     required String id,
   }) {
