@@ -177,39 +177,46 @@ class HomePage extends HookConsumerWidget {
                     }
                     return KeyEventResult.ignored;
                   },
-                  child: CollaborativeSelectableText(
-                    text.value,
-                    textStyle: textStyle,
-                    collaboratorSelections: collaboratorIndexes.entries.map(
-                      (entry) {
-                        final collaboratorColor = _colorFromAddress(entry.key);
-                        return CollaboratorSelection(
-                          start: entry.value.start,
-                          end: entry.value.end,
-                          color: collaboratorColor,
-                          name: entry.key,
-                        );
-                      },
-                    ).toList(),
-                    onTap: () {
-                      if (!isActionViewActive.value) {
-                        focus();
-                      } else {
-                        unfocus();
-                      }
-                    },
-                    onSelectionChanged: (selection, cause) {
-                      // debugPrint('Selection changed: $selection');
-                      ref
-                          .read(collaboratorIndexesProvider.notifier)
-                          .select(
-                            docId,
-                            Selection(
-                              start: selection.start,
-                              end: selection.end,
-                            ),
-                          );
-                    },
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: CollaborativeSelectableText(
+                        text.value,
+                        textStyle: textStyle,
+                        collaboratorSelections: collaboratorIndexes.entries.map(
+                          (entry) {
+                            final collaboratorColor = _colorFromAddress(
+                              entry.key,
+                            );
+                            return CollaboratorSelection(
+                              start: entry.value.start,
+                              end: entry.value.end,
+                              color: collaboratorColor,
+                              name: entry.key,
+                            );
+                          },
+                        ).toList(),
+                        onTap: () {
+                          if (!isActionViewActive.value) {
+                            focus();
+                          } else {
+                            unfocus();
+                          }
+                        },
+                        onSelectionChanged: (selection, cause) {
+                          // debugPrint('Selection changed: $selection');
+                          ref
+                              .read(collaboratorIndexesProvider.notifier)
+                              .select(
+                                docId,
+                                Selection(
+                                  start: selection.start,
+                                  end: selection.end,
+                                ),
+                              );
+                        },
+                      ),
+                    ),
                   ),
                 ),
               ),
