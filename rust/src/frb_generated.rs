@@ -410,11 +410,11 @@ impl SseDecode for Vec<u8> {
     }
 }
 
-impl SseDecode for Option<(u32, u32)> {
+impl SseDecode for Option<u32> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         if (<bool>::sse_decode(deserializer)) {
-            return Some(<(u32, u32)>::sse_decode(deserializer));
+            return Some(<u32>::sse_decode(deserializer));
         } else {
             return None;
         }
@@ -445,11 +445,11 @@ impl SseDecode for crate::api::model::Partial {
     }
 }
 
-impl SseDecode for (u32, u32) {
+impl SseDecode for (Option<u32>, Option<u32>) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_field0 = <u32>::sse_decode(deserializer);
-        let mut var_field1 = <u32>::sse_decode(deserializer);
+        let mut var_field0 = <Option<u32>>::sse_decode(deserializer);
+        let mut var_field1 = <Option<u32>>::sse_decode(deserializer);
         return (var_field0, var_field1);
     }
 }
@@ -658,12 +658,12 @@ impl SseEncode for Vec<u8> {
     }
 }
 
-impl SseEncode for Option<(u32, u32)> {
+impl SseEncode for Option<u32> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <bool>::sse_encode(self.is_some(), serializer);
         if let Some(value) = self {
-            <(u32, u32)>::sse_encode(value, serializer);
+            <u32>::sse_encode(value, serializer);
         }
     }
 }
@@ -691,11 +691,11 @@ impl SseEncode for crate::api::model::Partial {
     }
 }
 
-impl SseEncode for (u32, u32) {
+impl SseEncode for (Option<u32>, Option<u32>) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <u32>::sse_encode(self.0, serializer);
-        <u32>::sse_encode(self.1, serializer);
+        <Option<u32>>::sse_encode(self.0, serializer);
+        <Option<u32>>::sse_encode(self.1, serializer);
     }
 }
 

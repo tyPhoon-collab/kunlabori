@@ -37,26 +37,21 @@ final class PartialEventHandler {
       Partial_Update(:final field0) => () {
         _send(SendMessage.update(bytes: field0));
         final stickySelection = rust_api.selection(id: id);
-        final start = stickySelection?.$1;
-        final end = stickySelection?.$2;
+        final start = stickySelection.$1;
+        final end = stickySelection.$2;
 
         if (_selection case final selection?
             when selection.start != start || selection.end != end) {
-          if (stickySelection == null) {
-            _selection = null;
-            _send(const SendMessage.unselect());
-          } else {
-            _send(
-              SendMessage.selection(
-                start: start!,
-                end: end!,
-              ),
-            );
-            _sink(
-              ClientEvent.moved(
-                selection: Selection(start: start, end: end),
-              ),
-            );
+          switch ((start, end)) {
+            case (null, null):
+              _selection = null;
+              _send(const SendMessage.unselect());
+            case (final s?, null):
+              setSelection(id, Selection(start: s, end: s));
+            case (null, final e?):
+              setSelection(id, Selection(start: e, end: e));
+            case (final s?, final e?):
+              setSelection(id, Selection(start: s, end: e));
           }
         }
       },

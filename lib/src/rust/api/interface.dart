@@ -49,5 +49,5 @@ void setSelection({required String id, required int start, required int end}) =>
       end: end,
     );
 
-(int, int)? selection({required String id}) =>
+(int?, int?) selection({required String id}) =>
     RustLib.instance.api.crateApiInterfaceSelection(id: id);

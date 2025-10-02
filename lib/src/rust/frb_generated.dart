@@ -107,7 +107,7 @@ abstract class RustLibApi extends BaseApi {
 
   void crateApiInterfaceMerge({required String id, required List<int> update});
 
-  (int, int)? crateApiInterfaceSelection({required String id});
+  (int?, int?) crateApiInterfaceSelection({required String id});
 
   void crateApiInterfaceSetSelection({
     required String id,
@@ -326,7 +326,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  (int, int)? crateApiInterfaceSelection({required String id}) {
+  (int?, int?) crateApiInterfaceSelection({required String id}) {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
@@ -335,7 +335,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8)!;
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_opt_box_autoadd_record_u_32_u_32,
+          decodeSuccessData:
+              sse_decode_record_opt_box_autoadd_u_32_opt_box_autoadd_u_32,
           decodeErrorData: sse_decode_String,
         ),
         constMeta: kCrateApiInterfaceSelectionConstMeta,
@@ -433,15 +434,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (int, int) dco_decode_box_autoadd_record_u_32_u_32(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return raw as (int, int);
-  }
-
-  @protected
   SimpleDelta dco_decode_box_autoadd_simple_delta(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_simple_delta(raw);
+  }
+
+  @protected
+  int dco_decode_box_autoadd_u_32(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as int;
   }
 
   @protected
@@ -457,9 +458,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (int, int)? dco_decode_opt_box_autoadd_record_u_32_u_32(dynamic raw) {
+  int? dco_decode_opt_box_autoadd_u_32(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return raw == null ? null : dco_decode_box_autoadd_record_u_32_u_32(raw);
+    return raw == null ? null : dco_decode_box_autoadd_u_32(raw);
   }
 
   @protected
@@ -484,15 +485,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (int, int) dco_decode_record_u_32_u_32(dynamic raw) {
+  (int?, int?) dco_decode_record_opt_box_autoadd_u_32_opt_box_autoadd_u_32(
+    dynamic raw,
+  ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
     if (arr.length != 2) {
       throw Exception('Expected 2 elements, got ${arr.length}');
     }
     return (
-      dco_decode_u_32(arr[0]),
-      dco_decode_u_32(arr[1]),
+      dco_decode_opt_box_autoadd_u_32(arr[0]),
+      dco_decode_opt_box_autoadd_u_32(arr[1]),
     );
   }
 
@@ -567,19 +570,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (int, int) sse_decode_box_autoadd_record_u_32_u_32(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return (sse_decode_record_u_32_u_32(deserializer));
-  }
-
-  @protected
   SimpleDelta sse_decode_box_autoadd_simple_delta(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_simple_delta(deserializer));
+  }
+
+  @protected
+  int sse_decode_box_autoadd_u_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_u_32(deserializer));
   }
 
   @protected
@@ -597,13 +598,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (int, int)? sse_decode_opt_box_autoadd_record_u_32_u_32(
-    SseDeserializer deserializer,
-  ) {
+  int? sse_decode_opt_box_autoadd_u_32(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     if (sse_decode_bool(deserializer)) {
-      return (sse_decode_box_autoadd_record_u_32_u_32(deserializer));
+      return (sse_decode_box_autoadd_u_32(deserializer));
     } else {
       return null;
     }
@@ -630,10 +629,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  (int, int) sse_decode_record_u_32_u_32(SseDeserializer deserializer) {
+  (int?, int?) sse_decode_record_opt_box_autoadd_u_32_opt_box_autoadd_u_32(
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_field0 = sse_decode_u_32(deserializer);
-    var var_field1 = sse_decode_u_32(deserializer);
+    var var_field0 = sse_decode_opt_box_autoadd_u_32(deserializer);
+    var var_field1 = sse_decode_opt_box_autoadd_u_32(deserializer);
     return (var_field0, var_field1);
   }
 
@@ -722,21 +723,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_box_autoadd_record_u_32_u_32(
-    (int, int) self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_record_u_32_u_32(self, serializer);
-  }
-
-  @protected
   void sse_encode_box_autoadd_simple_delta(
     SimpleDelta self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_simple_delta(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self, serializer);
   }
 
   @protected
@@ -762,15 +760,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_opt_box_autoadd_record_u_32_u_32(
-    (int, int)? self,
-    SseSerializer serializer,
-  ) {
+  void sse_encode_opt_box_autoadd_u_32(int? self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     sse_encode_bool(self != null, serializer);
     if (self != null) {
-      sse_encode_box_autoadd_record_u_32_u_32(self, serializer);
+      sse_encode_box_autoadd_u_32(self, serializer);
     }
   }
 
@@ -791,10 +786,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_record_u_32_u_32((int, int) self, SseSerializer serializer) {
+  void sse_encode_record_opt_box_autoadd_u_32_opt_box_autoadd_u_32(
+    (int?, int?) self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_u_32(self.$1, serializer);
-    sse_encode_u_32(self.$2, serializer);
+    sse_encode_opt_box_autoadd_u_32(self.$1, serializer);
+    sse_encode_opt_box_autoadd_u_32(self.$2, serializer);
   }
 
   @protected

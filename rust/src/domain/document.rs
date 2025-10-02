@@ -154,31 +154,20 @@ impl Document {
     }
 
     pub fn set_selection(&mut self, start: u32, end: u32) {
-        if let Some(index) = self.text_ref.sticky_index(
-            &mut self.doc.transact_mut_with(ORIGIN_LOCAL),
-            start,
-            Assoc::Before,
-        ) {
-            self.start = Some(index);
-        }
-
-        if let Some(index) = self.text_ref.sticky_index(
-            &mut self.doc.transact_mut_with(ORIGIN_LOCAL),
-            end,
-            Assoc::After,
-        ) {
-            self.end = Some(index);
-        }
+        let mut txn = self.doc.transact_mut_with(ORIGIN_LOCAL);
+        self.start = self.text_ref.sticky_index(&mut txn, start, Assoc::Before);
+        self.end = self.text_ref.sticky_index(&mut txn, end, Assoc::After);
     }
 
-    pub fn selection(&self) -> Option<(u32, u32)> {
+    pub fn selection(&self) -> (Option<u32>, Option<u32>) {
         let txn = self.doc.transact();
 
         let start = self.start.as_ref().and_then(|idx| idx.get_offset(&txn));
         let end = self.end.as_ref().and_then(|idx| idx.get_offset(&txn));
-        match (start, end) {
-            (Some(s), Some(e)) => Some((s.index, e.index)),
-            _ => None,
-        }
+
+        let start_index = start.map(|s| s.index);
+        let end_index = end.map(|e| e.index);
+
+        (start_index, end_index)
     }
 }

@@ -68,7 +68,7 @@ pub fn set_selection(id: String, start: u32, end: u32) -> Result<(), String> {
 }
 
 #[flutter_rust_bridge::frb(sync)]
-pub fn selection(id: String) -> Result<Option<(u32, u32)>, String> {
+pub fn selection(id: String) -> Result<(Option<u32>, Option<u32>), String> {
     with_document(&id, |document| document.selection()).map_err(|e| e.to_string())
 }
 

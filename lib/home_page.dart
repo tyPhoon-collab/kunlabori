@@ -75,8 +75,6 @@ class HomePage extends HookConsumerWidget {
             notifier.remove(addr);
           case ClientEventText():
             text.value = next.text;
-          case ClientEventMoved(:final selection):
-            notifier.setSelection(docId, selection);
           default:
             break;
         }
