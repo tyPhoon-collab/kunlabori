@@ -131,6 +131,20 @@ class HomePage extends HookConsumerWidget {
         title: const Text('Kunlabori'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.copy_all_rounded),
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: text.value));
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('クリップボードにコピーされました: ${text.value.length} 文字'),
+                  ),
+                );
+              }
+            },
+            tooltip: 'クリップボードにコピー',
+          ),
+          IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () async {
               await Navigator.of(context).push(
