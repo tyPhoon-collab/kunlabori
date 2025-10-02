@@ -33,7 +33,7 @@ class CollaboratorIndexes extends _$CollaboratorIndexes {
     }..remove(addr);
   }
 
-  void setSelection(String id, Selection selection) {
+  void select(String id, Selection selection) {
     update(
       'you',
       Selection(
@@ -58,7 +58,7 @@ class HomePage extends HookConsumerWidget {
     final controller = useTextEditingController();
 
     final collaboratorIndexes = ref.watch(collaboratorIndexesProvider);
-    final useCase = ref.read(documentUseCaseProvider);
+    final useCase = ref.watch(documentUseCaseProvider);
 
     ref
       ..listen(eventProvider, (previous, next) {
@@ -112,8 +112,8 @@ class HomePage extends HookConsumerWidget {
     }, const []);
 
     final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
-      fontFamily: 'monospace',
       fontSize: 24,
+      height: 1.5,
     );
 
     void unfocus() {
@@ -199,10 +199,10 @@ class HomePage extends HookConsumerWidget {
                       }
                     },
                     onSelectionChanged: (selection, cause) {
-                      debugPrint('Selection changed: $selection');
+                      // debugPrint('Selection changed: $selection');
                       ref
                           .read(collaboratorIndexesProvider.notifier)
-                          .setSelection(
+                          .select(
                             docId,
                             Selection(
                               start: selection.start,

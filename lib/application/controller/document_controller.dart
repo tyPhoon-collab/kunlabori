@@ -17,7 +17,7 @@ class DocumentController {
     rust_api.insert(id: id, position: position, text: text);
     ref
         .read(collaboratorIndexesProvider.notifier)
-        .setSelection(id, Selection.same(position + text.length));
+        .select(id, Selection.same(position + text.length));
   }
 
   void delete({
@@ -29,6 +29,6 @@ class DocumentController {
     rust_api.delete(id: id, position: position, deleteCount: deleteCount);
     ref
         .read(collaboratorIndexesProvider.notifier)
-        .setSelection(id, Selection.same(position));
+        .select(id, Selection.same(position));
   }
 }

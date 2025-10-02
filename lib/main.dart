@@ -16,9 +16,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomePage(),
+    return MaterialApp(
+      home: const HomePage(),
+      theme: theme,
       debugShowCheckedModeBanner: false,
     );
   }
 }
+
+final theme = ThemeData(
+  fontFamily: 'HachiMaruPop',
+  useMaterial3: true,
+);
