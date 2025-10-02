@@ -145,66 +145,71 @@ class HomePage extends HookConsumerWidget {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Focus(
-                onKeyEvent: (node, event) {
-                  if (event is KeyDownEvent) {
-                    switch (event.logicalKey) {
-                      case LogicalKeyboardKey.enter:
-                        useCase.enter(id: docId);
-                      case LogicalKeyboardKey.backspace:
-                        useCase.backspace(id: docId);
+      body: SizedBox(
+        width: double.infinity,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Focus(
+                  onKeyEvent: (node, event) {
+                    if (event is KeyDownEvent) {
+                      switch (event.logicalKey) {
+                        case LogicalKeyboardKey.enter:
+                          useCase.enter(id: docId);
+                        case LogicalKeyboardKey.backspace:
+                          useCase.backspace(id: docId);
+                      }
                     }
-                  }
-                  return KeyEventResult.ignored;
-                },
-                child: CollaborativeSelectableText(
-                  text.value,
-                  textStyle: textStyle,
-                  collaboratorSelections: collaboratorIndexes.entries.map(
-                    (entry) {
-                      final collaboratorColor = _colorFromAddress(entry.key);
-                      return CollaboratorSelection(
-                        start: entry.value.start,
-                        end: entry.value.end,
-                        color: collaboratorColor,
-                        name: entry.key,
-                      );
-                    },
-                  ).toList(),
-                  onTap: () {
-                    if (!isActionViewActive.value) {
-                      focus();
-                    } else {
-                      unfocus();
-                    }
+                    return KeyEventResult.ignored;
                   },
-                  onSelectionChanged: (selection, cause) {
-                    debugPrint('Selection changed: $selection');
-                    ref
-                        .read(collaboratorIndexesProvider.notifier)
-                        .setSelection(
-                          docId,
-                          Selection(start: selection.start, end: selection.end),
+                  child: CollaborativeSelectableText(
+                    text.value,
+                    textStyle: textStyle,
+                    collaboratorSelections: collaboratorIndexes.entries.map(
+                      (entry) {
+                        final collaboratorColor = _colorFromAddress(entry.key);
+                        return CollaboratorSelection(
+                          start: entry.value.start,
+                          end: entry.value.end,
+                          color: collaboratorColor,
+                          name: entry.key,
                         );
-                  },
+                      },
+                    ).toList(),
+                    onTap: () {
+                      if (!isActionViewActive.value) {
+                        focus();
+                      } else {
+                        unfocus();
+                      }
+                    },
+                    onSelectionChanged: (selection, cause) {
+                      debugPrint('Selection changed: $selection');
+                      ref
+                          .read(collaboratorIndexesProvider.notifier)
+                          .setSelection(
+                            docId,
+                            Selection(
+                              start: selection.start,
+                              end: selection.end,
+                            ),
+                          );
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          // Draggable ActionView window
-          if (isActionViewActive.value)
-            ActionView(
-              controller: controller,
-              onClose: unfocus,
-              focusNode: focusNode,
-              docId: docId,
-            ),
-        ],
+            if (isActionViewActive.value)
+              ActionView(
+                controller: controller,
+                focusNode: focusNode,
+                docId: docId,
+              ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
