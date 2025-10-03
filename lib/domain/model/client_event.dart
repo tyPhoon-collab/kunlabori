@@ -3,12 +3,14 @@ import 'package:kunlabori/src/rust/api/model.dart';
 
 part 'client_event.freezed.dart';
 
+@immutable
 final class Selection {
   const Selection({
     required this.start,
     required this.end,
   });
 
+  const Selection.zero() : start = 0, end = 0;
   const Selection.same(int index) : start = index, end = index;
 
   final int start;

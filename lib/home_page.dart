@@ -105,9 +105,15 @@ class HomePage extends HookConsumerWidget {
             },
           );
 
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref
+            .read(collaboratorIndexesProvider.notifier)
+            .select(docId, const Selection.zero());
+      });
+
       return () async {
-        await eventSubscription.cancel();
         rust_api.destroy(id: docId);
+        await eventSubscription.cancel();
       };
     }, const []);
 
@@ -183,19 +189,16 @@ class HomePage extends HookConsumerWidget {
                       child: CollaborativeSelectableText(
                         text.value,
                         textStyle: textStyle,
-                        collaboratorSelections: collaboratorIndexes.entries.map(
-                          (entry) {
-                            final collaboratorColor = _colorFromAddress(
-                              entry.key,
-                            );
-                            return CollaboratorSelection(
-                              start: entry.value.start,
-                              end: entry.value.end,
-                              color: collaboratorColor,
-                              name: entry.key,
-                            );
-                          },
-                        ).toList(),
+                        collaboratorSelections: collaboratorIndexes.entries
+                            .map(
+                              (entry) => CollaboratorSelection(
+                                start: entry.value.start,
+                                end: entry.value.end,
+                                color: _colorFromAddress(entry.key),
+                                name: entry.key,
+                              ),
+                            )
+                            .toList(),
                         onTap: () {
                           if (!isActionViewActive.value) {
                             focus();
