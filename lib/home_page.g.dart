@@ -63,3 +63,57 @@ abstract class _$CollaboratorIndexes extends $Notifier<Map<String, Selection>> {
     element.handleValue(ref, created);
   }
 }
+
+@ProviderFor(_IsActionViewActive)
+const _isActionViewActiveProvider = _IsActionViewActiveProvider._();
+
+final class _IsActionViewActiveProvider
+    extends $NotifierProvider<_IsActionViewActive, bool> {
+  const _IsActionViewActiveProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'_isActionViewActiveProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$_isActionViewActiveHash();
+
+  @$internal
+  @override
+  _IsActionViewActive create() => _IsActionViewActive();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$_isActionViewActiveHash() =>
+    r'523101802e82fd99411f3be615a3f0829f2cd914';
+
+abstract class _$IsActionViewActive extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

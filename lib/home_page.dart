@@ -46,6 +46,16 @@ class CollaboratorIndexes extends _$CollaboratorIndexes {
   }
 }
 
+@Riverpod(keepAlive: true)
+class _IsActionViewActive extends _$IsActionViewActive {
+  @override
+  bool build() => true;
+
+  void activate() => state = true;
+
+  void deactivate() => state = false;
+}
+
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
 
@@ -54,11 +64,8 @@ class HomePage extends HookConsumerWidget {
     final docId = useMemoized(() => 'memo');
     final focusNode = useFocusNode();
     final text = useState<String>('');
-    final isActionViewActive = useState<bool>(true);
+    final isActionViewActive = ref.watch(_isActionViewActiveProvider);
     final controller = useTextEditingController();
-
-    final collaboratorIndexes = ref.watch(collaboratorIndexesProvider);
-    final useCase = ref.watch(documentUseCaseProvider);
 
     ref
       ..listen(eventProvider, (previous, next) {
@@ -117,141 +124,232 @@ class HomePage extends HookConsumerWidget {
       };
     }, const []);
 
+    void unfocus() {
+      focusNode.unfocus();
+      ref.read(_isActionViewActiveProvider.notifier).deactivate();
+    }
+
+    void focus() {
+      focusNode.requestFocus();
+      ref.read(_isActionViewActiveProvider.notifier).activate();
+    }
+
+    return _EventListeners(
+      docId: docId,
+      text: text,
+      child: Scaffold(
+        appBar: _HomeAppBar(text: text.value),
+        body: SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: _CollaborativeTextCard(
+                      docId: docId,
+                      text: text.value,
+                      isActionViewActive: isActionViewActive,
+                      onToggleActive: () {
+                        if (!isActionViewActive) {
+                          focus();
+                        } else {
+                          unfocus();
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              if (isActionViewActive) ...[
+                const Divider(),
+                ActionView(
+                  controller: controller,
+                  focusNode: focusNode,
+                  docId: docId,
+                  onClose: unfocus,
+                ),
+              ],
+            ],
+          ),
+        ),
+        floatingActionButton: isActionViewActive
+            ? null
+            : FloatingActionButton(
+                onPressed: focus,
+                tooltip: 'Toggle Action View',
+                child: const Icon(Icons.keyboard_rounded),
+              ),
+      ),
+    );
+  }
+}
+
+class _HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _HomeAppBar({required this.text});
+
+  final String text;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: const Text('Kunlabori'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.copy_all_rounded),
+          onPressed: () async {
+            await Clipboard.setData(ClipboardData(text: text));
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('クリップボードにコピーされました: ${text.length} 文字'),
+                ),
+              );
+            }
+          },
+          tooltip: 'クリップボードにコピー',
+        ),
+        IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: () async {
+            await Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (context) => const SettingsPage(),
+              ),
+            );
+          },
+          tooltip: 'Settings',
+        ),
+      ],
+    );
+  }
+}
+
+class _CollaborativeTextCard extends ConsumerWidget {
+  const _CollaborativeTextCard({
+    required this.docId,
+    required this.text,
+    required this.isActionViewActive,
+    required this.onToggleActive,
+  });
+
+  final String docId;
+  final String text;
+  final bool isActionViewActive;
+  final VoidCallback onToggleActive;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final collaboratorIndexes = ref.watch(collaboratorIndexesProvider);
+
+    final useCase = ref.watch(documentUseCaseProvider);
+
     final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
       fontSize: 20,
       height: 1.5,
     );
 
-    void unfocus() {
-      focusNode.unfocus();
-      isActionViewActive.value = false;
-    }
-
-    void focus() {
-      focusNode.requestFocus();
-      isActionViewActive.value = true;
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kunlabori'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.copy_all_rounded),
-            onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: text.value));
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('クリップボードにコピーされました: ${text.value.length} 文字'),
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent) {
+          switch (event.logicalKey) {
+            case LogicalKeyboardKey.enter:
+              useCase.enter(id: docId);
+            case LogicalKeyboardKey.backspace:
+              useCase.backspace(id: docId);
+          }
+        }
+        return KeyEventResult.ignored;
+      },
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: CollaborativeSelectableText(
+            text,
+            textStyle: textStyle,
+            collaboratorSelections: collaboratorIndexes.entries
+                .map(
+                  (entry) => CollaboratorSelection(
+                    start: entry.value.start,
+                    end: entry.value.end,
+                    color: _colorFromAddress(entry.key),
+                    name: entry.key,
                   ),
-                );
-              }
-            },
-            tooltip: 'クリップボードにコピー',
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () async {
-              await Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (context) => const SettingsPage(),
-                ),
-              );
-            },
-            tooltip: 'Settings',
-          ),
-        ],
-      ),
-      body: SizedBox(
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Focus(
-                    onKeyEvent: (node, event) {
-                      if (event is KeyDownEvent) {
-                        switch (event.logicalKey) {
-                          case LogicalKeyboardKey.enter:
-                            useCase.enter(id: docId);
-                          case LogicalKeyboardKey.backspace:
-                            useCase.backspace(id: docId);
-                        }
-                      }
-                      return KeyEventResult.ignored;
-                    },
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: CollaborativeSelectableText(
-                          text.value,
-                          textStyle: textStyle,
-                          collaboratorSelections: collaboratorIndexes.entries
-                              .map(
-                                (entry) => CollaboratorSelection(
-                                  start: entry.value.start,
-                                  end: entry.value.end,
-                                  color: _colorFromAddress(entry.key),
-                                  name: entry.key,
-                                ),
-                              )
-                              .toList(),
-                          onTap: () {
-                            if (!isActionViewActive.value) {
-                              focus();
-                            } else {
-                              unfocus();
-                            }
-                          },
-                          onSelectionChanged: (selection, cause) {
-                            // debugPrint('Selection changed: $selection');
-                            ref
-                                .read(collaboratorIndexesProvider.notifier)
-                                .select(
-                                  docId,
-                                  Selection(
-                                    start: selection.start,
-                                    end: selection.end,
-                                  ),
-                                );
-                          },
-                        ),
-                      ),
+                )
+                .toList(),
+            onTap: onToggleActive,
+            onSelectionChanged: (selection, cause) {
+              ref
+                  .read(collaboratorIndexesProvider.notifier)
+                  .select(
+                    docId,
+                    Selection(
+                      start: selection.start,
+                      end: selection.end,
                     ),
-                  ),
-                ),
-              ),
-            ),
-            if (isActionViewActive.value) ...[
-              const Divider(),
-              ActionView(
-                controller: controller,
-                focusNode: focusNode,
-                docId: docId,
-                onClose: unfocus,
-              ),
-            ],
-          ],
+                  );
+            },
+          ),
         ),
       ),
-      floatingActionButton: !isActionViewActive.value
-          ? FloatingActionButton(
-              onPressed: () {
-                isActionViewActive.value = true;
-              },
-              tooltip: 'Toggle Action View',
-              child: const Icon(Icons.keyboard_rounded),
-            )
-          : null,
     );
   }
+}
 
-  Color _colorFromAddress(String addr) {
-    return Colors.primaries[addr.codeUnits.fold(0, (a, b) => a + b) %
-        Colors.primaries.length];
+class _EventListeners extends HookConsumerWidget {
+  const _EventListeners({
+    required this.docId,
+    required this.text,
+    required this.child,
+  });
+
+  final String docId;
+  final ValueNotifier<String> text;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref
+      ..listen(eventProvider, (previous, next) {
+        final notifier = ref.read(collaboratorIndexesProvider.notifier);
+
+        switch (next) {
+          case ClientEventSelected(:final selection, :final addr):
+            notifier.update(
+              addr,
+              selection,
+            );
+          case ClientEventDisconnected(:final addr):
+          case ClientEventUnselected(:final addr):
+            notifier.remove(addr);
+          case ClientEventText():
+            text.value = next.text;
+          default:
+            break;
+        }
+      })
+      ..listen(messagesProvider, (previous, next) {
+        switch (next) {
+          case AsyncData(:final value):
+            ref.read(websocketEventHandlerProvider).handle(docId, value);
+          case AsyncError(:final error, :final stackTrace):
+            debugPrint('WebSocket error: $error');
+            debugPrintStack(stackTrace: stackTrace);
+          case AsyncLoading():
+            debugPrint('WebSocket loading...');
+        }
+      });
+
+    return child;
   }
+}
+
+Color _colorFromAddress(String addr) {
+  return Colors.primaries[addr.codeUnits.fold(0, (a, b) => a + b) %
+      Colors.primaries.length];
 }
