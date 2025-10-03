@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+@immutable
 class CollaboratorSelection {
-  CollaboratorSelection({
+  const CollaboratorSelection({
     required this.start,
     required this.end,
     required this.color,
@@ -20,10 +23,6 @@ class CollaborativeSelectableText extends HookWidget {
     required this.collaboratorSelections,
     required this.textStyle,
     super.key,
-    this.caretWidth = 2.0,
-    this.caretBlinkDuration = const Duration(milliseconds: 500),
-    this.cursorMoveAnimDuration = const Duration(milliseconds: 100),
-    this.selectionOpacity = 0.28,
     this.onTap,
     this.onSelectionChanged,
   });
@@ -32,18 +31,13 @@ class CollaborativeSelectableText extends HookWidget {
   final TextStyle textStyle;
   final List<CollaboratorSelection> collaboratorSelections;
 
-  final double caretWidth;
-  final Duration caretBlinkDuration;
-  final Duration cursorMoveAnimDuration;
-  final double selectionOpacity;
-
   final VoidCallback? onTap;
   final SelectionChangedCallback? onSelectionChanged;
 
   @override
   Widget build(BuildContext context) {
     final blinkController = useAnimationController(
-      duration: caretBlinkDuration,
+      duration: const Duration(milliseconds: 500),
     );
 
     final blinkOpacity = useMemoized(
@@ -53,9 +47,8 @@ class CollaborativeSelectableText extends HookWidget {
       [blinkController],
     );
 
-    // アニメーションの開始
     useEffect(() {
-      blinkController.repeat(reverse: true);
+      unawaited(blinkController.repeat(reverse: true));
       return null;
     }, [blinkController]);
 
@@ -63,28 +56,41 @@ class CollaborativeSelectableText extends HookWidget {
     final textPainterCache = useRef<TextPainter?>(null);
     final lastMaxWidth = useRef<double?>(null);
 
-    TextPainter obtainTextPainter(TextStyle style, double maxWidth) {
-      if (textPainterCache.value != null && lastMaxWidth.value == maxWidth) {
-        return textPainterCache.value!;
+    /// TextPainterを取得または作成（キャッシュあり）
+    TextPainter getOrCreateTextPainter(TextStyle style, double maxWidth) {
+      final cachedPainter = textPainterCache.value;
+      final cachedWidth = lastMaxWidth.value;
+
+      // キャッシュが有効な場合は再利用
+      if (cachedPainter != null &&
+          cachedWidth != null &&
+          (cachedWidth - maxWidth).abs() < 0.001) {
+        return cachedPainter;
       }
+
+      // 新しいTextPainterを作成
       final painter = TextPainter(
         text: TextSpan(text: text, style: style),
         textDirection: TextDirection.ltr,
       )..layout(maxWidth: maxWidth);
+
       textPainterCache.value = painter;
       lastMaxWidth.value = maxWidth;
       return painter;
     }
 
-    // textが変更された時にキャッシュをクリア
     useEffect(() {
       textPainterCache.value = null;
+      lastMaxWidth.value = null;
       return null;
-    }, [text]);
+    }, [text, textStyle]);
 
-    List<Widget> buildRemoteSelections(TextPainter textPainter) {
+    List<Widget> buildSelections(
+      TextPainter textPainter,
+      List<CollaboratorSelection> selections,
+    ) {
       final widgets = <Widget>[];
-      for (final selection in collaboratorSelections) {
+      for (final selection in selections) {
         final boxes = textPainter.getBoxesForSelection(
           TextSelection(
             baseOffset: selection.start,
@@ -101,7 +107,6 @@ class CollaborativeSelectableText extends HookWidget {
               height: rect.height,
               child: _SelectionView(
                 selection: selection,
-                selectionOpacity: selectionOpacity,
               ),
             ),
           );
@@ -110,22 +115,24 @@ class CollaborativeSelectableText extends HookWidget {
       return widgets;
     }
 
-    List<Widget> buildRemoteCursors(TextPainter textPainter) {
+    List<Widget> buildCursors(
+      TextPainter textPainter,
+      List<CollaboratorSelection> selections,
+    ) {
       final widgets = <Widget>[];
-      for (final selection in collaboratorSelections) {
+      for (final selection in selections) {
         final caretOffset = textPainter.getOffsetForCaret(
           TextPosition(offset: selection.start),
           Rect.zero,
         );
         widgets.add(
           AnimatedPositioned(
-            duration: cursorMoveAnimDuration,
+            duration: const Duration(milliseconds: 100),
             curve: Curves.easeOut,
             left: caretOffset.dx,
             top: caretOffset.dy,
             child: _CursorView(
               blinkOpacity: blinkOpacity,
-              caretWidth: caretWidth,
               selection: selection,
               height: textPainter.preferredLineHeight,
             ),
@@ -137,7 +144,17 @@ class CollaborativeSelectableText extends HookWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final painter = obtainTextPainter(textStyle, constraints.maxWidth);
+        final painter = getOrCreateTextPainter(textStyle, constraints.maxWidth);
+
+        final remoteSelections = buildSelections(
+          painter,
+          collaboratorSelections,
+        );
+        final remoteCursors = buildCursors(
+          painter,
+          collaboratorSelections,
+        );
+
         return Stack(
           clipBehavior: Clip.none,
           children: [
@@ -147,8 +164,8 @@ class CollaborativeSelectableText extends HookWidget {
               onTap: onTap,
               onSelectionChanged: onSelectionChanged,
             ),
-            ...buildRemoteSelections(painter),
-            ...buildRemoteCursors(painter),
+            ...remoteSelections,
+            ...remoteCursors,
           ],
         );
       },
@@ -159,18 +176,16 @@ class CollaborativeSelectableText extends HookWidget {
 class _SelectionView extends StatelessWidget {
   const _SelectionView({
     required this.selection,
-    required this.selectionOpacity,
   });
 
   final CollaboratorSelection selection;
-  final double selectionOpacity;
 
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: selection.color.withValues(alpha: selectionOpacity),
+          color: selection.color.withValues(alpha: 0.28),
           borderRadius: BorderRadius.circular(3),
         ),
       ),
@@ -181,13 +196,11 @@ class _SelectionView extends StatelessWidget {
 class _CursorView extends StatelessWidget {
   const _CursorView({
     required this.blinkOpacity,
-    required this.caretWidth,
     required this.selection,
     required this.height,
   });
 
   final Animation<double> blinkOpacity;
-  final double caretWidth;
   final CollaboratorSelection selection;
   final double height;
 
@@ -202,7 +215,7 @@ class _CursorView extends StatelessWidget {
             builder: (context, child) => Opacity(
               opacity: blinkOpacity.value,
               child: Container(
-                width: caretWidth,
+                width: 2,
                 height: height,
                 color: selection.color,
               ),
@@ -218,6 +231,7 @@ class _CursorView extends StatelessWidget {
 
 class _LabelView extends HookWidget {
   const _LabelView({required this.userId, required this.color});
+
   final String userId;
   final Color color;
 
@@ -226,7 +240,6 @@ class _LabelView extends HookWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // シンプル化：三角（Tail）を廃止してラベル本体のみ
         DecoratedBox(
           decoration: BoxDecoration(
             color: color,
