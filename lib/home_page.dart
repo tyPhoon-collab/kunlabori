@@ -169,55 +169,57 @@ class HomePage extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Focus(
-                  onKeyEvent: (node, event) {
-                    if (event is KeyDownEvent) {
-                      switch (event.logicalKey) {
-                        case LogicalKeyboardKey.enter:
-                          useCase.enter(id: docId);
-                        case LogicalKeyboardKey.backspace:
-                          useCase.backspace(id: docId);
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Focus(
+                    onKeyEvent: (node, event) {
+                      if (event is KeyDownEvent) {
+                        switch (event.logicalKey) {
+                          case LogicalKeyboardKey.enter:
+                            useCase.enter(id: docId);
+                          case LogicalKeyboardKey.backspace:
+                            useCase.backspace(id: docId);
+                        }
                       }
-                    }
-                    return KeyEventResult.ignored;
-                  },
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: CollaborativeSelectableText(
-                        text.value,
-                        textStyle: textStyle,
-                        collaboratorSelections: collaboratorIndexes.entries
-                            .map(
-                              (entry) => CollaboratorSelection(
-                                start: entry.value.start,
-                                end: entry.value.end,
-                                color: _colorFromAddress(entry.key),
-                                name: entry.key,
-                              ),
-                            )
-                            .toList(),
-                        onTap: () {
-                          if (!isActionViewActive.value) {
-                            focus();
-                          } else {
-                            unfocus();
-                          }
-                        },
-                        onSelectionChanged: (selection, cause) {
-                          // debugPrint('Selection changed: $selection');
-                          ref
-                              .read(collaboratorIndexesProvider.notifier)
-                              .select(
-                                docId,
-                                Selection(
-                                  start: selection.start,
-                                  end: selection.end,
+                      return KeyEventResult.ignored;
+                    },
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: CollaborativeSelectableText(
+                          text.value,
+                          textStyle: textStyle,
+                          collaboratorSelections: collaboratorIndexes.entries
+                              .map(
+                                (entry) => CollaboratorSelection(
+                                  start: entry.value.start,
+                                  end: entry.value.end,
+                                  color: _colorFromAddress(entry.key),
+                                  name: entry.key,
                                 ),
-                              );
-                        },
+                              )
+                              .toList(),
+                          onTap: () {
+                            if (!isActionViewActive.value) {
+                              focus();
+                            } else {
+                              unfocus();
+                            }
+                          },
+                          onSelectionChanged: (selection, cause) {
+                            // debugPrint('Selection changed: $selection');
+                            ref
+                                .read(collaboratorIndexesProvider.notifier)
+                                .select(
+                                  docId,
+                                  Selection(
+                                    start: selection.start,
+                                    end: selection.end,
+                                  ),
+                                );
+                          },
+                        ),
                       ),
                     ),
                   ),
