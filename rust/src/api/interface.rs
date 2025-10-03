@@ -7,8 +7,8 @@ use crate::{
 };
 
 #[flutter_rust_bridge::frb(sync)]
-pub fn create(id: String, stream_sink: StreamSink<Partial>) -> Result<(), String> {
-    create_document(id, stream_sink).map_err(|e| e.to_string())
+pub fn create(id: String, stream_sink: StreamSink<Partial>, exists_ok: bool) -> Result<(), String> {
+    create_document(id, stream_sink, exists_ok).map_err(|e| e.to_string())
 }
 
 #[flutter_rust_bridge::frb(sync)]

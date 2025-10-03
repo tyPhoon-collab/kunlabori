@@ -82,7 +82,10 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  Stream<Partial> crateApiInterfaceCreate({required String id});
+  Stream<Partial> crateApiInterfaceCreate({
+    required String id,
+    required bool existsOk,
+  });
 
   void crateApiInterfaceDelete({
     required String id,
@@ -127,7 +130,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  Stream<Partial> crateApiInterfaceCreate({required String id}) {
+  Stream<Partial> crateApiInterfaceCreate({
+    required String id,
+    required bool existsOk,
+  }) {
     final streamSink = RustStreamSink<Partial>();
     handler.executeSync(
       SyncTask(
@@ -135,6 +141,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(id, serializer);
           sse_encode_StreamSink_partial_Sse(streamSink, serializer);
+          sse_encode_bool(existsOk, serializer);
           return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 1)!;
         },
         codec: SseCodec(
@@ -142,7 +149,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_String,
         ),
         constMeta: kCrateApiInterfaceCreateConstMeta,
-        argValues: [id, streamSink],
+        argValues: [id, streamSink, existsOk],
         apiImpl: this,
       ),
     );
@@ -151,7 +158,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiInterfaceCreateConstMeta => const TaskConstMeta(
     debugName: "create",
-    argNames: ["id", "streamSink"],
+    argNames: ["id", "streamSink", "existsOk"],
   );
 
   @override

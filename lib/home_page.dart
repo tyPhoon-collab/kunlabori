@@ -94,7 +94,7 @@ class HomePage extends HookConsumerWidget {
 
     useEffect(() {
       final eventSubscription = rust_api
-          .create(id: docId)
+          .create(id: docId, existsOk: true)
           .listen(
             (partial) {
               // debugPrint('Stream partial: $partial');

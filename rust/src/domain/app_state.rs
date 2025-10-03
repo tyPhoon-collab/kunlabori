@@ -68,10 +68,19 @@ where
 pub fn create_document(
     id: String,
     stream_sink: crate::frb_generated::StreamSink<crate::api::model::Partial>,
+    exists_ok: bool,
 ) -> Result<(), DocumentError> {
     with_documents_mut(|documents| {
         if documents.contains_key(&id) {
-            return Err(DocumentError::DocumentAlreadyExists { id });
+            if exists_ok {
+                // Update stream_sink for existing document
+                if let Some(document) = documents.get_mut(&id) {
+                    document.update_stream_sink(stream_sink)?;
+                }
+                return Ok(());
+            } else {
+                return Err(DocumentError::DocumentAlreadyExists { id });
+            }
         }
         let document = Document::new(id.clone(), stream_sink)?;
         documents.insert(id, document);

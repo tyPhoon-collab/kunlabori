@@ -71,9 +71,11 @@ fn wire__crate__api__interface__create_impl(
                 crate::api::model::Partial,
                 flutter_rust_bridge::for_generated::SseCodec,
             >>::sse_decode(&mut deserializer);
+            let api_exists_ok = <bool>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, String>((move || {
-                let output_ok = crate::api::interface::create(api_id, api_stream_sink)?;
+                let output_ok =
+                    crate::api::interface::create(api_id, api_stream_sink, api_exists_ok)?;
                 Ok(output_ok)
             })())
         },

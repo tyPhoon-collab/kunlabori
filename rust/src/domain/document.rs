@@ -94,12 +94,10 @@ impl Document {
         doc.observe_update_v1(move |txn, event| {
             debug!("Update event received");
 
-            // Send update
             if let Err(e) = stream_sink.add(Partial::Update(event.update.clone())) {
                 error!("Failed to send update: {}", e);
             }
 
-            // Send current text
             if let Some(text) = txn.get_text(id.as_str()) {
                 let text_string = text.get_string(txn);
                 if let Err(e) = stream_sink.add(Partial::Text(text_string)) {
@@ -169,5 +167,28 @@ impl Document {
         let end_index = end.map(|e| e.index);
 
         (start_index, end_index)
+    }
+
+    pub fn update_stream_sink(
+        &mut self,
+        stream_sink: StreamSink<Partial>,
+    ) -> Result<(), DocumentError> {
+        // Create new subscriptions with new stream_sink
+        let text_subscription = Self::setup_text_observer(&self.text_ref, stream_sink.clone());
+        let update_subscription =
+            Self::setup_update_observer(&self.doc, self.id.clone(), stream_sink.clone())?;
+
+        stream_sink
+            .add(Partial::Text(
+                self.text_ref.get_string(&self.doc.transact()),
+            ))
+            .unwrap();
+
+        // Replace old subscriptions (they will be dropped automatically)
+        self._text_subscription = Box::new(text_subscription);
+        self._update_subscription = Box::new(update_subscription);
+        self._stream_sink = stream_sink;
+
+        Ok(())
     }
 }
