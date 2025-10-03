@@ -137,7 +137,7 @@ return moved(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String addr)?  connected,TResult Function( String addr)?  disconnected,TResult Function( Selection selection,  String addr)?  selected,TResult Function( String addr)?  unselected,TResult Function( String text)?  text,TResult Function( SimpleDelta delta)?  delta,TResult Function( Selection selection)?  moved,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String addr)?  connected,TResult Function( String addr)?  disconnected,TResult Function( Selection selection,  String addr)?  selected,TResult Function( String addr)?  unselected,TResult Function( String text)?  text,TResult Function( SimpleDelta delta)?  delta,TResult Function( Selection? selection)?  moved,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ClientEventInit() when init != null:
 return init();case ClientEventConnected() when connected != null:
@@ -165,7 +165,7 @@ return moved(_that.selection);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String addr)  connected,required TResult Function( String addr)  disconnected,required TResult Function( Selection selection,  String addr)  selected,required TResult Function( String addr)  unselected,required TResult Function( String text)  text,required TResult Function( SimpleDelta delta)  delta,required TResult Function( Selection selection)  moved,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String addr)  connected,required TResult Function( String addr)  disconnected,required TResult Function( Selection selection,  String addr)  selected,required TResult Function( String addr)  unselected,required TResult Function( String text)  text,required TResult Function( SimpleDelta delta)  delta,required TResult Function( Selection? selection)  moved,}) {final _that = this;
 switch (_that) {
 case ClientEventInit():
 return init();case ClientEventConnected():
@@ -189,7 +189,7 @@ return moved(_that.selection);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String addr)?  connected,TResult? Function( String addr)?  disconnected,TResult? Function( Selection selection,  String addr)?  selected,TResult? Function( String addr)?  unselected,TResult? Function( String text)?  text,TResult? Function( SimpleDelta delta)?  delta,TResult? Function( Selection selection)?  moved,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String addr)?  connected,TResult? Function( String addr)?  disconnected,TResult? Function( Selection selection,  String addr)?  selected,TResult? Function( String addr)?  unselected,TResult? Function( String text)?  text,TResult? Function( SimpleDelta delta)?  delta,TResult? Function( Selection? selection)?  moved,}) {final _that = this;
 switch (_that) {
 case ClientEventInit() when init != null:
 return init();case ClientEventConnected() when connected != null:
@@ -653,7 +653,7 @@ class ClientEventMoved implements ClientEvent {
   const ClientEventMoved({required this.selection});
   
 
- final  Selection selection;
+ final  Selection? selection;
 
 /// Create a copy of ClientEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -685,7 +685,7 @@ abstract mixin class $ClientEventMovedCopyWith<$Res> implements $ClientEventCopy
   factory $ClientEventMovedCopyWith(ClientEventMoved value, $Res Function(ClientEventMoved) _then) = _$ClientEventMovedCopyWithImpl;
 @useResult
 $Res call({
- Selection selection
+ Selection? selection
 });
 
 
@@ -702,10 +702,10 @@ class _$ClientEventMovedCopyWithImpl<$Res>
 
 /// Create a copy of ClientEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? selection = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? selection = freezed,}) {
   return _then(ClientEventMoved(
-selection: null == selection ? _self.selection : selection // ignore: cast_nullable_to_non_nullable
-as Selection,
+selection: freezed == selection ? _self.selection : selection // ignore: cast_nullable_to_non_nullable
+as Selection?,
   ));
 }
 

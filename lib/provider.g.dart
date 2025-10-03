@@ -296,6 +296,54 @@ final class DocumentControllerProvider
 String _$documentControllerHash() =>
     r'dba9b187eca87346ae35d8960f86bb16ead7b32b';
 
+@ProviderFor(selectionController)
+const selectionControllerProvider = SelectionControllerProvider._();
+
+final class SelectionControllerProvider
+    extends
+        $FunctionalProvider<
+          SelectionController,
+          SelectionController,
+          SelectionController
+        >
+    with $Provider<SelectionController> {
+  const SelectionControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectionControllerProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$selectionControllerHash();
+
+  @$internal
+  @override
+  $ProviderElement<SelectionController> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  SelectionController create(Ref ref) {
+    return selectionController(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SelectionController value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SelectionController>(value),
+    );
+  }
+}
+
+String _$selectionControllerHash() =>
+    r'839955bd4a34a0a542138d1e41840203118b9363';
+
 @ProviderFor(Event)
 const eventProvider = EventProvider._();
 

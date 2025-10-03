@@ -10,8 +10,8 @@ class DocumentUseCase {
     documentControllerProvider,
   );
 
-  int start() => ref.read(partialEventHandlerProvider).start ?? 0;
-  int length() => ref.read(partialEventHandlerProvider).length ?? 0;
+  int start() => ref.read(selectionControllerProvider).start ?? 0;
+  int length() => ref.read(selectionControllerProvider).length ?? 0;
 
   void insert({
     required String id,

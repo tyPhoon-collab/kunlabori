@@ -42,7 +42,7 @@ final class CollaboratorIndexesProvider
 }
 
 String _$collaboratorIndexesHash() =>
-    r'e0c366b8c388073d09782f84e3cda387bb6ab147';
+    r'122d239730e74d4dd71ca726f98f4eff3cff80b7';
 
 abstract class _$CollaboratorIndexes extends $Notifier<Map<String, Selection>> {
   Map<String, Selection> build();

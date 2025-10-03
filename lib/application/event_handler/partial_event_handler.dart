@@ -13,18 +13,9 @@ final class PartialEventHandler {
 
   final Send _send;
   final Sink _sink;
-  Selection? _selection;
 
-  int? get start => _selection?.start;
-  int? get end => _selection?.end;
-  int? get length =>
-      (_selection != null) ? _selection!.end - _selection!.start : null;
-
-  void setSelection(String id, Selection selection) {
-    _selection = selection;
-    rust_api.setSelection(id: id, start: selection.start, end: selection.end);
-    _send(SendMessage.selection(start: selection.start, end: selection.end));
-  }
+  int? _start;
+  int? _end;
 
   void handle(String id, Partial partial) {
     final action = switch (partial) {
@@ -40,18 +31,36 @@ final class PartialEventHandler {
         final start = stickySelection.$1;
         final end = stickySelection.$2;
 
-        if (_selection case final selection?
-            when selection.start != start || selection.end != end) {
+        if (_start != start || _end != end) {
           switch ((start, end)) {
             case (null, null):
-              _selection = null;
-              _send(const SendMessage.unselect());
+              _start = null;
+              _end = null;
+              _sink(const ClientEvent.moved(selection: null));
             case (final s?, null):
-              setSelection(id, Selection(start: s, end: s));
+              _start = s;
+              _end = s;
+              _sink(
+                ClientEvent.moved(
+                  selection: Selection(start: s, end: s),
+                ),
+              );
             case (null, final e?):
-              setSelection(id, Selection(start: e, end: e));
+              _start = e;
+              _end = e;
+              _sink(
+                ClientEvent.moved(
+                  selection: Selection(start: e, end: e),
+                ),
+              );
             case (final s?, final e?):
-              setSelection(id, Selection(start: s, end: e));
+              _start = s;
+              _end = e;
+              _sink(
+                ClientEvent.moved(
+                  selection: Selection(start: s, end: e),
+                ),
+              );
           }
         }
       },

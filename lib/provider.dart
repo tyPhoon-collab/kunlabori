@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:kunlabori/application/controller/document_controller.dart';
+import 'package:kunlabori/application/controller/selection_controller.dart';
 import 'package:kunlabori/application/event_handler/partial_event_handler.dart';
 import 'package:kunlabori/application/event_handler/websocket_event_handler.dart';
 import 'package:kunlabori/domain/model/client_event.dart';
@@ -66,6 +67,13 @@ PartialEventHandler partialEventHandler(Ref ref) {
 @Riverpod(keepAlive: true)
 DocumentController documentController(Ref ref) {
   return DocumentController(ref);
+}
+
+@Riverpod(keepAlive: true)
+SelectionController selectionController(Ref ref) {
+  return SelectionController(
+    send: ref.watch(_sendProvider),
+  );
 }
 
 @Riverpod(keepAlive: true)

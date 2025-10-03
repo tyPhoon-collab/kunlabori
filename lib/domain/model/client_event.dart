@@ -48,6 +48,6 @@ sealed class ClientEvent with _$ClientEvent {
       ClientEventDelta;
 
   /// 更新によりカーソルが移動した
-  const factory ClientEvent.moved({required Selection selection}) =
+  const factory ClientEvent.moved({required Selection? selection}) =
       ClientEventMoved;
 }

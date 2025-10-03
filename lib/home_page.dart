@@ -33,16 +33,20 @@ class CollaboratorIndexes extends _$CollaboratorIndexes {
     }..remove(addr);
   }
 
-  void select(String id, Selection selection) {
-    update(
-      'you',
-      Selection(
-        start: selection.start,
-        end: selection.end,
-      ),
-    );
+  void select(String id, Selection? selection) {
+    if (selection == null) {
+      remove('you');
+    } else {
+      update(
+        'you',
+        Selection(
+          start: selection.start,
+          end: selection.end,
+        ),
+      );
+    }
 
-    ref.read(partialEventHandlerProvider).setSelection(id, selection);
+    ref.read(selectionControllerProvider).update(id, selection);
   }
 }
 
@@ -329,6 +333,10 @@ class _EventListeners extends HookConsumerWidget {
             notifier.remove(addr);
           case ClientEventText():
             text.value = next.text;
+          case ClientEventMoved(:final selection):
+            ref
+                .read(collaboratorIndexesProvider.notifier)
+                .select(docId, selection);
           default:
             break;
         }
