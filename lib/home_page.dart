@@ -60,6 +60,29 @@ class _IsActionViewActive extends _$IsActionViewActive {
   void deactivate() => state = false;
 }
 
+@riverpod
+class FontSize extends _$FontSize {
+  static const _minFontSize = 10.0;
+  static const _maxFontSize = 48.0;
+  static const _defaultFontSize = 20.0;
+
+  @override
+  double build() => _defaultFontSize;
+
+  void update(double size) {
+    state = size.clamp(_minFontSize, _maxFontSize);
+  }
+
+  void reset() {
+    state = _defaultFontSize;
+  }
+
+  void scale(double scaleFactor) {
+    final newSize = state * scaleFactor;
+    update(newSize);
+  }
+}
+
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
 
@@ -193,7 +216,7 @@ class HomePage extends HookConsumerWidget {
   }
 }
 
-class _HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
+class _HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const _HomeAppBar({required this.text});
 
   final String text;
@@ -202,10 +225,33 @@ class _HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final fontSize = ref.watch(fontSizeProvider);
+
     return AppBar(
       title: const Text('Kunlabori'),
       actions: [
+        IconButton(
+          icon: const Icon(Icons.zoom_out_rounded),
+          onPressed: () {
+            ref.read(fontSizeProvider.notifier).scale(0.9);
+          },
+          tooltip: 'フォントサイズを縮小',
+        ),
+        IconButton(
+          icon: const Icon(Icons.format_size_rounded),
+          onPressed: () {
+            ref.read(fontSizeProvider.notifier).reset();
+          },
+          tooltip: 'フォントサイズをリセット (${fontSize.toStringAsFixed(0)})',
+        ),
+        IconButton(
+          icon: const Icon(Icons.zoom_in_rounded),
+          onPressed: () {
+            ref.read(fontSizeProvider.notifier).scale(1.1);
+          },
+          tooltip: 'フォントサイズを拡大',
+        ),
         IconButton(
           icon: const Icon(Icons.copy_all_rounded),
           onPressed: () async {
@@ -252,11 +298,11 @@ class _CollaborativeTextCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collaboratorIndexes = ref.watch(collaboratorIndexesProvider);
-
     final useCase = ref.watch(documentUseCaseProvider);
+    final fontSize = ref.watch(fontSizeProvider);
 
     final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
-      fontSize: 20,
+      fontSize: fontSize,
       height: 1.5,
     );
 
