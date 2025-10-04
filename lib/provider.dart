@@ -25,6 +25,16 @@ class SocketUrl extends _$SocketUrl {
 }
 
 @Riverpod(keepAlive: true)
+class SelectedFont extends _$SelectedFont {
+  @override
+  String build() => 'MPLUSRounded1c';
+
+  //
+  // ignore: use_setters_to_change_properties
+  void setFont(String fontFamily) => state = fontFamily;
+}
+
+@Riverpod(keepAlive: true)
 class Socket extends _$Socket {
   @override
   WebSocket build() {

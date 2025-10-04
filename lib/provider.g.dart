@@ -61,6 +61,59 @@ abstract class _$SocketUrl extends $Notifier<String> {
   }
 }
 
+@ProviderFor(SelectedFont)
+const selectedFontProvider = SelectedFontProvider._();
+
+final class SelectedFontProvider
+    extends $NotifierProvider<SelectedFont, String> {
+  const SelectedFontProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectedFontProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$selectedFontHash();
+
+  @$internal
+  @override
+  SelectedFont create() => SelectedFont();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String>(value),
+    );
+  }
+}
+
+String _$selectedFontHash() => r'd7b3462b6a2ad18df2be60feb1ab8a8d3616bec0';
+
+abstract class _$SelectedFont extends $Notifier<String> {
+  String build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<String, String>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String, String>,
+              String,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
 @ProviderFor(Socket)
 const socketProvider = SocketProvider._();
 

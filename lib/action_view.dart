@@ -54,13 +54,10 @@ class _Body extends ConsumerWidget {
         children: [
           TextField(
             controller: controller,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'カーソル位置に挿入するテキスト',
               hintText: '入力してください',
-              prefixIcon: const Icon(Icons.text_fields_rounded, size: 20),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+              prefixIcon: Icon(Icons.text_fields_rounded, size: 20),
             ),
             focusNode: focusNode,
             textInputAction: TextInputAction.done,
