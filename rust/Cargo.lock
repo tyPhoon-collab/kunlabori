@@ -711,6 +711,7 @@ name = "rust_lib_kunlabori"
 version = "0.1.0"
 dependencies = [
  "flutter_rust_bridge",
+ "js-sys",
  "log",
  "serde_json",
  "thiserror",

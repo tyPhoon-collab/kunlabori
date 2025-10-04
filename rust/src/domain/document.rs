@@ -5,13 +5,13 @@ use yrs::{
     types::Delta,
     undo::UndoManager,
     updates::{decoder::Decode, encoder::Encode},
-    Assoc, Doc, GetString, IndexedSequence, Observable, OffsetKind, Out, ReadTxn, StateVector,
-    StickyIndex, Subscription, Text, TextRef, Transact, Update,
+    Assoc, Doc, GetString, IndexedSequence, Observable, Out, ReadTxn, StateVector, StickyIndex,
+    Subscription, Text, TextRef, Transact, Update,
 };
 
 use crate::{
     api::model::{Partial, SimpleDelta},
-    domain::error::DocumentError,
+    domain::{document_config, error::DocumentError},
     frb_generated::StreamSink,
 };
 
@@ -32,16 +32,13 @@ pub struct Document {
 
 impl Document {
     pub fn new(id: String, stream_sink: StreamSink<Partial>) -> Result<Self, DocumentError> {
-        let doc: Arc<Doc> = Arc::new(Doc::with_options(yrs::doc::Options {
-            offset_kind: OffsetKind::Utf16,
-            ..yrs::doc::Options::default()
-        }));
+        let doc: Arc<Doc> = Arc::new(Doc::with_options(document_config::default_doc_options()));
         let text_ref = doc.get_or_insert_text(id.clone());
 
         let mut undo_manager = UndoManager::<()>::with_scope_and_options(
             &doc,
             &text_ref,
-            yrs::undo::Options::default(),
+            document_config::default_undo_options(),
         );
         undo_manager.include_origin(doc.client_id());
 
