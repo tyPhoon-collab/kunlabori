@@ -19,6 +19,8 @@ class SocketUrl extends _$SocketUrl {
       ? 'https://neighbouring-kass-typhoon-07a541cd.koyeb.app/'
       : 'ws://localhost:8080';
 
+  //
+  // ignore: use_setters_to_change_properties
   void setUrl(String value) => state = value;
 }
 
@@ -81,6 +83,8 @@ class Event extends _$Event {
   @override
   ClientEvent build() => const ClientEventInit();
 
+  //
+  // ignore: use_setters_to_change_properties
   void add(ClientEvent event) => state = event;
 }
 

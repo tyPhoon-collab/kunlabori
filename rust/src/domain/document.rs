@@ -3,9 +3,10 @@ use std::sync::Arc;
 use log::{debug, error};
 use yrs::{
     types::Delta,
+    undo::UndoManager,
     updates::{decoder::Decode, encoder::Encode},
-    Assoc, Doc, GetString, IndexedSequence, Observable, OffsetKind, Options, Out, ReadTxn,
-    StateVector, StickyIndex, Subscription, Text, TextRef, Transact, Update,
+    Assoc, Doc, GetString, IndexedSequence, Observable, OffsetKind, Out, ReadTxn, StateVector,
+    StickyIndex, Subscription, Text, TextRef, Transact, Update,
 };
 
 use crate::{
@@ -15,13 +16,13 @@ use crate::{
 };
 
 // Origin keys used for tagging transactions
-const ORIGIN_LOCAL: &str = "local";
 const ORIGIN_REMOTE: &str = "remote";
 
 pub struct Document {
     pub id: String,
     doc: Arc<Doc>,
-    text_ref: Arc<TextRef>,
+    text_ref: TextRef,
+    undo_manager: UndoManager<()>,
     start: Option<StickyIndex>,
     end: Option<StickyIndex>,
     _stream_sink: StreamSink<Partial>,
@@ -31,11 +32,18 @@ pub struct Document {
 
 impl Document {
     pub fn new(id: String, stream_sink: StreamSink<Partial>) -> Result<Self, DocumentError> {
-        let doc = Arc::new(Doc::with_options(Options {
+        let doc: Arc<Doc> = Arc::new(Doc::with_options(yrs::doc::Options {
             offset_kind: OffsetKind::Utf16,
-            ..Options::default()
+            ..yrs::doc::Options::default()
         }));
-        let text_ref = Arc::new(doc.get_or_insert_text(id.clone()));
+        let text_ref = doc.get_or_insert_text(id.clone());
+
+        let mut undo_manager = UndoManager::<()>::with_scope_and_options(
+            &doc,
+            &text_ref,
+            yrs::undo::Options::default(),
+        );
+        undo_manager.include_origin(doc.client_id());
 
         let text_subscription = Self::setup_text_observer(&text_ref, stream_sink.clone());
         let update_subscription =
@@ -45,9 +53,10 @@ impl Document {
             id,
             doc,
             text_ref,
-            _stream_sink: stream_sink,
+            undo_manager,
             start: None,
             end: None,
+            _stream_sink: stream_sink,
             _text_subscription: Box::new(text_subscription),
             _update_subscription: Box::new(update_subscription),
         })
@@ -113,7 +122,7 @@ impl Document {
     // Core document operations
     pub fn insert(&mut self, position: u32, text: &str) -> Result<(), DocumentError> {
         self.text_ref.insert(
-            &mut self.doc.transact_mut_with(ORIGIN_LOCAL),
+            &mut self.doc.transact_mut_with(self.doc.client_id()),
             position,
             text,
         );
@@ -122,7 +131,7 @@ impl Document {
 
     pub fn delete(&mut self, position: u32, delete_count: u32) -> Result<(), DocumentError> {
         self.text_ref.remove_range(
-            &mut self.doc.transact_mut_with(ORIGIN_LOCAL),
+            &mut self.doc.transact_mut_with(self.doc.client_id()),
             position,
             delete_count,
         );
@@ -151,8 +160,18 @@ impl Document {
         Ok(self.doc.transact().encode_diff_v1(&since))
     }
 
+    pub fn undo(&mut self) -> Result<(), DocumentError> {
+        self.undo_manager.undo_blocking();
+        Ok(())
+    }
+
+    pub fn redo(&mut self) -> Result<(), DocumentError> {
+        self.undo_manager.redo_blocking();
+        Ok(())
+    }
+
     pub fn set_selection(&mut self, start: u32, end: u32) {
-        let mut txn = self.doc.transact_mut_with(ORIGIN_LOCAL);
+        let mut txn = self.doc.transact_mut_with(self.doc.client_id());
         self.start = self.text_ref.sticky_index(&mut txn, start, Assoc::Before);
         self.end = self.text_ref.sticky_index(&mut txn, end, Assoc::After);
     }

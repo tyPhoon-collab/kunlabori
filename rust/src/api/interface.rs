@@ -1,4 +1,4 @@
-use log::info;
+use log::{debug, info};
 
 use crate::{
     api::model::Partial,
@@ -20,7 +20,7 @@ pub fn destroy(id: String) -> Result<(), String> {
 pub fn insert(id: String, position: u32, text: String) -> Result<(), String> {
     with_document_mut(&id, |document| {
         document.insert(position, &text)?;
-        info!("Inserted text into document with id {id}: pos={position}, text={text}");
+        debug!("Inserted text into document with id {id}: pos={position}, text={text}");
         Ok(())
     })
     .map_err(|e| e.to_string())
@@ -30,7 +30,7 @@ pub fn insert(id: String, position: u32, text: String) -> Result<(), String> {
 pub fn delete(id: String, position: u32, delete_count: u32) -> Result<(), String> {
     with_document_mut(&id, |document| {
         document.delete(position, delete_count)?;
-        info!("Deleted text from document with id {id}: pos={position}, del={delete_count}");
+        debug!("Deleted text from document with id {id}: pos={position}, del={delete_count}");
         Ok(())
     })
     .map_err(|e| e.to_string())
@@ -40,7 +40,7 @@ pub fn delete(id: String, position: u32, delete_count: u32) -> Result<(), String
 pub fn merge(id: String, update: Vec<u8>) -> Result<(), String> {
     with_document_mut(&id, |document| {
         document.merge(update)?;
-        info!("Merged update into document with id {id}");
+        debug!("Merged update into document with id {id}");
         Ok(())
     })
     .map_err(|e| e.to_string())
@@ -59,9 +59,30 @@ pub fn diff(id: String, since: Vec<u8>) -> Result<Vec<u8>, String> {
 }
 
 #[flutter_rust_bridge::frb(sync)]
+pub fn undo(id: String) -> Result<(), String> {
+    with_document_mut(&id, |document| {
+        document.undo()?;
+        debug!("Undid last operation in document with id {id}");
+        Ok(())
+    })
+    .map_err(|e| e.to_string())
+}
+
+#[flutter_rust_bridge::frb(sync)]
+pub fn redo(id: String) -> Result<(), String> {
+    with_document_mut(&id, |document| {
+        document.redo()?;
+        debug!("Redid last operation in document with id {id}");
+        Ok(())
+    })
+    .map_err(|e| e.to_string())
+}
+
+#[flutter_rust_bridge::frb(sync)]
 pub fn set_selection(id: String, start: u32, end: u32) -> Result<(), String> {
     with_document_mut(&id, |document| {
         document.set_selection(start, end);
+        debug!("Set selection in document with id {id}: start={start}, end={end}");
         Ok(())
     })
     .map_err(|e| e.to_string())

@@ -42,6 +42,12 @@ Uint8List stateVector({required String id}) =>
 Uint8List diff({required String id, required List<int> since}) =>
     RustLib.instance.api.crateApiInterfaceDiff(id: id, since: since);
 
+void undo({required String id}) =>
+    RustLib.instance.api.crateApiInterfaceUndo(id: id);
+
+void redo({required String id}) =>
+    RustLib.instance.api.crateApiInterfaceRedo(id: id);
+
 void setSelection({required String id, required int start, required int end}) =>
     RustLib.instance.api.crateApiInterfaceSetSelection(
       id: id,

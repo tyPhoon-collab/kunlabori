@@ -101,6 +101,20 @@ class _Body extends ConsumerWidget {
                 },
               ),
               _ActionButton(
+                icon: Icons.undo_rounded,
+                label: '元に戻す',
+                onPressed: () {
+                  useCase.undo(id: docId);
+                },
+              ),
+              _ActionButton(
+                icon: Icons.redo_rounded,
+                label: 'やり直し',
+                onPressed: () {
+                  useCase.redo(id: docId);
+                },
+              ),
+              _ActionButton(
                 icon: Icons.close_rounded,
                 label: '閉じる',
                 onPressed: onClose,

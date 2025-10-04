@@ -47,4 +47,16 @@ class DocumentUseCase {
     final pos = start();
     controller.insert(id: id, position: pos, text: '\n');
   }
+
+  void undo({
+    required String id,
+  }) {
+    controller.undo(id: id);
+  }
+
+  void redo({
+    required String id,
+  }) {
+    controller.redo(id: id);
+  }
 }

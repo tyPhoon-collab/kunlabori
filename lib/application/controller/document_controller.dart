@@ -31,4 +31,16 @@ class DocumentController {
         .read(collaboratorIndexesProvider.notifier)
         .select(id, Selection.same(position));
   }
+
+  void undo({
+    required String id,
+  }) {
+    rust_api.undo(id: id);
+  }
+
+  void redo({
+    required String id,
+  }) {
+    rust_api.redo(id: id);
+  }
 }
