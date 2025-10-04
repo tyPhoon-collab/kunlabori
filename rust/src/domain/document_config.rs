@@ -35,8 +35,10 @@ pub fn default_undo_options() -> UndoOptions {
         }
 
         UndoOptions {
+            capture_timeout_millis: 500,
+            tracked_origins: HashSet::new(),
+            capture_transaction: None,
             timestamp: Arc::new(WasmClock),
-            ..UndoOptions::default()
         }
     }
 }
