@@ -1,6 +1,7 @@
 [tools]
 flutter = "3.35.3"
 rust = "1.89.0"
+ruby = { version = "3.4.4", os = ["macos"] }
 "npm:serve" = "14.2.5"
 "npm:firebase-tools" = "14.17.0"
 "cargo:flutter_rust_bridge_codegen" = "2.11.1"
@@ -17,11 +18,11 @@ run = "flutter_rust_bridge_codegen generate"
 
 [tasks."dev:build"]
 description = "Run the Flutter build runner"
-run = "dart pub run build_runner build -d"
+run = "dart run build_runner build -d"
 
 [tasks."dev:watch"]
 description = "Run the Flutter build runner in watch mode"
-run = "dart pub run build_runner watch -d"
+run = "dart run build_runner watch -d"
 
 [tasks."web:serve"]
 description = "Serve the client build"
@@ -32,6 +33,10 @@ description = "Deploy the Flutter web app to Firebase Hosting"
 run = "firebase deploy --only hosting"
 
 [tasks."web:build"]
+description = "Build the Flutter web app"
+run = "flutter_rust_bridge_codegen build-web"
+
+[tasks."web:build-release"]
 description = "Build the Flutter web app"
 run = [
     "flutter_rust_bridge_codegen build-web --release",
