@@ -7,14 +7,12 @@ class ActionView extends ConsumerWidget {
     required this.controller,
     required this.focusNode,
     required this.docId,
-    this.onClose,
     super.key,
   });
 
   final TextEditingController controller;
   final FocusNode focusNode;
   final String docId;
-  final VoidCallback? onClose;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +21,6 @@ class ActionView extends ConsumerWidget {
         controller: controller,
         focusNode: focusNode,
         docId: docId,
-        onClose: onClose,
       ),
     );
   }
@@ -34,22 +31,21 @@ class _Body extends ConsumerWidget {
     required this.controller,
     required this.focusNode,
     required this.docId,
-    this.onClose,
   });
 
   final TextEditingController controller;
   final FocusNode focusNode;
   final String docId;
-  final VoidCallback? onClose;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final useCase = ref.read(documentUseCaseProvider);
 
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 12,
         children: [
           TextField(
@@ -69,8 +65,10 @@ class _Body extends ConsumerWidget {
               }
             },
           ),
-          OverflowBar(
-            alignment: MainAxisAlignment.spaceEvenly,
+          Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            spacing: 4,
+            runSpacing: 4,
             children: [
               _ActionButton(
                 icon: Icons.add_rounded,
@@ -111,11 +109,6 @@ class _Body extends ConsumerWidget {
                   useCase.redo(id: docId);
                 },
               ),
-              _ActionButton(
-                icon: Icons.close_rounded,
-                label: '閉じる',
-                onPressed: onClose,
-              ),
             ],
           ),
         ],
@@ -139,7 +132,7 @@ class _ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton.filledTonal(
       onPressed: onPressed,
-      icon: Icon(icon, size: 24),
+      icon: Icon(icon, size: 20),
       tooltip: label,
     );
   }
