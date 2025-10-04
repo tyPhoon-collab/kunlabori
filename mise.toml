@@ -3,30 +3,35 @@ flutter = "3.35.3"
 rust = "1.89.0"
 "npm:serve" = "14.2.5"
 "npm:firebase-tools" = "14.17.0"
+"cargo:flutter_rust_bridge_codegen" = "2.11.1"
 
-[tasks."server:start"]
+[tasks."server:run"]
 description = "Start the WebSocket server"
 run = "cargo run"
 dir = "server"
 env = { RUST_LOG = "info", RUST_BACKTRACE = "1", PORT = "8080", HOST = "localhost" }
 
-[tasks."server:serve"]
-description = "Serve the client build"
-run = "serve build/web -c serve.json"
+[tasks."generate"]
+description = "Generate the Flutter Rust Bridge bindings"
+run = "flutter_rust_bridge_codegen generate"
 
-[tasks."client:build"]
+[tasks."dev:build"]
 description = "Run the Flutter build runner"
 run = "dart pub run build_runner build -d"
 
-[tasks."client:watch"]
+[tasks."dev:watch"]
 description = "Run the Flutter build runner in watch mode"
 run = "dart pub run build_runner watch -d"
 
-[tasks."client:deploy"]
+[tasks."web:serve"]
+description = "Serve the client build"
+run = "serve build/web -c serve.json"
+
+[tasks."web:deploy"]
 description = "Deploy the Flutter web app to Firebase Hosting"
 run = "firebase deploy --only hosting"
 
-[tasks."build:web"]
+[tasks."web:build"]
 description = "Build the Flutter web app"
 run = [
     "flutter_rust_bridge_codegen build-web --release",
