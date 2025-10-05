@@ -5,8 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kunlabori/action_view.dart';
 import 'package:kunlabori/collaborative_selectable_text.dart';
 import 'package:kunlabori/domain/model/client_event.dart';
+import 'package:kunlabori/home_drawer.dart';
 import 'package:kunlabori/provider.dart';
-import 'package:kunlabori/settings_page.dart';
 import 'package:kunlabori/src/rust/api/interface.dart' as rust_api;
 import 'package:kunlabori/use_case_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -62,19 +62,20 @@ class _IsActionViewActive extends _$IsActionViewActive {
 
 @riverpod
 class FontSize extends _$FontSize {
-  static const _minFontSize = 10.0;
-  static const _maxFontSize = 48.0;
-  static const _defaultFontSize = 20.0;
+  static const minFontSize = 10.0;
+  static const maxFontSize = 48.0;
+  static const double fontSizeRange = maxFontSize - minFontSize;
+  static const defaultFontSize = 20.0;
 
   @override
-  double build() => _defaultFontSize;
+  double build() => defaultFontSize;
 
   void update(double size) {
-    state = size.clamp(_minFontSize, _maxFontSize);
+    state = size.clamp(minFontSize, maxFontSize);
   }
 
   void reset() {
-    state = _defaultFontSize;
+    state = defaultFontSize;
   }
 
   void scale(double scaleFactor) {
@@ -165,7 +166,8 @@ class HomePage extends HookConsumerWidget {
       docId: docId,
       text: text,
       child: Scaffold(
-        appBar: _HomeAppBar(text: text.value),
+        appBar: AppBar(title: const Text('Kunlabori')),
+        drawer: HomeDrawer(text: text.value),
         body: SizedBox(
           width: double.infinity,
           child: Column(
@@ -212,72 +214,6 @@ class HomePage extends HookConsumerWidget {
                 child: const Icon(Icons.keyboard_rounded),
               ),
       ),
-    );
-  }
-}
-
-class _HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  const _HomeAppBar({required this.text});
-
-  final String text;
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final fontSize = ref.watch(fontSizeProvider);
-
-    return AppBar(
-      title: const Text('Kunlabori'),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.zoom_out_rounded),
-          onPressed: () {
-            ref.read(fontSizeProvider.notifier).scale(0.9);
-          },
-          tooltip: 'フォントサイズを縮小',
-        ),
-        IconButton(
-          icon: const Icon(Icons.format_size_rounded),
-          onPressed: () {
-            ref.read(fontSizeProvider.notifier).reset();
-          },
-          tooltip: 'フォントサイズをリセット (${fontSize.toStringAsFixed(0)})',
-        ),
-        IconButton(
-          icon: const Icon(Icons.zoom_in_rounded),
-          onPressed: () {
-            ref.read(fontSizeProvider.notifier).scale(1.1);
-          },
-          tooltip: 'フォントサイズを拡大',
-        ),
-        IconButton(
-          icon: const Icon(Icons.copy_all_rounded),
-          onPressed: () async {
-            await Clipboard.setData(ClipboardData(text: text));
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('クリップボードにコピーされました: ${text.length} 文字'),
-                ),
-              );
-            }
-          },
-          tooltip: 'クリップボードにコピー',
-        ),
-        IconButton(
-          icon: const Icon(Icons.settings),
-          onPressed: () async {
-            await Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (context) => const SettingsPage(),
-              ),
-            );
-          },
-          tooltip: 'Settings',
-        ),
-      ],
     );
   }
 }

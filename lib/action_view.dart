@@ -42,7 +42,7 @@ class _Body extends ConsumerWidget {
     final useCase = ref.read(documentUseCaseProvider);
 
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 4),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

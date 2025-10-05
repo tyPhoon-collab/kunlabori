@@ -149,7 +149,7 @@ final class FontSizeProvider extends $NotifierProvider<FontSize, double> {
   }
 }
 
-String _$fontSizeHash() => r'237e2bfbe9a8c79ffac2e608bdbbd5adbd232e6b';
+String _$fontSizeHash() => r'9b37496d4ef04f1fcc2a931dc38ad070058b1f48';
 
 abstract class _$FontSize extends $Notifier<double> {
   double build();
