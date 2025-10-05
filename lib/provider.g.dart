@@ -254,7 +254,7 @@ String _$websocketEventHandlerHash() =>
     r'da282ece055fbb2aba739c7189010c0e24645248';
 
 @ProviderFor(partialEventHandler)
-const partialEventHandlerProvider = PartialEventHandlerProvider._();
+const partialEventHandlerProvider = PartialEventHandlerFamily._();
 
 final class PartialEventHandlerProvider
     extends
@@ -264,19 +264,26 @@ final class PartialEventHandlerProvider
           PartialEventHandler
         >
     with $Provider<PartialEventHandler> {
-  const PartialEventHandlerProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'partialEventHandlerProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  const PartialEventHandlerProvider._({
+    required PartialEventHandlerFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'partialEventHandlerProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$partialEventHandlerHash();
+
+  @override
+  String toString() {
+    return r'partialEventHandlerProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
@@ -286,7 +293,8 @@ final class PartialEventHandlerProvider
 
   @override
   PartialEventHandler create(Ref ref) {
-    return partialEventHandler(ref);
+    final argument = this.argument as String;
+    return partialEventHandler(ref, argument);
   }
 
   /// {@macro riverpod.override_with_value}
@@ -296,13 +304,41 @@ final class PartialEventHandlerProvider
       providerOverride: $SyncValueProvider<PartialEventHandler>(value),
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PartialEventHandlerProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
 String _$partialEventHandlerHash() =>
-    r'a6eaf3f2e14466f435a8d75271b7c30a5b7b6c2a';
+    r'6e910d78d4098d918329f25b350a50ada1d46c20';
+
+final class PartialEventHandlerFamily extends $Family
+    with $FunctionalFamilyOverride<PartialEventHandler, String> {
+  const PartialEventHandlerFamily._()
+    : super(
+        retry: null,
+        name: r'partialEventHandlerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: false,
+      );
+
+  PartialEventHandlerProvider call(String id) =>
+      PartialEventHandlerProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'partialEventHandlerProvider';
+}
 
 @ProviderFor(documentController)
-const documentControllerProvider = DocumentControllerProvider._();
+const documentControllerProvider = DocumentControllerFamily._();
 
 final class DocumentControllerProvider
     extends
@@ -312,19 +348,26 @@ final class DocumentControllerProvider
           DocumentController
         >
     with $Provider<DocumentController> {
-  const DocumentControllerProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'documentControllerProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  const DocumentControllerProvider._({
+    required DocumentControllerFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'documentControllerProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$documentControllerHash();
+
+  @override
+  String toString() {
+    return r'documentControllerProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
@@ -334,7 +377,8 @@ final class DocumentControllerProvider
 
   @override
   DocumentController create(Ref ref) {
-    return documentController(ref);
+    final argument = this.argument as String;
+    return documentController(ref, argument);
   }
 
   /// {@macro riverpod.override_with_value}
@@ -344,58 +388,122 @@ final class DocumentControllerProvider
       providerOverride: $SyncValueProvider<DocumentController>(value),
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is DocumentControllerProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
 String _$documentControllerHash() =>
-    r'dba9b187eca87346ae35d8960f86bb16ead7b32b';
+    r'065610f4f3ab10bfed63be05571a6cf7e93f5c69';
+
+final class DocumentControllerFamily extends $Family
+    with $FunctionalFamilyOverride<DocumentController, String> {
+  const DocumentControllerFamily._()
+    : super(
+        retry: null,
+        name: r'documentControllerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: false,
+      );
+
+  DocumentControllerProvider call(String id) =>
+      DocumentControllerProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'documentControllerProvider';
+}
 
 @ProviderFor(selectionController)
-const selectionControllerProvider = SelectionControllerProvider._();
+const selectionControllerProvider = SelectionControllerFamily._();
 
 final class SelectionControllerProvider
     extends
         $FunctionalProvider<
-          SelectionController,
-          SelectionController,
-          SelectionController
+          Raw<SelectionController>,
+          Raw<SelectionController>,
+          Raw<SelectionController>
         >
-    with $Provider<SelectionController> {
-  const SelectionControllerProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'selectionControllerProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+    with $Provider<Raw<SelectionController>> {
+  const SelectionControllerProvider._({
+    required SelectionControllerFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'selectionControllerProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$selectionControllerHash();
 
+  @override
+  String toString() {
+    return r'selectionControllerProvider'
+        ''
+        '($argument)';
+  }
+
   @$internal
   @override
-  $ProviderElement<SelectionController> $createElement(
+  $ProviderElement<Raw<SelectionController>> $createElement(
     $ProviderPointer pointer,
   ) => $ProviderElement(pointer);
 
   @override
-  SelectionController create(Ref ref) {
-    return selectionController(ref);
+  Raw<SelectionController> create(Ref ref) {
+    final argument = this.argument as String;
+    return selectionController(ref, argument);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(SelectionController value) {
+  Override overrideWithValue(Raw<SelectionController> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<SelectionController>(value),
+      providerOverride: $SyncValueProvider<Raw<SelectionController>>(value),
     );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SelectionControllerProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
   }
 }
 
 String _$selectionControllerHash() =>
-    r'839955bd4a34a0a542138d1e41840203118b9363';
+    r'b9438c2a6edc0a54826ab7636e9ca35a5a876aaa';
+
+final class SelectionControllerFamily extends $Family
+    with $FunctionalFamilyOverride<Raw<SelectionController>, String> {
+  const SelectionControllerFamily._()
+    : super(
+        retry: null,
+        name: r'selectionControllerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: false,
+      );
+
+  SelectionControllerProvider call(String id) =>
+      SelectionControllerProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'selectionControllerProvider';
+}
 
 @ProviderFor(Event)
 const eventProvider = EventProvider._();

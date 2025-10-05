@@ -6,7 +6,7 @@ use yrs::{
     undo::UndoManager,
     updates::{decoder::Decode, encoder::Encode},
     Assoc, Doc, GetString, IndexedSequence, Observable, Out, ReadTxn, StateVector, StickyIndex,
-    Subscription, Text, TextRef, Transact, Update,
+    Subscription, Text, TextRef, Transact, TransactionMut, Update,
 };
 
 use crate::{
@@ -17,6 +17,10 @@ use crate::{
 
 // Origin keys used for tagging transactions
 const ORIGIN_REMOTE: &str = "remote";
+
+fn is_origin_remote(txn: &TransactionMut) -> bool {
+    matches!(txn.origin(), Some(o) if o.as_ref() == ORIGIN_REMOTE.as_bytes())
+}
 
 pub struct Document {
     pub id: String,
@@ -62,7 +66,7 @@ impl Document {
     fn setup_text_observer(text_ref: &TextRef, stream_sink: StreamSink<Partial>) -> Subscription {
         text_ref.observe(move |txn, event| {
             debug!("Text event received");
-            let remote = matches!(txn.origin(), Some(o) if o.as_ref() == ORIGIN_REMOTE.as_bytes());
+            let remote = is_origin_remote(txn);
             for delta in event.delta(txn).iter() {
                 let partial = match delta {
                     Delta::Inserted(value, _) => {
@@ -98,9 +102,13 @@ impl Document {
         stream_sink: StreamSink<Partial>,
     ) -> Result<Subscription, DocumentError> {
         doc.observe_update_v1(move |txn, event| {
-            debug!("Update event received");
+            let remote = is_origin_remote(txn);
+            debug!("Update event received, remote: {}", remote);
 
-            if let Err(e) = stream_sink.add(Partial::Update(event.update.clone())) {
+            if let Err(e) = stream_sink.add(Partial::Update {
+                bytes: event.update.clone(),
+                remote,
+            }) {
                 error!("Failed to send update: {}", e);
             }
 

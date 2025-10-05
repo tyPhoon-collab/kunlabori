@@ -11,5 +11,5 @@ pub enum SimpleDelta {
 pub enum Partial {
     Delta(SimpleDelta),
     Text(String),
-    Update(Vec<u8>),
+    Update { bytes: Vec<u8>, remote: bool },
 }

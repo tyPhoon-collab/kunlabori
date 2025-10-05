@@ -69,21 +69,24 @@ WebsocketEventHandler websocketEventHandler(Ref ref) {
 }
 
 @Riverpod(keepAlive: true)
-PartialEventHandler partialEventHandler(Ref ref) {
+PartialEventHandler partialEventHandler(Ref ref, String id) {
   return PartialEventHandler(
+    id: id,
     send: ref.watch(_sendProvider),
     sink: ref.watch(_sinkProvider),
+    selectionController: ref.watch(selectionControllerProvider(id)),
   );
 }
 
 @Riverpod(keepAlive: true)
-DocumentController documentController(Ref ref) {
-  return DocumentController(ref);
+DocumentController documentController(Ref ref, String id) {
+  return DocumentController(ref, id: id);
 }
 
 @Riverpod(keepAlive: true)
-SelectionController selectionController(Ref ref) {
+Raw<SelectionController> selectionController(Ref ref, String id) {
   return SelectionController(
+    id: id,
     send: ref.watch(_sendProvider),
   );
 }

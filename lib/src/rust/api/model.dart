@@ -20,9 +20,10 @@ sealed class Partial with _$Partial {
   const factory Partial.text(
     String field0,
   ) = Partial_Text;
-  const factory Partial.update(
-    Uint8List field0,
-  ) = Partial_Update;
+  const factory Partial.update({
+    required Uint8List bytes,
+    required bool remote,
+  }) = Partial_Update;
 }
 
 @freezed

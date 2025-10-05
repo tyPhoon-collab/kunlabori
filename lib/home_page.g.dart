@@ -42,7 +42,7 @@ final class CollaboratorIndexesProvider
 }
 
 String _$collaboratorIndexesHash() =>
-    r'122d239730e74d4dd71ca726f98f4eff3cff80b7';
+    r'2ebe98dfebc6279aaef7de502e40c96b8844b315';
 
 abstract class _$CollaboratorIndexes extends $Notifier<Map<String, Selection>> {
   Map<String, Selection> build();
@@ -149,7 +149,7 @@ final class FontSizeProvider extends $NotifierProvider<FontSize, double> {
   }
 }
 
-String _$fontSizeHash() => r'9b37496d4ef04f1fcc2a931dc38ad070058b1f48';
+String _$fontSizeHash() => r'8fa8191fa568fecc3c4b8fabb53c5b687c5d52c2';
 
 abstract class _$FontSize extends $Notifier<double> {
   double build();

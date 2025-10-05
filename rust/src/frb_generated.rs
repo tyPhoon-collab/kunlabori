@@ -497,8 +497,12 @@ impl SseDecode for crate::api::model::Partial {
                 return crate::api::model::Partial::Text(var_field0);
             }
             2 => {
-                let mut var_field0 = <Vec<u8>>::sse_decode(deserializer);
-                return crate::api::model::Partial::Update(var_field0);
+                let mut var_bytes = <Vec<u8>>::sse_decode(deserializer);
+                let mut var_remote = <bool>::sse_decode(deserializer);
+                return crate::api::model::Partial::Update {
+                    bytes: var_bytes,
+                    remote: var_remote,
+                };
             }
             _ => {
                 unimplemented!("");
@@ -627,9 +631,12 @@ impl flutter_rust_bridge::IntoDart for crate::api::model::Partial {
             crate::api::model::Partial::Text(field0) => {
                 [1.into_dart(), field0.into_into_dart().into_dart()].into_dart()
             }
-            crate::api::model::Partial::Update(field0) => {
-                [2.into_dart(), field0.into_into_dart().into_dart()].into_dart()
-            }
+            crate::api::model::Partial::Update { bytes, remote } => [
+                2.into_dart(),
+                bytes.into_into_dart().into_dart(),
+                remote.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
             _ => {
                 unimplemented!("");
             }
@@ -744,9 +751,10 @@ impl SseEncode for crate::api::model::Partial {
                 <i32>::sse_encode(1, serializer);
                 <String>::sse_encode(field0, serializer);
             }
-            crate::api::model::Partial::Update(field0) => {
+            crate::api::model::Partial::Update { bytes, remote } => {
                 <i32>::sse_encode(2, serializer);
-                <Vec<u8>>::sse_encode(field0, serializer);
+                <Vec<u8>>::sse_encode(bytes, serializer);
+                <bool>::sse_encode(remote, serializer);
             }
             _ => {
                 unimplemented!("");

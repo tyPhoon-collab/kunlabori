@@ -538,7 +538,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         );
       case 2:
         return Partial_Update(
-          dco_decode_list_prim_u_8_strict(raw[1]),
+          bytes: dco_decode_list_prim_u_8_strict(raw[1]),
+          remote: dco_decode_bool(raw[2]),
         );
       default:
         throw Exception("unreachable");
@@ -682,8 +683,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         var var_field0 = sse_decode_String(deserializer);
         return Partial_Text(var_field0);
       case 2:
-        var var_field0 = sse_decode_list_prim_u_8_strict(deserializer);
-        return Partial_Update(var_field0);
+        var var_bytes = sse_decode_list_prim_u_8_strict(deserializer);
+        var var_remote = sse_decode_bool(deserializer);
+        return Partial_Update(bytes: var_bytes, remote: var_remote);
       default:
         throw UnimplementedError('');
     }
@@ -840,9 +842,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case Partial_Text(field0: final field0):
         sse_encode_i_32(1, serializer);
         sse_encode_String(field0, serializer);
-      case Partial_Update(field0: final field0):
+      case Partial_Update(bytes: final bytes, remote: final remote):
         sse_encode_i_32(2, serializer);
-        sse_encode_list_prim_u_8_strict(field0, serializer);
+        sse_encode_list_prim_u_8_strict(bytes, serializer);
+        sse_encode_bool(remote, serializer);
     }
   }
 

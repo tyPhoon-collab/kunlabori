@@ -14,22 +14,22 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Partial {
 
- Object get field0;
+
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Partial&&const DeepCollectionEquality().equals(other.field0, field0));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Partial);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(field0));
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'Partial(field0: $field0)';
+  return 'Partial()';
 }
 
 
@@ -122,12 +122,12 @@ return update(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( SimpleDelta field0)?  delta,TResult Function( String field0)?  text,TResult Function( Uint8List field0)?  update,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( SimpleDelta field0)?  delta,TResult Function( String field0)?  text,TResult Function( Uint8List bytes,  bool remote)?  update,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case Partial_Delta() when delta != null:
 return delta(_that.field0);case Partial_Text() when text != null:
 return text(_that.field0);case Partial_Update() when update != null:
-return update(_that.field0);case _:
+return update(_that.bytes,_that.remote);case _:
   return orElse();
 
 }
@@ -145,12 +145,12 @@ return update(_that.field0);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( SimpleDelta field0)  delta,required TResult Function( String field0)  text,required TResult Function( Uint8List field0)  update,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( SimpleDelta field0)  delta,required TResult Function( String field0)  text,required TResult Function( Uint8List bytes,  bool remote)  update,}) {final _that = this;
 switch (_that) {
 case Partial_Delta():
 return delta(_that.field0);case Partial_Text():
 return text(_that.field0);case Partial_Update():
-return update(_that.field0);}
+return update(_that.bytes,_that.remote);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -164,12 +164,12 @@ return update(_that.field0);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( SimpleDelta field0)?  delta,TResult? Function( String field0)?  text,TResult? Function( Uint8List field0)?  update,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( SimpleDelta field0)?  delta,TResult? Function( String field0)?  text,TResult? Function( Uint8List bytes,  bool remote)?  update,}) {final _that = this;
 switch (_that) {
 case Partial_Delta() when delta != null:
 return delta(_that.field0);case Partial_Text() when text != null:
 return text(_that.field0);case Partial_Update() when update != null:
-return update(_that.field0);case _:
+return update(_that.bytes,_that.remote);case _:
   return null;
 
 }
@@ -184,7 +184,7 @@ class Partial_Delta extends Partial {
   const Partial_Delta(this.field0): super._();
   
 
-@override final  SimpleDelta field0;
+ final  SimpleDelta field0;
 
 /// Create a copy of Partial
 /// with the given fields replaced by the non-null parameter values.
@@ -259,7 +259,7 @@ class Partial_Text extends Partial {
   const Partial_Text(this.field0): super._();
   
 
-@override final  String field0;
+ final  String field0;
 
 /// Create a copy of Partial
 /// with the given fields replaced by the non-null parameter values.
@@ -322,10 +322,11 @@ as String,
 
 
 class Partial_Update extends Partial {
-  const Partial_Update(this.field0): super._();
+  const Partial_Update({required this.bytes, required this.remote}): super._();
   
 
-@override final  Uint8List field0;
+ final  Uint8List bytes;
+ final  bool remote;
 
 /// Create a copy of Partial
 /// with the given fields replaced by the non-null parameter values.
@@ -337,16 +338,16 @@ $Partial_UpdateCopyWith<Partial_Update> get copyWith => _$Partial_UpdateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Partial_Update&&const DeepCollectionEquality().equals(other.field0, field0));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Partial_Update&&const DeepCollectionEquality().equals(other.bytes, bytes)&&(identical(other.remote, remote) || other.remote == remote));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(field0));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(bytes),remote);
 
 @override
 String toString() {
-  return 'Partial.update(field0: $field0)';
+  return 'Partial.update(bytes: $bytes, remote: $remote)';
 }
 
 
@@ -357,7 +358,7 @@ abstract mixin class $Partial_UpdateCopyWith<$Res> implements $PartialCopyWith<$
   factory $Partial_UpdateCopyWith(Partial_Update value, $Res Function(Partial_Update) _then) = _$Partial_UpdateCopyWithImpl;
 @useResult
 $Res call({
- Uint8List field0
+ Uint8List bytes, bool remote
 });
 
 
@@ -374,10 +375,11 @@ class _$Partial_UpdateCopyWithImpl<$Res>
 
 /// Create a copy of Partial
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? field0 = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? bytes = null,Object? remote = null,}) {
   return _then(Partial_Update(
-null == field0 ? _self.field0 : field0 // ignore: cast_nullable_to_non_nullable
-as Uint8List,
+bytes: null == bytes ? _self.bytes : bytes // ignore: cast_nullable_to_non_nullable
+as Uint8List,remote: null == remote ? _self.remote : remote // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

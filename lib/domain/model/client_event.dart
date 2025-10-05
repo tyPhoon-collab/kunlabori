@@ -15,6 +15,14 @@ final class Selection {
 
   final int start;
   final int end;
+
+  @override
+  int get hashCode => Object.hash(start, end);
+
+  @override
+  bool operator ==(Object other) {
+    return other is Selection && other.start == start && other.end == end;
+  }
 }
 
 @freezed
@@ -46,8 +54,4 @@ sealed class ClientEvent with _$ClientEvent {
   /// テキストの一部が更新された
   const factory ClientEvent.delta({required SimpleDelta delta}) =
       ClientEventDelta;
-
-  /// 更新によりカーソルが移動した
-  const factory ClientEvent.moved({required Selection? selection}) =
-      ClientEventMoved;
 }

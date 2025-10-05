@@ -10,25 +10,32 @@ part of 'use_case_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(documentUseCase)
-const documentUseCaseProvider = DocumentUseCaseProvider._();
+const documentUseCaseProvider = DocumentUseCaseFamily._();
 
 final class DocumentUseCaseProvider
     extends
         $FunctionalProvider<DocumentUseCase, DocumentUseCase, DocumentUseCase>
     with $Provider<DocumentUseCase> {
-  const DocumentUseCaseProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'documentUseCaseProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  const DocumentUseCaseProvider._({
+    required DocumentUseCaseFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'documentUseCaseProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$documentUseCaseHash();
+
+  @override
+  String toString() {
+    return r'documentUseCaseProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
@@ -37,7 +44,8 @@ final class DocumentUseCaseProvider
 
   @override
   DocumentUseCase create(Ref ref) {
-    return documentUseCase(ref);
+    final argument = this.argument as String;
+    return documentUseCase(ref, argument);
   }
 
   /// {@macro riverpod.override_with_value}
@@ -47,6 +55,34 @@ final class DocumentUseCaseProvider
       providerOverride: $SyncValueProvider<DocumentUseCase>(value),
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is DocumentUseCaseProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
-String _$documentUseCaseHash() => r'033282b715acacfbb9671c86e6b96c8a123459a0';
+String _$documentUseCaseHash() => r'12285ad3370a8a931160b825d8f38ce6c6f61a7d';
+
+final class DocumentUseCaseFamily extends $Family
+    with $FunctionalFamilyOverride<DocumentUseCase, String> {
+  const DocumentUseCaseFamily._()
+    : super(
+        retry: null,
+        name: r'documentUseCaseProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: false,
+      );
+
+  DocumentUseCaseProvider call(String id) =>
+      DocumentUseCaseProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'documentUseCaseProvider';
+}

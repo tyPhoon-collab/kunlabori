@@ -31,22 +31,6 @@ class CollaboratorIndexes extends _$CollaboratorIndexes {
       ...state,
     }..remove(addr);
   }
-
-  void select(String id, Selection? selection) {
-    if (selection == null) {
-      remove('you');
-    } else {
-      update(
-        'you',
-        Selection(
-          start: selection.start,
-          end: selection.end,
-        ),
-      );
-    }
-
-    ref.read(selectionControllerProvider).update(id, selection);
-  }
 }
 
 @Riverpod(keepAlive: true)
@@ -95,13 +79,12 @@ class HomePage extends HookConsumerWidget {
     final controller = useTextEditingController();
 
     useEffect(() {
-      final documentController = ref.read(documentControllerProvider)
-        ..create(id: docId);
+      final documentController = ref.read(documentControllerProvider(docId))
+        ..create();
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref
-            .read(collaboratorIndexesProvider.notifier)
-            .select(docId, const Selection.zero());
+        ref.read(selectionControllerProvider(docId)).value =
+            const Selection.zero();
       });
 
       return documentController.dispose;
@@ -202,8 +185,9 @@ class _CollaborativeTextCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final selectionController = ref.watch(selectionControllerProvider(docId));
     final collaboratorIndexes = ref.watch(collaboratorIndexesProvider);
-    final useCase = ref.watch(documentUseCaseProvider);
+    final useCase = ref.watch(documentUseCaseProvider(docId));
     final fontSize = ref.watch(fontSizeProvider);
 
     final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
@@ -216,9 +200,9 @@ class _CollaborativeTextCard extends ConsumerWidget {
         if (event is KeyDownEvent) {
           switch (event.logicalKey) {
             case LogicalKeyboardKey.enter:
-              useCase.enter(id: docId);
+              useCase.enter();
             case LogicalKeyboardKey.backspace:
-              useCase.backspace(id: docId);
+              useCase.backspace();
           }
         }
         return KeyEventResult.ignored;
@@ -226,30 +210,38 @@ class _CollaborativeTextCard extends ConsumerWidget {
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: CollaborativeSelectableText(
-            text,
-            textStyle: textStyle,
-            collaboratorSelections: collaboratorIndexes.entries
-                .map(
-                  (entry) => CollaboratorSelection(
-                    start: entry.value.start,
-                    end: entry.value.end,
-                    color: _colorFromAddress(entry.key),
-                    name: entry.key,
-                  ),
-                )
-                .toList(),
-            onTap: onToggleActive,
-            onSelectionChanged: (selection, cause) {
-              ref
-                  .read(collaboratorIndexesProvider.notifier)
-                  .select(
-                    docId,
-                    Selection(
-                      start: selection.start,
-                      end: selection.end,
+          child: ValueListenableBuilder(
+            valueListenable: selectionController,
+            builder: (context, value, child) {
+              return CollaborativeSelectableText(
+                text,
+                textStyle: textStyle,
+                collaboratorSelections: [
+                  for (final entry in collaboratorIndexes.entries)
+                    CollaboratorSelection(
+                      start: entry.value.start,
+                      end: entry.value.end,
+                      color: _colorFromAddress(entry.key),
+                      name: entry.key,
                     ),
+                  if (value != null)
+                    CollaboratorSelection(
+                      start: value.start,
+                      end: value.end,
+                      color: _colorFromAddress('you'),
+                      name: 'you',
+                    ),
+                ],
+                onTap: onToggleActive,
+                onSelectionChanged: (selection, cause) {
+                  ref
+                      .read(selectionControllerProvider(docId))
+                      .value = Selection(
+                    start: selection.start,
+                    end: selection.end,
                   );
+                },
+              );
             },
           ),
         ),
@@ -283,10 +275,6 @@ class _EventListeners extends HookConsumerWidget {
             notifier.remove(addr);
           case ClientEventText():
             text.value = next.text;
-          case ClientEventMoved(:final selection):
-            ref
-                .read(collaboratorIndexesProvider.notifier)
-                .select(docId, selection);
           default:
             break;
         }

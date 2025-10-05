@@ -39,7 +39,7 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final useCase = ref.read(documentUseCaseProvider);
+    final useCase = ref.read(documentUseCaseProvider(docId));
 
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 4),
@@ -59,7 +59,7 @@ class _Body extends ConsumerWidget {
             textInputAction: TextInputAction.done,
             onSubmitted: (value) {
               if (value.isNotEmpty) {
-                useCase.insert(id: docId, text: value);
+                useCase.insert(text: value);
                 controller.clear();
                 focusNode.requestFocus();
               }
@@ -75,7 +75,7 @@ class _Body extends ConsumerWidget {
                 label: '挿入',
                 onPressed: () {
                   if (controller.text.isNotEmpty) {
-                    useCase.insert(id: docId, text: controller.text);
+                    useCase.insert(text: controller.text);
                     controller.clear();
                     focusNode.requestFocus();
                   }
@@ -84,30 +84,22 @@ class _Body extends ConsumerWidget {
               _ActionButton(
                 icon: Icons.keyboard_return_rounded,
                 label: '改行',
-                onPressed: () {
-                  useCase.enter(id: docId);
-                },
+                onPressed: useCase.enter,
               ),
               _ActionButton(
                 icon: Icons.backspace_outlined,
                 label: '削除',
-                onPressed: () {
-                  useCase.backspace(id: docId);
-                },
+                onPressed: useCase.backspace,
               ),
               _ActionButton(
                 icon: Icons.undo_rounded,
                 label: '元に戻す',
-                onPressed: () {
-                  useCase.undo(id: docId);
-                },
+                onPressed: useCase.undo,
               ),
               _ActionButton(
                 icon: Icons.redo_rounded,
                 label: 'やり直し',
-                onPressed: () {
-                  useCase.redo(id: docId);
-                },
+                onPressed: useCase.redo,
               ),
             ],
           ),
