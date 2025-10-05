@@ -1,16 +1,13 @@
-# kunlabori
+# Kunlabori
 
-A new Flutter project.
+リアルタイムコラボレーション可能なテキストエディタ。[yrs](https://github.com/y-crdt/y-crdt)によるCRDTを使用し、[flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge)でRustとFlutterを接続しています。
 
-## Getting Started
+## 必要条件
 
-This project is a starting point for a Flutter application.
+- [mise](https://mise.jdx.dev/) (環境管理ツール)
+- [Flutter SDK](https://flutter.dev/)
+- [Rust](https://www.rust-lang.org/)
 
-A few resources to get you started if this is your first Flutter project:
+## デプロイ
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [Web](https://kunlabori-b0e32.web.app/)
