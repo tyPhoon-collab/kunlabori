@@ -1,11 +1,33 @@
+import 'dart:async';
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kunlabori/domain/model/client_event.dart';
 import 'package:kunlabori/home_page.dart';
+import 'package:kunlabori/provider.dart';
 import 'package:kunlabori/src/rust/api/interface.dart' as rust_api;
+import 'package:kunlabori/src/rust/api/model.dart';
 
 class DocumentController {
-  const DocumentController(this.ref);
+  DocumentController(this.ref);
   final Ref ref;
+
+  StreamSubscription<Partial>? _subscription;
+
+  void create({
+    required String id,
+  }) {
+    _subscription = rust_api.create(id: id, existsOk: true).listen(
+      (partial) {
+        // debugPrint('Stream partial: $partial');
+        ref.read(partialEventHandlerProvider).handle(id, partial);
+      },
+    );
+  }
+
+  Future<void> dispose() async {
+    await _subscription?.cancel();
+    _subscription = null;
+  }
 
   void insert({
     required String id,

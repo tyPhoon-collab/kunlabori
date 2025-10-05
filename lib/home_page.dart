@@ -7,7 +7,6 @@ import 'package:kunlabori/collaborative_selectable_text.dart';
 import 'package:kunlabori/domain/model/client_event.dart';
 import 'package:kunlabori/home_drawer.dart';
 import 'package:kunlabori/provider.dart';
-import 'package:kunlabori/src/rust/api/interface.dart' as rust_api;
 import 'package:kunlabori/use_case_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -89,56 +88,15 @@ class HomePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final docId = useMemoized(() => 'memo');
+    final docId = useMemoized(() => 'doc');
     final focusNode = useFocusNode();
     final text = useState<String>('');
     final isActionViewActive = ref.watch(_isActionViewActiveProvider);
     final controller = useTextEditingController();
 
-    ref
-      ..listen(eventProvider, (previous, next) {
-        final notifier = ref.read(collaboratorIndexesProvider.notifier);
-
-        switch (next) {
-          case ClientEventSelected(:final selection, :final addr):
-            notifier.update(
-              addr,
-              selection,
-            );
-          case ClientEventDisconnected(:final addr):
-          case ClientEventUnselected(:final addr):
-            notifier.remove(addr);
-          case ClientEventText():
-            text.value = next.text;
-          default:
-            break;
-        }
-      })
-      ..listen(messagesProvider, (previous, next) {
-        // debugPrint('WebSocket message: $next');
-        switch (next) {
-          case AsyncData(:final value):
-            ref.read(websocketEventHandlerProvider).handle(docId, value);
-          case AsyncError(:final error, :final stackTrace):
-            debugPrint('WebSocket error: $error');
-            debugPrintStack(stackTrace: stackTrace);
-          case AsyncLoading():
-            debugPrint('WebSocket loading...');
-        }
-      });
-
     useEffect(() {
-      final eventSubscription = rust_api
-          .create(id: docId, existsOk: true)
-          .listen(
-            (partial) {
-              // debugPrint('Stream partial: $partial');
-              ref.read(partialEventHandlerProvider).handle(docId, partial);
-            },
-            onError: (Object? error) {
-              debugPrint('Error in stream: $error');
-            },
-          );
+      final documentController = ref.read(documentControllerProvider)
+        ..create(id: docId);
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref
@@ -146,10 +104,7 @@ class HomePage extends HookConsumerWidget {
             .select(docId, const Selection.zero());
       });
 
-      return () async {
-        rust_api.destroy(id: docId);
-        await eventSubscription.cancel();
-      };
+      return documentController.dispose;
     }, const []);
 
     void unfocus() {
@@ -166,7 +121,7 @@ class HomePage extends HookConsumerWidget {
       docId: docId,
       text: text,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Kunlabori')),
+        appBar: const _HomeAppBar(),
         drawer: HomeDrawer(text: text.value),
         body: SizedBox(
           width: double.infinity,
@@ -214,6 +169,20 @@ class HomePage extends HookConsumerWidget {
                 child: const Icon(Icons.keyboard_rounded),
               ),
       ),
+    );
+  }
+}
+
+class _HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _HomeAppBar();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: const Text('Kunlabori'),
     );
   }
 }
@@ -308,10 +277,7 @@ class _EventListeners extends HookConsumerWidget {
 
         switch (next) {
           case ClientEventSelected(:final selection, :final addr):
-            notifier.update(
-              addr,
-              selection,
-            );
+            notifier.update(addr, selection);
           case ClientEventDisconnected(:final addr):
           case ClientEventUnselected(:final addr):
             notifier.remove(addr);
