@@ -317,7 +317,7 @@ final class PartialEventHandlerProvider
 }
 
 String _$partialEventHandlerHash() =>
-    r'6e910d78d4098d918329f25b350a50ada1d46c20';
+    r'a5c9aa519194fffbf17c5e68503f9246ec956956';
 
 final class PartialEventHandlerFamily extends $Family
     with $FunctionalFamilyOverride<PartialEventHandler, String> {

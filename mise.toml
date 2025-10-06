@@ -10,7 +10,7 @@ ruby = { version = "3.4.4", os = ["macos"] }
 description = "Start the WebSocket server"
 run = "cargo run"
 dir = "server"
-env = { RUST_LOG = "info", RUST_BACKTRACE = "1", PORT = "8080", HOST = "localhost" }
+env = { RUST_LOG = "debug", RUST_BACKTRACE = "1", PORT = "8080", HOST = "localhost" }
 
 [tasks."generate"]
 description = "Generate the Flutter Rust Bridge bindings"

@@ -1,3 +1,7 @@
+// JsonSerializableとFreezedの相性が悪い
+// コンストラクタにJsonSerializableを指定すると以下の警告が出るため、このファイルでは無視する
+// ignore_for_file: invalid_annotation_target
+
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -34,19 +38,27 @@ sealed class SendMessage with _$SendMessage {
 
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
 sealed class ReceiveMessage with _$ReceiveMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake)
+  const factory ReceiveMessage.welcome({
+    required String peerId,
+  }) = ReceiveMessageWelcome;
+
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory ReceiveMessage.update({
     @Uint8ListConverter() required Uint8List bytes,
-    required String addr,
+    required String peerId,
   }) = ReceiveMessageUpdate;
 
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory ReceiveMessage.selection({
     required int start,
     required int end,
-    required String addr,
+    required String peerId,
   }) = ReceiveMessageSelection;
 
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory ReceiveMessage.unselect({
-    required String addr,
+    required String peerId,
   }) = ReceiveMessageUnselect;
 
   const factory ReceiveMessage.read({
@@ -59,12 +71,14 @@ sealed class ReceiveMessage with _$ReceiveMessage {
     required String to,
   }) = ReceiveMessageInit;
 
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory ReceiveMessage.connected({
-    required String addr,
+    required String peerId,
   }) = ReceiveMessageConnected;
 
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory ReceiveMessage.disconnected({
-    required String addr,
+    required String peerId,
   }) = ReceiveMessageDisconnected;
 
   factory ReceiveMessage.fromJson(Map<String, dynamic> json) =>

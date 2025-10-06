@@ -15,28 +15,31 @@ final class WebsocketEventHandler {
 
   void handle(String id, ReceiveMessage message) {
     final action = switch (message) {
-      ReceiveMessageConnected(:final addr) => () {
+      ReceiveMessageWelcome() => () {
+        // Welcomeメッセージを受け取ったらJoinメッセージを送る
         _send(
           SendMessage.join(bytes: rust_api.stateVector(id: id)),
         );
-        _sink(ClientEvent.connected(addr: addr));
       },
-      ReceiveMessageDisconnected(:final addr) => () {
-        _sink(ClientEvent.disconnected(addr: addr));
+      ReceiveMessageConnected(:final peerId) => () {
+        _sink(ClientEvent.connected(peerId: peerId));
+      },
+      ReceiveMessageDisconnected(:final peerId) => () {
+        _sink(ClientEvent.disconnected(peerId: peerId));
       },
       ReceiveMessageUpdate(:final bytes) => () => rust_api.merge(
         id: id,
         update: bytes,
       ),
-      ReceiveMessageSelection(:final start, :final end, :final addr) =>
+      ReceiveMessageSelection(:final start, :final end, :final peerId) =>
         () => _sink(
           ClientEvent.selected(
             selection: Selection(start: start, end: end),
-            addr: addr,
+            peerId: peerId,
           ),
         ),
-      ReceiveMessageUnselect(:final addr) => () {
-        _sink(ClientEvent.unselected(addr: addr));
+      ReceiveMessageUnselect(:final peerId) => () {
+        _sink(ClientEvent.unselected(peerId: peerId));
       },
       ReceiveMessageRead(:final bytes, :final from) => () => _send(
         SendMessage.init(

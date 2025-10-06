@@ -8,12 +8,23 @@ use std::{
     sync::{Arc, Mutex},
 };
 use tokio_tungstenite::tungstenite::protocol::Message;
+use uuid::Uuid;
 
 use crate::error::{ServerError, ServerResult};
 use crate::messages::SendMessage;
 
 pub type Tx = UnboundedSender<Message>;
-pub type PeerMap = Arc<Mutex<HashMap<SocketAddr, Tx>>>;
+pub type PeerId = String;
+
+/// Peer情報
+#[derive(Clone, Debug)]
+pub struct PeerInfo {
+    pub id: PeerId,
+    pub addr: SocketAddr,
+    pub tx: Tx,
+}
+
+pub type PeerMap = Arc<Mutex<HashMap<PeerId, PeerInfo>>>;
 
 /// Peer管理を行うサービス
 #[derive(Clone)]
@@ -29,44 +40,52 @@ impl PeerService {
         }
     }
 
-    /// Peerを追加
-    pub fn add_peer(&self, addr: SocketAddr, tx: Tx) -> ServerResult<()> {
+    /// Peerを追加してIDを返す
+    pub fn add_peer(&self, addr: SocketAddr, tx: Tx) -> ServerResult<PeerId> {
+        let peer_id = Uuid::new_v4().to_string();
         let mut peers = self.peers.lock().map_err(|_| {
             ServerError::PeerManagement("Failed to acquire peer map lock".to_string())
         })?;
-        peers.insert(addr, tx);
-        Ok(())
+
+        let peer_info = PeerInfo {
+            id: peer_id.clone(),
+            addr,
+            tx,
+        };
+
+        peers.insert(peer_id.clone(), peer_info);
+        Ok(peer_id)
     }
 
     /// Peerを削除
-    pub fn remove_peer(&self, addr: SocketAddr) -> ServerResult<()> {
+    pub fn remove_peer(&self, peer_id: &PeerId) -> ServerResult<()> {
         let mut peers = self.peers.lock().map_err(|_| {
             ServerError::PeerManagement("Failed to acquire peer map lock".to_string())
         })?;
-        peers.remove(&addr);
+        peers.remove(peer_id);
         Ok(())
     }
 
     /// 特定のpeerにメッセージを送信
-    pub fn send_to_peer(&self, addr: SocketAddr, message: &SendMessage) -> ServerResult<()> {
+    pub fn send(&self, peer_id: &PeerId, message: &SendMessage) -> ServerResult<()> {
         let peers = self.peers.lock().map_err(|_| {
             ServerError::PeerManagement("Failed to acquire peer map lock".to_string())
         })?;
 
-        if let Some(tx) = peers.get(&addr) {
-            self.send_message_to_tx(tx, message)
+        if let Some(peer_info) = peers.get(peer_id) {
+            self.send_message_to_tx(&peer_info.tx, message)
         } else {
             Err(ServerError::PeerManagement(format!(
                 "Peer {} not found",
-                addr
+                peer_id
             )))
         }
     }
 
-    /// メッセージをブロードキャスト（送信者を除外可能）
+    /// メッセージをブロードキャスト(送信者を除外可能)
     pub fn broadcast(
         &self,
-        sender_addr: SocketAddr,
+        sender_peer_id: &PeerId,
         message: &SendMessage,
         exclude_sender: bool,
     ) -> ServerResult<()> {
@@ -77,69 +96,37 @@ impl PeerService {
         let json_str = serde_json::to_string(message)?;
         let ws_message = Message::Text(json_str.into());
 
-        for (addr, tx) in peers.iter() {
-            if exclude_sender && *addr == sender_addr {
+        for (peer_id, peer_info) in peers.iter() {
+            if exclude_sender && peer_id == sender_peer_id {
                 continue;
             }
-            if let Err(e) = tx.unbounded_send(ws_message.clone()) {
-                warn!("Failed to send message to peer {}: {}", addr, e);
+            if let Err(e) = peer_info.tx.unbounded_send(ws_message.clone()) {
+                warn!("Failed to send message to peer {}: {}", peer_id, e);
             }
         }
 
         Ok(())
     }
 
-    /// 初期状態要求を既存のpeerに送信
-    pub fn request_initial_state(
-        &self,
-        requester_addr: SocketAddr,
-        bytes: String,
-    ) -> ServerResult<()> {
+    /// 他のpeerを探す(特定のpeerを除外)
+    pub fn find_other_peer(&self, exclude_peer_id: &PeerId) -> ServerResult<Option<PeerInfo>> {
         let peers = self.peers.lock().map_err(|_| {
             ServerError::PeerManagement("Failed to acquire peer map lock".to_string())
         })?;
 
-        let initial_peer = peers
+        Ok(peers
             .iter()
-            .find(|(addr, _)| **addr != requester_addr)
-            .map(|(_, tx)| tx);
-
-        if let Some(tx) = initial_peer {
-            let read_msg = SendMessage::Read {
-                bytes,
-                from: requester_addr.to_string(),
-            };
-            self.send_message_to_tx(tx, &read_msg)
-        } else {
-            warn!("No other peers available to request initial state");
-            Ok(())
-        }
+            .find(|(peer_id, _)| *peer_id != exclude_peer_id)
+            .map(|(_, peer_info)| peer_info.clone()))
     }
 
-    /// 指定されたpeerに初期化メッセージを送信
-    pub fn send_init_to_peer(&self, target_addr_string: &str, bytes: String) -> ServerResult<()> {
+    /// 指定されたpeerを取得
+    pub fn get_peer(&self, peer_id: &PeerId) -> ServerResult<Option<PeerInfo>> {
         let peers = self.peers.lock().map_err(|_| {
             ServerError::PeerManagement("Failed to acquire peer map lock".to_string())
         })?;
 
-        let target_peer = peers
-            .iter()
-            .find(|(addr, _)| addr.to_string() == target_addr_string)
-            .map(|(_, tx)| tx);
-
-        if let Some(tx) = target_peer {
-            let init_msg = SendMessage::Init {
-                bytes,
-                to: target_addr_string.to_string(),
-            };
-            self.send_message_to_tx(tx, &init_msg)
-        } else {
-            warn!(
-                "Target peer {} not found for init message",
-                target_addr_string
-            );
-            Ok(())
-        }
+        Ok(peers.get(peer_id).cloned())
     }
 
     /// Txを使って直接メッセージを送信

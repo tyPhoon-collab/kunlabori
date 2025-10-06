@@ -19,17 +19,17 @@ class CollaboratorIndexes extends _$CollaboratorIndexes {
     return {};
   }
 
-  void update(String addr, Selection selection) {
+  void update(String id, Selection selection) {
     state = {
       ...state,
-      addr: selection,
+      id: selection,
     };
   }
 
-  void remove(String addr) {
+  void remove(String id) {
     state = {
       ...state,
-    }..remove(addr);
+    }..remove(id);
   }
 }
 
@@ -190,6 +190,7 @@ class _CollaborativeTextCard extends ConsumerWidget {
     final useCase = ref.watch(documentUseCaseProvider(docId));
     final fontSize = ref.watch(fontSizeProvider);
 
+    final colorScheme = Theme.of(context).colorScheme;
     final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
       fontSize: fontSize,
       height: 1.5,
@@ -222,13 +223,13 @@ class _CollaborativeTextCard extends ConsumerWidget {
                       start: entry.value.start,
                       end: entry.value.end,
                       color: _colorFromAddress(entry.key),
-                      name: entry.key,
+                      name: entry.key.substring(0, 5),
                     ),
                   if (value != null)
                     CollaboratorSelection(
                       start: value.start,
                       end: value.end,
-                      color: _colorFromAddress('you'),
+                      color: colorScheme.primary,
                       name: 'you',
                     ),
                 ],
@@ -268,11 +269,11 @@ class _EventListeners extends HookConsumerWidget {
         final notifier = ref.read(collaboratorIndexesProvider.notifier);
 
         switch (next) {
-          case ClientEventSelected(:final selection, :final addr):
-            notifier.update(addr, selection);
-          case ClientEventDisconnected(:final addr):
-          case ClientEventUnselected(:final addr):
-            notifier.remove(addr);
+          case ClientEventSelected(:final selection, :final peerId):
+            notifier.update(peerId, selection);
+          case ClientEventDisconnected(:final peerId):
+          case ClientEventUnselected(:final peerId):
+            notifier.remove(peerId);
           case ClientEventText():
             text.value = next.text;
           default:

@@ -566,7 +566,11 @@ ReceiveMessage _$ReceiveMessageFromJson(
   Map<String, dynamic> json
 ) {
         switch (json['type']) {
-                  case 'update':
+                  case 'welcome':
+          return ReceiveMessageWelcome.fromJson(
+            json
+          );
+                case 'update':
           return ReceiveMessageUpdate.fromJson(
             json
           );
@@ -652,10 +656,11 @@ extension ReceiveMessagePatterns on ReceiveMessage {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ReceiveMessageUpdate value)?  update,TResult Function( ReceiveMessageSelection value)?  selection,TResult Function( ReceiveMessageUnselect value)?  unselect,TResult Function( ReceiveMessageRead value)?  read,TResult Function( ReceiveMessageInit value)?  init,TResult Function( ReceiveMessageConnected value)?  connected,TResult Function( ReceiveMessageDisconnected value)?  disconnected,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ReceiveMessageWelcome value)?  welcome,TResult Function( ReceiveMessageUpdate value)?  update,TResult Function( ReceiveMessageSelection value)?  selection,TResult Function( ReceiveMessageUnselect value)?  unselect,TResult Function( ReceiveMessageRead value)?  read,TResult Function( ReceiveMessageInit value)?  init,TResult Function( ReceiveMessageConnected value)?  connected,TResult Function( ReceiveMessageDisconnected value)?  disconnected,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case ReceiveMessageUpdate() when update != null:
+case ReceiveMessageWelcome() when welcome != null:
+return welcome(_that);case ReceiveMessageUpdate() when update != null:
 return update(_that);case ReceiveMessageSelection() when selection != null:
 return selection(_that);case ReceiveMessageUnselect() when unselect != null:
 return unselect(_that);case ReceiveMessageRead() when read != null:
@@ -680,10 +685,11 @@ return disconnected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ReceiveMessageUpdate value)  update,required TResult Function( ReceiveMessageSelection value)  selection,required TResult Function( ReceiveMessageUnselect value)  unselect,required TResult Function( ReceiveMessageRead value)  read,required TResult Function( ReceiveMessageInit value)  init,required TResult Function( ReceiveMessageConnected value)  connected,required TResult Function( ReceiveMessageDisconnected value)  disconnected,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ReceiveMessageWelcome value)  welcome,required TResult Function( ReceiveMessageUpdate value)  update,required TResult Function( ReceiveMessageSelection value)  selection,required TResult Function( ReceiveMessageUnselect value)  unselect,required TResult Function( ReceiveMessageRead value)  read,required TResult Function( ReceiveMessageInit value)  init,required TResult Function( ReceiveMessageConnected value)  connected,required TResult Function( ReceiveMessageDisconnected value)  disconnected,}){
 final _that = this;
 switch (_that) {
-case ReceiveMessageUpdate():
+case ReceiveMessageWelcome():
+return welcome(_that);case ReceiveMessageUpdate():
 return update(_that);case ReceiveMessageSelection():
 return selection(_that);case ReceiveMessageUnselect():
 return unselect(_that);case ReceiveMessageRead():
@@ -704,10 +710,11 @@ return disconnected(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ReceiveMessageUpdate value)?  update,TResult? Function( ReceiveMessageSelection value)?  selection,TResult? Function( ReceiveMessageUnselect value)?  unselect,TResult? Function( ReceiveMessageRead value)?  read,TResult? Function( ReceiveMessageInit value)?  init,TResult? Function( ReceiveMessageConnected value)?  connected,TResult? Function( ReceiveMessageDisconnected value)?  disconnected,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ReceiveMessageWelcome value)?  welcome,TResult? Function( ReceiveMessageUpdate value)?  update,TResult? Function( ReceiveMessageSelection value)?  selection,TResult? Function( ReceiveMessageUnselect value)?  unselect,TResult? Function( ReceiveMessageRead value)?  read,TResult? Function( ReceiveMessageInit value)?  init,TResult? Function( ReceiveMessageConnected value)?  connected,TResult? Function( ReceiveMessageDisconnected value)?  disconnected,}){
 final _that = this;
 switch (_that) {
-case ReceiveMessageUpdate() when update != null:
+case ReceiveMessageWelcome() when welcome != null:
+return welcome(_that);case ReceiveMessageUpdate() when update != null:
 return update(_that);case ReceiveMessageSelection() when selection != null:
 return selection(_that);case ReceiveMessageUnselect() when unselect != null:
 return unselect(_that);case ReceiveMessageRead() when read != null:
@@ -731,16 +738,17 @@ return disconnected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function(@Uint8ListConverter()  Uint8List bytes,  String addr)?  update,TResult Function( int start,  int end,  String addr)?  selection,TResult Function( String addr)?  unselect,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String from)?  read,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String to)?  init,TResult Function( String addr)?  connected,TResult Function( String addr)?  disconnected,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String peerId)?  welcome,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String peerId)?  update,TResult Function( int start,  int end,  String peerId)?  selection,TResult Function( String peerId)?  unselect,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String from)?  read,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String to)?  init,TResult Function( String peerId)?  connected,TResult Function( String peerId)?  disconnected,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case ReceiveMessageUpdate() when update != null:
-return update(_that.bytes,_that.addr);case ReceiveMessageSelection() when selection != null:
-return selection(_that.start,_that.end,_that.addr);case ReceiveMessageUnselect() when unselect != null:
-return unselect(_that.addr);case ReceiveMessageRead() when read != null:
+case ReceiveMessageWelcome() when welcome != null:
+return welcome(_that.peerId);case ReceiveMessageUpdate() when update != null:
+return update(_that.bytes,_that.peerId);case ReceiveMessageSelection() when selection != null:
+return selection(_that.start,_that.end,_that.peerId);case ReceiveMessageUnselect() when unselect != null:
+return unselect(_that.peerId);case ReceiveMessageRead() when read != null:
 return read(_that.bytes,_that.from);case ReceiveMessageInit() when init != null:
 return init(_that.bytes,_that.to);case ReceiveMessageConnected() when connected != null:
-return connected(_that.addr);case ReceiveMessageDisconnected() when disconnected != null:
-return disconnected(_that.addr);case _:
+return connected(_that.peerId);case ReceiveMessageDisconnected() when disconnected != null:
+return disconnected(_that.peerId);case _:
   return orElse();
 
 }
@@ -758,16 +766,17 @@ return disconnected(_that.addr);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String addr)  update,required TResult Function( int start,  int end,  String addr)  selection,required TResult Function( String addr)  unselect,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String from)  read,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String to)  init,required TResult Function( String addr)  connected,required TResult Function( String addr)  disconnected,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String peerId)  welcome,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String peerId)  update,required TResult Function( int start,  int end,  String peerId)  selection,required TResult Function( String peerId)  unselect,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String from)  read,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String to)  init,required TResult Function( String peerId)  connected,required TResult Function( String peerId)  disconnected,}) {final _that = this;
 switch (_that) {
-case ReceiveMessageUpdate():
-return update(_that.bytes,_that.addr);case ReceiveMessageSelection():
-return selection(_that.start,_that.end,_that.addr);case ReceiveMessageUnselect():
-return unselect(_that.addr);case ReceiveMessageRead():
+case ReceiveMessageWelcome():
+return welcome(_that.peerId);case ReceiveMessageUpdate():
+return update(_that.bytes,_that.peerId);case ReceiveMessageSelection():
+return selection(_that.start,_that.end,_that.peerId);case ReceiveMessageUnselect():
+return unselect(_that.peerId);case ReceiveMessageRead():
 return read(_that.bytes,_that.from);case ReceiveMessageInit():
 return init(_that.bytes,_that.to);case ReceiveMessageConnected():
-return connected(_that.addr);case ReceiveMessageDisconnected():
-return disconnected(_that.addr);}
+return connected(_that.peerId);case ReceiveMessageDisconnected():
+return disconnected(_that.peerId);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -781,16 +790,17 @@ return disconnected(_that.addr);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String addr)?  update,TResult? Function( int start,  int end,  String addr)?  selection,TResult? Function( String addr)?  unselect,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String from)?  read,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String to)?  init,TResult? Function( String addr)?  connected,TResult? Function( String addr)?  disconnected,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String peerId)?  welcome,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String peerId)?  update,TResult? Function( int start,  int end,  String peerId)?  selection,TResult? Function( String peerId)?  unselect,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String from)?  read,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String to)?  init,TResult? Function( String peerId)?  connected,TResult? Function( String peerId)?  disconnected,}) {final _that = this;
 switch (_that) {
-case ReceiveMessageUpdate() when update != null:
-return update(_that.bytes,_that.addr);case ReceiveMessageSelection() when selection != null:
-return selection(_that.start,_that.end,_that.addr);case ReceiveMessageUnselect() when unselect != null:
-return unselect(_that.addr);case ReceiveMessageRead() when read != null:
+case ReceiveMessageWelcome() when welcome != null:
+return welcome(_that.peerId);case ReceiveMessageUpdate() when update != null:
+return update(_that.bytes,_that.peerId);case ReceiveMessageSelection() when selection != null:
+return selection(_that.start,_that.end,_that.peerId);case ReceiveMessageUnselect() when unselect != null:
+return unselect(_that.peerId);case ReceiveMessageRead() when read != null:
 return read(_that.bytes,_that.from);case ReceiveMessageInit() when init != null:
 return init(_that.bytes,_that.to);case ReceiveMessageConnected() when connected != null:
-return connected(_that.addr);case ReceiveMessageDisconnected() when disconnected != null:
-return disconnected(_that.addr);case _:
+return connected(_that.peerId);case ReceiveMessageDisconnected() when disconnected != null:
+return disconnected(_that.peerId);case _:
   return null;
 
 }
@@ -799,14 +809,87 @@ return disconnected(_that.addr);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake)
+class ReceiveMessageWelcome implements ReceiveMessage {
+  const ReceiveMessageWelcome({required this.peerId, final  String? $type}): $type = $type ?? 'welcome';
+  factory ReceiveMessageWelcome.fromJson(Map<String, dynamic> json) => _$ReceiveMessageWelcomeFromJson(json);
+
+ final  String peerId;
+
+@JsonKey(name: 'type')
+final String $type;
+
+
+/// Create a copy of ReceiveMessage
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ReceiveMessageWelcomeCopyWith<ReceiveMessageWelcome> get copyWith => _$ReceiveMessageWelcomeCopyWithImpl<ReceiveMessageWelcome>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ReceiveMessageWelcomeToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageWelcome&&(identical(other.peerId, peerId) || other.peerId == peerId));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,peerId);
+
+@override
+String toString() {
+  return 'ReceiveMessage.welcome(peerId: $peerId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ReceiveMessageWelcomeCopyWith<$Res> implements $ReceiveMessageCopyWith<$Res> {
+  factory $ReceiveMessageWelcomeCopyWith(ReceiveMessageWelcome value, $Res Function(ReceiveMessageWelcome) _then) = _$ReceiveMessageWelcomeCopyWithImpl;
+@useResult
+$Res call({
+ String peerId
+});
+
+
+
+
+}
+/// @nodoc
+class _$ReceiveMessageWelcomeCopyWithImpl<$Res>
+    implements $ReceiveMessageWelcomeCopyWith<$Res> {
+  _$ReceiveMessageWelcomeCopyWithImpl(this._self, this._then);
+
+  final ReceiveMessageWelcome _self;
+  final $Res Function(ReceiveMessageWelcome) _then;
+
+/// Create a copy of ReceiveMessage
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? peerId = null,}) {
+  return _then(ReceiveMessageWelcome(
+peerId: null == peerId ? _self.peerId : peerId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+@JsonSerializable(fieldRename: FieldRename.snake)
 class ReceiveMessageUpdate implements ReceiveMessage {
-  const ReceiveMessageUpdate({@Uint8ListConverter() required this.bytes, required this.addr, final  String? $type}): $type = $type ?? 'update';
+  const ReceiveMessageUpdate({@Uint8ListConverter() required this.bytes, required this.peerId, final  String? $type}): $type = $type ?? 'update';
   factory ReceiveMessageUpdate.fromJson(Map<String, dynamic> json) => _$ReceiveMessageUpdateFromJson(json);
 
 @Uint8ListConverter() final  Uint8List bytes;
- final  String addr;
+ final  String peerId;
 
 @JsonKey(name: 'type')
 final String $type;
@@ -825,16 +908,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageUpdate&&const DeepCollectionEquality().equals(other.bytes, bytes)&&(identical(other.addr, addr) || other.addr == addr));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageUpdate&&const DeepCollectionEquality().equals(other.bytes, bytes)&&(identical(other.peerId, peerId) || other.peerId == peerId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(bytes),addr);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(bytes),peerId);
 
 @override
 String toString() {
-  return 'ReceiveMessage.update(bytes: $bytes, addr: $addr)';
+  return 'ReceiveMessage.update(bytes: $bytes, peerId: $peerId)';
 }
 
 
@@ -845,7 +928,7 @@ abstract mixin class $ReceiveMessageUpdateCopyWith<$Res> implements $ReceiveMess
   factory $ReceiveMessageUpdateCopyWith(ReceiveMessageUpdate value, $Res Function(ReceiveMessageUpdate) _then) = _$ReceiveMessageUpdateCopyWithImpl;
 @useResult
 $Res call({
-@Uint8ListConverter() Uint8List bytes, String addr
+@Uint8ListConverter() Uint8List bytes, String peerId
 });
 
 
@@ -862,10 +945,10 @@ class _$ReceiveMessageUpdateCopyWithImpl<$Res>
 
 /// Create a copy of ReceiveMessage
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? bytes = null,Object? addr = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? bytes = null,Object? peerId = null,}) {
   return _then(ReceiveMessageUpdate(
 bytes: null == bytes ? _self.bytes : bytes // ignore: cast_nullable_to_non_nullable
-as Uint8List,addr: null == addr ? _self.addr : addr // ignore: cast_nullable_to_non_nullable
+as Uint8List,peerId: null == peerId ? _self.peerId : peerId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -874,15 +957,15 @@ as String,
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake)
 class ReceiveMessageSelection implements ReceiveMessage {
-  const ReceiveMessageSelection({required this.start, required this.end, required this.addr, final  String? $type}): $type = $type ?? 'selection';
+  const ReceiveMessageSelection({required this.start, required this.end, required this.peerId, final  String? $type}): $type = $type ?? 'selection';
   factory ReceiveMessageSelection.fromJson(Map<String, dynamic> json) => _$ReceiveMessageSelectionFromJson(json);
 
  final  int start;
  final  int end;
- final  String addr;
+ final  String peerId;
 
 @JsonKey(name: 'type')
 final String $type;
@@ -901,16 +984,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageSelection&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.addr, addr) || other.addr == addr));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageSelection&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.peerId, peerId) || other.peerId == peerId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,start,end,addr);
+int get hashCode => Object.hash(runtimeType,start,end,peerId);
 
 @override
 String toString() {
-  return 'ReceiveMessage.selection(start: $start, end: $end, addr: $addr)';
+  return 'ReceiveMessage.selection(start: $start, end: $end, peerId: $peerId)';
 }
 
 
@@ -921,7 +1004,7 @@ abstract mixin class $ReceiveMessageSelectionCopyWith<$Res> implements $ReceiveM
   factory $ReceiveMessageSelectionCopyWith(ReceiveMessageSelection value, $Res Function(ReceiveMessageSelection) _then) = _$ReceiveMessageSelectionCopyWithImpl;
 @useResult
 $Res call({
- int start, int end, String addr
+ int start, int end, String peerId
 });
 
 
@@ -938,11 +1021,11 @@ class _$ReceiveMessageSelectionCopyWithImpl<$Res>
 
 /// Create a copy of ReceiveMessage
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? start = null,Object? end = null,Object? addr = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? start = null,Object? end = null,Object? peerId = null,}) {
   return _then(ReceiveMessageSelection(
 start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as int,end: null == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
-as int,addr: null == addr ? _self.addr : addr // ignore: cast_nullable_to_non_nullable
+as int,peerId: null == peerId ? _self.peerId : peerId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -951,13 +1034,13 @@ as String,
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake)
 class ReceiveMessageUnselect implements ReceiveMessage {
-  const ReceiveMessageUnselect({required this.addr, final  String? $type}): $type = $type ?? 'unselect';
+  const ReceiveMessageUnselect({required this.peerId, final  String? $type}): $type = $type ?? 'unselect';
   factory ReceiveMessageUnselect.fromJson(Map<String, dynamic> json) => _$ReceiveMessageUnselectFromJson(json);
 
- final  String addr;
+ final  String peerId;
 
 @JsonKey(name: 'type')
 final String $type;
@@ -976,16 +1059,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageUnselect&&(identical(other.addr, addr) || other.addr == addr));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageUnselect&&(identical(other.peerId, peerId) || other.peerId == peerId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,addr);
+int get hashCode => Object.hash(runtimeType,peerId);
 
 @override
 String toString() {
-  return 'ReceiveMessage.unselect(addr: $addr)';
+  return 'ReceiveMessage.unselect(peerId: $peerId)';
 }
 
 
@@ -996,7 +1079,7 @@ abstract mixin class $ReceiveMessageUnselectCopyWith<$Res> implements $ReceiveMe
   factory $ReceiveMessageUnselectCopyWith(ReceiveMessageUnselect value, $Res Function(ReceiveMessageUnselect) _then) = _$ReceiveMessageUnselectCopyWithImpl;
 @useResult
 $Res call({
- String addr
+ String peerId
 });
 
 
@@ -1013,9 +1096,9 @@ class _$ReceiveMessageUnselectCopyWithImpl<$Res>
 
 /// Create a copy of ReceiveMessage
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? addr = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? peerId = null,}) {
   return _then(ReceiveMessageUnselect(
-addr: null == addr ? _self.addr : addr // ignore: cast_nullable_to_non_nullable
+peerId: null == peerId ? _self.peerId : peerId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -1174,13 +1257,13 @@ as String,
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake)
 class ReceiveMessageConnected implements ReceiveMessage {
-  const ReceiveMessageConnected({required this.addr, final  String? $type}): $type = $type ?? 'connected';
+  const ReceiveMessageConnected({required this.peerId, final  String? $type}): $type = $type ?? 'connected';
   factory ReceiveMessageConnected.fromJson(Map<String, dynamic> json) => _$ReceiveMessageConnectedFromJson(json);
 
- final  String addr;
+ final  String peerId;
 
 @JsonKey(name: 'type')
 final String $type;
@@ -1199,16 +1282,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageConnected&&(identical(other.addr, addr) || other.addr == addr));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageConnected&&(identical(other.peerId, peerId) || other.peerId == peerId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,addr);
+int get hashCode => Object.hash(runtimeType,peerId);
 
 @override
 String toString() {
-  return 'ReceiveMessage.connected(addr: $addr)';
+  return 'ReceiveMessage.connected(peerId: $peerId)';
 }
 
 
@@ -1219,7 +1302,7 @@ abstract mixin class $ReceiveMessageConnectedCopyWith<$Res> implements $ReceiveM
   factory $ReceiveMessageConnectedCopyWith(ReceiveMessageConnected value, $Res Function(ReceiveMessageConnected) _then) = _$ReceiveMessageConnectedCopyWithImpl;
 @useResult
 $Res call({
- String addr
+ String peerId
 });
 
 
@@ -1236,9 +1319,9 @@ class _$ReceiveMessageConnectedCopyWithImpl<$Res>
 
 /// Create a copy of ReceiveMessage
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? addr = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? peerId = null,}) {
   return _then(ReceiveMessageConnected(
-addr: null == addr ? _self.addr : addr // ignore: cast_nullable_to_non_nullable
+peerId: null == peerId ? _self.peerId : peerId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -1247,13 +1330,13 @@ as String,
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake)
 class ReceiveMessageDisconnected implements ReceiveMessage {
-  const ReceiveMessageDisconnected({required this.addr, final  String? $type}): $type = $type ?? 'disconnected';
+  const ReceiveMessageDisconnected({required this.peerId, final  String? $type}): $type = $type ?? 'disconnected';
   factory ReceiveMessageDisconnected.fromJson(Map<String, dynamic> json) => _$ReceiveMessageDisconnectedFromJson(json);
 
- final  String addr;
+ final  String peerId;
 
 @JsonKey(name: 'type')
 final String $type;
@@ -1272,16 +1355,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageDisconnected&&(identical(other.addr, addr) || other.addr == addr));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageDisconnected&&(identical(other.peerId, peerId) || other.peerId == peerId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,addr);
+int get hashCode => Object.hash(runtimeType,peerId);
 
 @override
 String toString() {
-  return 'ReceiveMessage.disconnected(addr: $addr)';
+  return 'ReceiveMessage.disconnected(peerId: $peerId)';
 }
 
 
@@ -1292,7 +1375,7 @@ abstract mixin class $ReceiveMessageDisconnectedCopyWith<$Res> implements $Recei
   factory $ReceiveMessageDisconnectedCopyWith(ReceiveMessageDisconnected value, $Res Function(ReceiveMessageDisconnected) _then) = _$ReceiveMessageDisconnectedCopyWithImpl;
 @useResult
 $Res call({
- String addr
+ String peerId
 });
 
 
@@ -1309,9 +1392,9 @@ class _$ReceiveMessageDisconnectedCopyWithImpl<$Res>
 
 /// Create a copy of ReceiveMessage
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? addr = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? peerId = null,}) {
   return _then(ReceiveMessageDisconnected(
-addr: null == addr ? _self.addr : addr // ignore: cast_nullable_to_non_nullable
+peerId: null == peerId ? _self.peerId : peerId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

@@ -31,21 +31,21 @@ sealed class ClientEvent with _$ClientEvent {
   const factory ClientEvent.init() = ClientEventInit;
 
   /// Websocketサーバーに接続した
-  const factory ClientEvent.connected({required String addr}) =
+  const factory ClientEvent.connected({required String peerId}) =
       ClientEventConnected;
 
   /// Websocketサーバーから切断した
-  const factory ClientEvent.disconnected({required String addr}) =
+  const factory ClientEvent.disconnected({required String peerId}) =
       ClientEventDisconnected;
 
   /// 他のユーザーがテキストを選択した
   const factory ClientEvent.selected({
     required Selection selection,
-    required String addr,
+    required String peerId,
   }) = ClientEventSelected;
 
   /// 他のユーザーがテキストの選択を解除した
-  const factory ClientEvent.unselected({required String addr}) =
+  const factory ClientEvent.unselected({required String peerId}) =
       ClientEventUnselected;
 
   /// テキストが更新された

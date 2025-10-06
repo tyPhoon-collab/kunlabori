@@ -55,7 +55,7 @@ extension ClientEventPatterns on ClientEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ClientEventInit value)?  init,TResult Function( ClientEventConnected value)?  connected,TResult Function( ClientEventDisconnected value)?  disconnected,TResult Function( ClientEventSelected value)?  selected,TResult Function( ClientEventUnselected value)?  unselected,TResult Function( ClientEventText value)?  text,TResult Function( ClientEventDelta value)?  delta,TResult Function( ClientEventMoved value)?  moved,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ClientEventInit value)?  init,TResult Function( ClientEventConnected value)?  connected,TResult Function( ClientEventDisconnected value)?  disconnected,TResult Function( ClientEventSelected value)?  selected,TResult Function( ClientEventUnselected value)?  unselected,TResult Function( ClientEventText value)?  text,TResult Function( ClientEventDelta value)?  delta,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case ClientEventInit() when init != null:
@@ -65,8 +65,7 @@ return disconnected(_that);case ClientEventSelected() when selected != null:
 return selected(_that);case ClientEventUnselected() when unselected != null:
 return unselected(_that);case ClientEventText() when text != null:
 return text(_that);case ClientEventDelta() when delta != null:
-return delta(_that);case ClientEventMoved() when moved != null:
-return moved(_that);case _:
+return delta(_that);case _:
   return orElse();
 
 }
@@ -84,7 +83,7 @@ return moved(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ClientEventInit value)  init,required TResult Function( ClientEventConnected value)  connected,required TResult Function( ClientEventDisconnected value)  disconnected,required TResult Function( ClientEventSelected value)  selected,required TResult Function( ClientEventUnselected value)  unselected,required TResult Function( ClientEventText value)  text,required TResult Function( ClientEventDelta value)  delta,required TResult Function( ClientEventMoved value)  moved,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ClientEventInit value)  init,required TResult Function( ClientEventConnected value)  connected,required TResult Function( ClientEventDisconnected value)  disconnected,required TResult Function( ClientEventSelected value)  selected,required TResult Function( ClientEventUnselected value)  unselected,required TResult Function( ClientEventText value)  text,required TResult Function( ClientEventDelta value)  delta,}){
 final _that = this;
 switch (_that) {
 case ClientEventInit():
@@ -94,8 +93,7 @@ return disconnected(_that);case ClientEventSelected():
 return selected(_that);case ClientEventUnselected():
 return unselected(_that);case ClientEventText():
 return text(_that);case ClientEventDelta():
-return delta(_that);case ClientEventMoved():
-return moved(_that);}
+return delta(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -109,7 +107,7 @@ return moved(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ClientEventInit value)?  init,TResult? Function( ClientEventConnected value)?  connected,TResult? Function( ClientEventDisconnected value)?  disconnected,TResult? Function( ClientEventSelected value)?  selected,TResult? Function( ClientEventUnselected value)?  unselected,TResult? Function( ClientEventText value)?  text,TResult? Function( ClientEventDelta value)?  delta,TResult? Function( ClientEventMoved value)?  moved,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ClientEventInit value)?  init,TResult? Function( ClientEventConnected value)?  connected,TResult? Function( ClientEventDisconnected value)?  disconnected,TResult? Function( ClientEventSelected value)?  selected,TResult? Function( ClientEventUnselected value)?  unselected,TResult? Function( ClientEventText value)?  text,TResult? Function( ClientEventDelta value)?  delta,}){
 final _that = this;
 switch (_that) {
 case ClientEventInit() when init != null:
@@ -119,8 +117,7 @@ return disconnected(_that);case ClientEventSelected() when selected != null:
 return selected(_that);case ClientEventUnselected() when unselected != null:
 return unselected(_that);case ClientEventText() when text != null:
 return text(_that);case ClientEventDelta() when delta != null:
-return delta(_that);case ClientEventMoved() when moved != null:
-return moved(_that);case _:
+return delta(_that);case _:
   return null;
 
 }
@@ -137,17 +134,16 @@ return moved(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String addr)?  connected,TResult Function( String addr)?  disconnected,TResult Function( Selection selection,  String addr)?  selected,TResult Function( String addr)?  unselected,TResult Function( String text)?  text,TResult Function( SimpleDelta delta)?  delta,TResult Function( Selection? selection)?  moved,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String peerId)?  connected,TResult Function( String peerId)?  disconnected,TResult Function( Selection selection,  String peerId)?  selected,TResult Function( String peerId)?  unselected,TResult Function( String text)?  text,TResult Function( SimpleDelta delta)?  delta,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ClientEventInit() when init != null:
 return init();case ClientEventConnected() when connected != null:
-return connected(_that.addr);case ClientEventDisconnected() when disconnected != null:
-return disconnected(_that.addr);case ClientEventSelected() when selected != null:
-return selected(_that.selection,_that.addr);case ClientEventUnselected() when unselected != null:
-return unselected(_that.addr);case ClientEventText() when text != null:
+return connected(_that.peerId);case ClientEventDisconnected() when disconnected != null:
+return disconnected(_that.peerId);case ClientEventSelected() when selected != null:
+return selected(_that.selection,_that.peerId);case ClientEventUnselected() when unselected != null:
+return unselected(_that.peerId);case ClientEventText() when text != null:
 return text(_that.text);case ClientEventDelta() when delta != null:
-return delta(_that.delta);case ClientEventMoved() when moved != null:
-return moved(_that.selection);case _:
+return delta(_that.delta);case _:
   return orElse();
 
 }
@@ -165,17 +161,16 @@ return moved(_that.selection);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String addr)  connected,required TResult Function( String addr)  disconnected,required TResult Function( Selection selection,  String addr)  selected,required TResult Function( String addr)  unselected,required TResult Function( String text)  text,required TResult Function( SimpleDelta delta)  delta,required TResult Function( Selection? selection)  moved,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String peerId)  connected,required TResult Function( String peerId)  disconnected,required TResult Function( Selection selection,  String peerId)  selected,required TResult Function( String peerId)  unselected,required TResult Function( String text)  text,required TResult Function( SimpleDelta delta)  delta,}) {final _that = this;
 switch (_that) {
 case ClientEventInit():
 return init();case ClientEventConnected():
-return connected(_that.addr);case ClientEventDisconnected():
-return disconnected(_that.addr);case ClientEventSelected():
-return selected(_that.selection,_that.addr);case ClientEventUnselected():
-return unselected(_that.addr);case ClientEventText():
+return connected(_that.peerId);case ClientEventDisconnected():
+return disconnected(_that.peerId);case ClientEventSelected():
+return selected(_that.selection,_that.peerId);case ClientEventUnselected():
+return unselected(_that.peerId);case ClientEventText():
 return text(_that.text);case ClientEventDelta():
-return delta(_that.delta);case ClientEventMoved():
-return moved(_that.selection);}
+return delta(_that.delta);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -189,17 +184,16 @@ return moved(_that.selection);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String addr)?  connected,TResult? Function( String addr)?  disconnected,TResult? Function( Selection selection,  String addr)?  selected,TResult? Function( String addr)?  unselected,TResult? Function( String text)?  text,TResult? Function( SimpleDelta delta)?  delta,TResult? Function( Selection? selection)?  moved,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String peerId)?  connected,TResult? Function( String peerId)?  disconnected,TResult? Function( Selection selection,  String peerId)?  selected,TResult? Function( String peerId)?  unselected,TResult? Function( String text)?  text,TResult? Function( SimpleDelta delta)?  delta,}) {final _that = this;
 switch (_that) {
 case ClientEventInit() when init != null:
 return init();case ClientEventConnected() when connected != null:
-return connected(_that.addr);case ClientEventDisconnected() when disconnected != null:
-return disconnected(_that.addr);case ClientEventSelected() when selected != null:
-return selected(_that.selection,_that.addr);case ClientEventUnselected() when unselected != null:
-return unselected(_that.addr);case ClientEventText() when text != null:
+return connected(_that.peerId);case ClientEventDisconnected() when disconnected != null:
+return disconnected(_that.peerId);case ClientEventSelected() when selected != null:
+return selected(_that.selection,_that.peerId);case ClientEventUnselected() when unselected != null:
+return unselected(_that.peerId);case ClientEventText() when text != null:
 return text(_that.text);case ClientEventDelta() when delta != null:
-return delta(_that.delta);case ClientEventMoved() when moved != null:
-return moved(_that.selection);case _:
+return delta(_that.delta);case _:
   return null;
 
 }
@@ -243,10 +237,10 @@ String toString() {
 
 
 class ClientEventConnected implements ClientEvent {
-  const ClientEventConnected({required this.addr});
+  const ClientEventConnected({required this.peerId});
   
 
- final  String addr;
+ final  String peerId;
 
 /// Create a copy of ClientEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -258,16 +252,16 @@ $ClientEventConnectedCopyWith<ClientEventConnected> get copyWith => _$ClientEven
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientEventConnected&&(identical(other.addr, addr) || other.addr == addr));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientEventConnected&&(identical(other.peerId, peerId) || other.peerId == peerId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,addr);
+int get hashCode => Object.hash(runtimeType,peerId);
 
 @override
 String toString() {
-  return 'ClientEvent.connected(addr: $addr)';
+  return 'ClientEvent.connected(peerId: $peerId)';
 }
 
 
@@ -278,7 +272,7 @@ abstract mixin class $ClientEventConnectedCopyWith<$Res> implements $ClientEvent
   factory $ClientEventConnectedCopyWith(ClientEventConnected value, $Res Function(ClientEventConnected) _then) = _$ClientEventConnectedCopyWithImpl;
 @useResult
 $Res call({
- String addr
+ String peerId
 });
 
 
@@ -295,9 +289,9 @@ class _$ClientEventConnectedCopyWithImpl<$Res>
 
 /// Create a copy of ClientEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? addr = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? peerId = null,}) {
   return _then(ClientEventConnected(
-addr: null == addr ? _self.addr : addr // ignore: cast_nullable_to_non_nullable
+peerId: null == peerId ? _self.peerId : peerId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -309,10 +303,10 @@ as String,
 
 
 class ClientEventDisconnected implements ClientEvent {
-  const ClientEventDisconnected({required this.addr});
+  const ClientEventDisconnected({required this.peerId});
   
 
- final  String addr;
+ final  String peerId;
 
 /// Create a copy of ClientEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -324,16 +318,16 @@ $ClientEventDisconnectedCopyWith<ClientEventDisconnected> get copyWith => _$Clie
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientEventDisconnected&&(identical(other.addr, addr) || other.addr == addr));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientEventDisconnected&&(identical(other.peerId, peerId) || other.peerId == peerId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,addr);
+int get hashCode => Object.hash(runtimeType,peerId);
 
 @override
 String toString() {
-  return 'ClientEvent.disconnected(addr: $addr)';
+  return 'ClientEvent.disconnected(peerId: $peerId)';
 }
 
 
@@ -344,7 +338,7 @@ abstract mixin class $ClientEventDisconnectedCopyWith<$Res> implements $ClientEv
   factory $ClientEventDisconnectedCopyWith(ClientEventDisconnected value, $Res Function(ClientEventDisconnected) _then) = _$ClientEventDisconnectedCopyWithImpl;
 @useResult
 $Res call({
- String addr
+ String peerId
 });
 
 
@@ -361,9 +355,9 @@ class _$ClientEventDisconnectedCopyWithImpl<$Res>
 
 /// Create a copy of ClientEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? addr = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? peerId = null,}) {
   return _then(ClientEventDisconnected(
-addr: null == addr ? _self.addr : addr // ignore: cast_nullable_to_non_nullable
+peerId: null == peerId ? _self.peerId : peerId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -375,11 +369,11 @@ as String,
 
 
 class ClientEventSelected implements ClientEvent {
-  const ClientEventSelected({required this.selection, required this.addr});
+  const ClientEventSelected({required this.selection, required this.peerId});
   
 
  final  Selection selection;
- final  String addr;
+ final  String peerId;
 
 /// Create a copy of ClientEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -391,16 +385,16 @@ $ClientEventSelectedCopyWith<ClientEventSelected> get copyWith => _$ClientEventS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientEventSelected&&(identical(other.selection, selection) || other.selection == selection)&&(identical(other.addr, addr) || other.addr == addr));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientEventSelected&&(identical(other.selection, selection) || other.selection == selection)&&(identical(other.peerId, peerId) || other.peerId == peerId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,selection,addr);
+int get hashCode => Object.hash(runtimeType,selection,peerId);
 
 @override
 String toString() {
-  return 'ClientEvent.selected(selection: $selection, addr: $addr)';
+  return 'ClientEvent.selected(selection: $selection, peerId: $peerId)';
 }
 
 
@@ -411,7 +405,7 @@ abstract mixin class $ClientEventSelectedCopyWith<$Res> implements $ClientEventC
   factory $ClientEventSelectedCopyWith(ClientEventSelected value, $Res Function(ClientEventSelected) _then) = _$ClientEventSelectedCopyWithImpl;
 @useResult
 $Res call({
- Selection selection, String addr
+ Selection selection, String peerId
 });
 
 
@@ -428,10 +422,10 @@ class _$ClientEventSelectedCopyWithImpl<$Res>
 
 /// Create a copy of ClientEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? selection = null,Object? addr = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? selection = null,Object? peerId = null,}) {
   return _then(ClientEventSelected(
 selection: null == selection ? _self.selection : selection // ignore: cast_nullable_to_non_nullable
-as Selection,addr: null == addr ? _self.addr : addr // ignore: cast_nullable_to_non_nullable
+as Selection,peerId: null == peerId ? _self.peerId : peerId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -443,10 +437,10 @@ as String,
 
 
 class ClientEventUnselected implements ClientEvent {
-  const ClientEventUnselected({required this.addr});
+  const ClientEventUnselected({required this.peerId});
   
 
- final  String addr;
+ final  String peerId;
 
 /// Create a copy of ClientEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -458,16 +452,16 @@ $ClientEventUnselectedCopyWith<ClientEventUnselected> get copyWith => _$ClientEv
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientEventUnselected&&(identical(other.addr, addr) || other.addr == addr));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientEventUnselected&&(identical(other.peerId, peerId) || other.peerId == peerId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,addr);
+int get hashCode => Object.hash(runtimeType,peerId);
 
 @override
 String toString() {
-  return 'ClientEvent.unselected(addr: $addr)';
+  return 'ClientEvent.unselected(peerId: $peerId)';
 }
 
 
@@ -478,7 +472,7 @@ abstract mixin class $ClientEventUnselectedCopyWith<$Res> implements $ClientEven
   factory $ClientEventUnselectedCopyWith(ClientEventUnselected value, $Res Function(ClientEventUnselected) _then) = _$ClientEventUnselectedCopyWithImpl;
 @useResult
 $Res call({
- String addr
+ String peerId
 });
 
 
@@ -495,9 +489,9 @@ class _$ClientEventUnselectedCopyWithImpl<$Res>
 
 /// Create a copy of ClientEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? addr = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? peerId = null,}) {
   return _then(ClientEventUnselected(
-addr: null == addr ? _self.addr : addr // ignore: cast_nullable_to_non_nullable
+peerId: null == peerId ? _self.peerId : peerId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -644,72 +638,6 @@ $SimpleDeltaCopyWith<$Res> get delta {
     return _then(_self.copyWith(delta: value));
   });
 }
-}
-
-/// @nodoc
-
-
-class ClientEventMoved implements ClientEvent {
-  const ClientEventMoved({required this.selection});
-  
-
- final  Selection? selection;
-
-/// Create a copy of ClientEvent
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$ClientEventMovedCopyWith<ClientEventMoved> get copyWith => _$ClientEventMovedCopyWithImpl<ClientEventMoved>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientEventMoved&&(identical(other.selection, selection) || other.selection == selection));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,selection);
-
-@override
-String toString() {
-  return 'ClientEvent.moved(selection: $selection)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $ClientEventMovedCopyWith<$Res> implements $ClientEventCopyWith<$Res> {
-  factory $ClientEventMovedCopyWith(ClientEventMoved value, $Res Function(ClientEventMoved) _then) = _$ClientEventMovedCopyWithImpl;
-@useResult
-$Res call({
- Selection? selection
-});
-
-
-
-
-}
-/// @nodoc
-class _$ClientEventMovedCopyWithImpl<$Res>
-    implements $ClientEventMovedCopyWith<$Res> {
-  _$ClientEventMovedCopyWithImpl(this._self, this._then);
-
-  final ClientEventMoved _self;
-  final $Res Function(ClientEventMoved) _then;
-
-/// Create a copy of ClientEvent
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? selection = freezed,}) {
-  return _then(ClientEventMoved(
-selection: freezed == selection ? _self.selection : selection // ignore: cast_nullable_to_non_nullable
-as Selection?,
-  ));
-}
-
-
 }
 
 // dart format on

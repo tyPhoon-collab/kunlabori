@@ -67,11 +67,22 @@ Map<String, dynamic> _$SendMessageJoinToJson(SendMessageJoin instance) =>
       'type': instance.$type,
     };
 
+ReceiveMessageWelcome _$ReceiveMessageWelcomeFromJson(
+  Map<String, dynamic> json,
+) => ReceiveMessageWelcome(
+  peerId: json['peer_id'] as String,
+  $type: json['type'] as String?,
+);
+
+Map<String, dynamic> _$ReceiveMessageWelcomeToJson(
+  ReceiveMessageWelcome instance,
+) => <String, dynamic>{'peer_id': instance.peerId, 'type': instance.$type};
+
 ReceiveMessageUpdate _$ReceiveMessageUpdateFromJson(
   Map<String, dynamic> json,
 ) => ReceiveMessageUpdate(
   bytes: const Uint8ListConverter().fromJson(json['bytes'] as String),
-  addr: json['addr'] as String,
+  peerId: json['peer_id'] as String,
   $type: json['type'] as String?,
 );
 
@@ -79,7 +90,7 @@ Map<String, dynamic> _$ReceiveMessageUpdateToJson(
   ReceiveMessageUpdate instance,
 ) => <String, dynamic>{
   'bytes': const Uint8ListConverter().toJson(instance.bytes),
-  'addr': instance.addr,
+  'peer_id': instance.peerId,
   'type': instance.$type,
 };
 
@@ -88,7 +99,7 @@ ReceiveMessageSelection _$ReceiveMessageSelectionFromJson(
 ) => ReceiveMessageSelection(
   start: (json['start'] as num).toInt(),
   end: (json['end'] as num).toInt(),
-  addr: json['addr'] as String,
+  peerId: json['peer_id'] as String,
   $type: json['type'] as String?,
 );
 
@@ -97,20 +108,20 @@ Map<String, dynamic> _$ReceiveMessageSelectionToJson(
 ) => <String, dynamic>{
   'start': instance.start,
   'end': instance.end,
-  'addr': instance.addr,
+  'peer_id': instance.peerId,
   'type': instance.$type,
 };
 
 ReceiveMessageUnselect _$ReceiveMessageUnselectFromJson(
   Map<String, dynamic> json,
 ) => ReceiveMessageUnselect(
-  addr: json['addr'] as String,
+  peerId: json['peer_id'] as String,
   $type: json['type'] as String?,
 );
 
 Map<String, dynamic> _$ReceiveMessageUnselectToJson(
   ReceiveMessageUnselect instance,
-) => <String, dynamic>{'addr': instance.addr, 'type': instance.$type};
+) => <String, dynamic>{'peer_id': instance.peerId, 'type': instance.$type};
 
 ReceiveMessageRead _$ReceiveMessageReadFromJson(Map<String, dynamic> json) =>
     ReceiveMessageRead(
@@ -143,21 +154,21 @@ Map<String, dynamic> _$ReceiveMessageInitToJson(ReceiveMessageInit instance) =>
 ReceiveMessageConnected _$ReceiveMessageConnectedFromJson(
   Map<String, dynamic> json,
 ) => ReceiveMessageConnected(
-  addr: json['addr'] as String,
+  peerId: json['peer_id'] as String,
   $type: json['type'] as String?,
 );
 
 Map<String, dynamic> _$ReceiveMessageConnectedToJson(
   ReceiveMessageConnected instance,
-) => <String, dynamic>{'addr': instance.addr, 'type': instance.$type};
+) => <String, dynamic>{'peer_id': instance.peerId, 'type': instance.$type};
 
 ReceiveMessageDisconnected _$ReceiveMessageDisconnectedFromJson(
   Map<String, dynamic> json,
 ) => ReceiveMessageDisconnected(
-  addr: json['addr'] as String,
+  peerId: json['peer_id'] as String,
   $type: json['type'] as String?,
 );
 
 Map<String, dynamic> _$ReceiveMessageDisconnectedToJson(
   ReceiveMessageDisconnected instance,
-) => <String, dynamic>{'addr': instance.addr, 'type': instance.$type};
+) => <String, dynamic>{'peer_id': instance.peerId, 'type': instance.$type};
