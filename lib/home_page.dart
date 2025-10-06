@@ -79,15 +79,8 @@ class HomePage extends HookConsumerWidget {
     final controller = useTextEditingController();
 
     useEffect(() {
-      final documentController = ref.read(documentControllerProvider(docId))
-        ..create();
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(selectionControllerProvider(docId)).value =
-            const Selection.zero();
-      });
-
-      return documentController.dispose;
+      ref.read(documentControllerProvider(docId)).create();
+      return null;
     }, const []);
 
     void unfocus() {
@@ -277,6 +270,11 @@ class _EventListeners extends HookConsumerWidget {
         final notifier = ref.read(collaboratorIndexesProvider.notifier);
 
         switch (next) {
+          case ClientEventWelcome():
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ref.read(selectionControllerProvider(docId)).value =
+                  const Selection.zero();
+            });
           case ClientEventSelected(:final selection, :final peerId):
             notifier.update(peerId, selection);
           case ClientEventDisconnected(:final peerId):

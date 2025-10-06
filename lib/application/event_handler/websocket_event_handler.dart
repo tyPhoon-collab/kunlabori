@@ -20,6 +20,7 @@ final class WebsocketEventHandler {
         _send(
           SendMessage.join(bytes: rust_api.stateVector(id: id)),
         );
+        _sink(const ClientEvent.welcome());
       },
       ReceiveMessageConnected(:final peerId) => () {
         _sink(ClientEvent.connected(peerId: peerId));

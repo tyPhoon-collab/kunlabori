@@ -55,11 +55,12 @@ extension ClientEventPatterns on ClientEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ClientEventInit value)?  init,TResult Function( ClientEventConnected value)?  connected,TResult Function( ClientEventDisconnected value)?  disconnected,TResult Function( ClientEventSelected value)?  selected,TResult Function( ClientEventUnselected value)?  unselected,TResult Function( ClientEventText value)?  text,TResult Function( ClientEventDelta value)?  delta,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ClientEventInit value)?  init,TResult Function( ClientEventWelcome value)?  welcome,TResult Function( ClientEventConnected value)?  connected,TResult Function( ClientEventDisconnected value)?  disconnected,TResult Function( ClientEventSelected value)?  selected,TResult Function( ClientEventUnselected value)?  unselected,TResult Function( ClientEventText value)?  text,TResult Function( ClientEventDelta value)?  delta,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case ClientEventInit() when init != null:
-return init(_that);case ClientEventConnected() when connected != null:
+return init(_that);case ClientEventWelcome() when welcome != null:
+return welcome(_that);case ClientEventConnected() when connected != null:
 return connected(_that);case ClientEventDisconnected() when disconnected != null:
 return disconnected(_that);case ClientEventSelected() when selected != null:
 return selected(_that);case ClientEventUnselected() when unselected != null:
@@ -83,11 +84,12 @@ return delta(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ClientEventInit value)  init,required TResult Function( ClientEventConnected value)  connected,required TResult Function( ClientEventDisconnected value)  disconnected,required TResult Function( ClientEventSelected value)  selected,required TResult Function( ClientEventUnselected value)  unselected,required TResult Function( ClientEventText value)  text,required TResult Function( ClientEventDelta value)  delta,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ClientEventInit value)  init,required TResult Function( ClientEventWelcome value)  welcome,required TResult Function( ClientEventConnected value)  connected,required TResult Function( ClientEventDisconnected value)  disconnected,required TResult Function( ClientEventSelected value)  selected,required TResult Function( ClientEventUnselected value)  unselected,required TResult Function( ClientEventText value)  text,required TResult Function( ClientEventDelta value)  delta,}){
 final _that = this;
 switch (_that) {
 case ClientEventInit():
-return init(_that);case ClientEventConnected():
+return init(_that);case ClientEventWelcome():
+return welcome(_that);case ClientEventConnected():
 return connected(_that);case ClientEventDisconnected():
 return disconnected(_that);case ClientEventSelected():
 return selected(_that);case ClientEventUnselected():
@@ -107,11 +109,12 @@ return delta(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ClientEventInit value)?  init,TResult? Function( ClientEventConnected value)?  connected,TResult? Function( ClientEventDisconnected value)?  disconnected,TResult? Function( ClientEventSelected value)?  selected,TResult? Function( ClientEventUnselected value)?  unselected,TResult? Function( ClientEventText value)?  text,TResult? Function( ClientEventDelta value)?  delta,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ClientEventInit value)?  init,TResult? Function( ClientEventWelcome value)?  welcome,TResult? Function( ClientEventConnected value)?  connected,TResult? Function( ClientEventDisconnected value)?  disconnected,TResult? Function( ClientEventSelected value)?  selected,TResult? Function( ClientEventUnselected value)?  unselected,TResult? Function( ClientEventText value)?  text,TResult? Function( ClientEventDelta value)?  delta,}){
 final _that = this;
 switch (_that) {
 case ClientEventInit() when init != null:
-return init(_that);case ClientEventConnected() when connected != null:
+return init(_that);case ClientEventWelcome() when welcome != null:
+return welcome(_that);case ClientEventConnected() when connected != null:
 return connected(_that);case ClientEventDisconnected() when disconnected != null:
 return disconnected(_that);case ClientEventSelected() when selected != null:
 return selected(_that);case ClientEventUnselected() when unselected != null:
@@ -134,10 +137,11 @@ return delta(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String peerId)?  connected,TResult Function( String peerId)?  disconnected,TResult Function( Selection selection,  String peerId)?  selected,TResult Function( String peerId)?  unselected,TResult Function( String text)?  text,TResult Function( SimpleDelta delta)?  delta,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function()?  welcome,TResult Function( String peerId)?  connected,TResult Function( String peerId)?  disconnected,TResult Function( Selection selection,  String peerId)?  selected,TResult Function( String peerId)?  unselected,TResult Function( String text)?  text,TResult Function( SimpleDelta delta)?  delta,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ClientEventInit() when init != null:
-return init();case ClientEventConnected() when connected != null:
+return init();case ClientEventWelcome() when welcome != null:
+return welcome();case ClientEventConnected() when connected != null:
 return connected(_that.peerId);case ClientEventDisconnected() when disconnected != null:
 return disconnected(_that.peerId);case ClientEventSelected() when selected != null:
 return selected(_that.selection,_that.peerId);case ClientEventUnselected() when unselected != null:
@@ -161,10 +165,11 @@ return delta(_that.delta);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String peerId)  connected,required TResult Function( String peerId)  disconnected,required TResult Function( Selection selection,  String peerId)  selected,required TResult Function( String peerId)  unselected,required TResult Function( String text)  text,required TResult Function( SimpleDelta delta)  delta,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function()  welcome,required TResult Function( String peerId)  connected,required TResult Function( String peerId)  disconnected,required TResult Function( Selection selection,  String peerId)  selected,required TResult Function( String peerId)  unselected,required TResult Function( String text)  text,required TResult Function( SimpleDelta delta)  delta,}) {final _that = this;
 switch (_that) {
 case ClientEventInit():
-return init();case ClientEventConnected():
+return init();case ClientEventWelcome():
+return welcome();case ClientEventConnected():
 return connected(_that.peerId);case ClientEventDisconnected():
 return disconnected(_that.peerId);case ClientEventSelected():
 return selected(_that.selection,_that.peerId);case ClientEventUnselected():
@@ -184,10 +189,11 @@ return delta(_that.delta);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String peerId)?  connected,TResult? Function( String peerId)?  disconnected,TResult? Function( Selection selection,  String peerId)?  selected,TResult? Function( String peerId)?  unselected,TResult? Function( String text)?  text,TResult? Function( SimpleDelta delta)?  delta,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function()?  welcome,TResult? Function( String peerId)?  connected,TResult? Function( String peerId)?  disconnected,TResult? Function( Selection selection,  String peerId)?  selected,TResult? Function( String peerId)?  unselected,TResult? Function( String text)?  text,TResult? Function( SimpleDelta delta)?  delta,}) {final _that = this;
 switch (_that) {
 case ClientEventInit() when init != null:
-return init();case ClientEventConnected() when connected != null:
+return init();case ClientEventWelcome() when welcome != null:
+return welcome();case ClientEventConnected() when connected != null:
 return connected(_that.peerId);case ClientEventDisconnected() when disconnected != null:
 return disconnected(_that.peerId);case ClientEventSelected() when selected != null:
 return selected(_that.selection,_that.peerId);case ClientEventUnselected() when unselected != null:
@@ -225,6 +231,38 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'ClientEvent.init()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class ClientEventWelcome implements ClientEvent {
+  const ClientEventWelcome();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientEventWelcome);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ClientEvent.welcome()';
 }
 
 

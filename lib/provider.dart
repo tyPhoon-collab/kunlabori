@@ -80,7 +80,9 @@ PartialEventHandler partialEventHandler(Ref ref, String id) {
 
 @Riverpod(keepAlive: true)
 DocumentController documentController(Ref ref, String id) {
-  return DocumentController(ref, id: id);
+  final controller = DocumentController(ref, id: id);
+  ref.onDispose(controller.dispose);
+  return controller;
 }
 
 @Riverpod(keepAlive: true)

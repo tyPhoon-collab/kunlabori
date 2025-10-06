@@ -30,6 +30,9 @@ sealed class ClientEvent with _$ClientEvent {
   /// 初期状態
   const factory ClientEvent.init() = ClientEventInit;
 
+  /// WebsocketサーバーからWelcomeメッセージを受け取った
+  const factory ClientEvent.welcome() = ClientEventWelcome;
+
   /// Websocketサーバーに接続した
   const factory ClientEvent.connected({required String peerId}) =
       ClientEventConnected;
