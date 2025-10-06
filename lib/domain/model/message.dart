@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:kunlabori/domain/model/client_event.dart';
 
 part 'message.freezed.dart';
 part 'message.g.dart';
@@ -25,6 +26,7 @@ sealed class SendMessage with _$SendMessage {
 
   const factory SendMessage.init({
     @Uint8ListConverter() required Uint8List bytes,
+    required Map<String, Selection> selections,
     required String to,
   }) = SendMessageInit;
 
@@ -68,6 +70,7 @@ sealed class ReceiveMessage with _$ReceiveMessage {
 
   const factory ReceiveMessage.init({
     @Uint8ListConverter() required Uint8List bytes,
+    required Map<String, Selection> selections,
     required String to,
   }) = ReceiveMessageInit;
 

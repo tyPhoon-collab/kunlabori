@@ -1,13 +1,13 @@
 //! WebSocket接続とメッセージ処理を管理するモジュール
 
-use std::{net::SocketAddr, sync::Arc};
+use std::{collections::HashMap, net::SocketAddr, sync::Arc};
 
 use futures_util::{StreamExt, future, stream::TryStreamExt};
 use log::{debug, error, info, warn};
 use tokio::net::TcpStream;
 
 use crate::{
-    messages::{ReceiveMessage, SendMessage},
+    messages::{ReceiveMessage, Selection, SendMessage},
     peer::{PeerId, PeerService},
 };
 
@@ -118,7 +118,7 @@ impl MessageHandler {
     }
 
     /// Init メッセージを処理
-    fn handle_init(&self, bytes: String, to: &PeerId) {
+    fn handle_init(&self, bytes: String, to: &PeerId, selections: HashMap<String, Selection>) {
         debug!("Received init from {} to {}", self.peer_id, to);
 
         match self.peer_service.get_peer(to) {
@@ -126,6 +126,7 @@ impl MessageHandler {
                 let init_msg = SendMessage::Init {
                     bytes,
                     to: to.clone(),
+                    selections,
                 };
                 if let Err(e) = self.peer_service.send(to, &init_msg) {
                     warn!("Failed to send init message to {}: {}", to, e);
@@ -228,8 +229,12 @@ pub async fn handle_connection(peer_service: PeerService, raw_stream: TcpStream,
             ReceiveMessage::Join { bytes } => {
                 handler.handle_join(bytes);
             }
-            ReceiveMessage::Init { bytes, to } => {
-                handler.handle_init(bytes, &to);
+            ReceiveMessage::Init {
+                bytes,
+                to,
+                selections,
+            } => {
+                handler.handle_init(bytes, &to, selections);
             }
         }
 

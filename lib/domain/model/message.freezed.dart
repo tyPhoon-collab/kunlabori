@@ -166,13 +166,13 @@ return join(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function(@Uint8ListConverter()  Uint8List bytes)?  update,TResult Function( int start,  int end)?  selection,TResult Function()?  unselect,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String to)?  init,TResult Function(@Uint8ListConverter()  Uint8List bytes)?  join,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function(@Uint8ListConverter()  Uint8List bytes)?  update,TResult Function( int start,  int end)?  selection,TResult Function()?  unselect,TResult Function(@Uint8ListConverter()  Uint8List bytes,  Map<String, Selection> selections,  String to)?  init,TResult Function(@Uint8ListConverter()  Uint8List bytes)?  join,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case SendMessageUpdate() when update != null:
 return update(_that.bytes);case SendMessageSelection() when selection != null:
 return selection(_that.start,_that.end);case SendMessageUnselect() when unselect != null:
 return unselect();case SendMessageInit() when init != null:
-return init(_that.bytes,_that.to);case SendMessageJoin() when join != null:
+return init(_that.bytes,_that.selections,_that.to);case SendMessageJoin() when join != null:
 return join(_that.bytes);case _:
   return orElse();
 
@@ -191,13 +191,13 @@ return join(_that.bytes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function(@Uint8ListConverter()  Uint8List bytes)  update,required TResult Function( int start,  int end)  selection,required TResult Function()  unselect,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String to)  init,required TResult Function(@Uint8ListConverter()  Uint8List bytes)  join,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function(@Uint8ListConverter()  Uint8List bytes)  update,required TResult Function( int start,  int end)  selection,required TResult Function()  unselect,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  Map<String, Selection> selections,  String to)  init,required TResult Function(@Uint8ListConverter()  Uint8List bytes)  join,}) {final _that = this;
 switch (_that) {
 case SendMessageUpdate():
 return update(_that.bytes);case SendMessageSelection():
 return selection(_that.start,_that.end);case SendMessageUnselect():
 return unselect();case SendMessageInit():
-return init(_that.bytes,_that.to);case SendMessageJoin():
+return init(_that.bytes,_that.selections,_that.to);case SendMessageJoin():
 return join(_that.bytes);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -212,13 +212,13 @@ return join(_that.bytes);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function(@Uint8ListConverter()  Uint8List bytes)?  update,TResult? Function( int start,  int end)?  selection,TResult? Function()?  unselect,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String to)?  init,TResult? Function(@Uint8ListConverter()  Uint8List bytes)?  join,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function(@Uint8ListConverter()  Uint8List bytes)?  update,TResult? Function( int start,  int end)?  selection,TResult? Function()?  unselect,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  Map<String, Selection> selections,  String to)?  init,TResult? Function(@Uint8ListConverter()  Uint8List bytes)?  join,}) {final _that = this;
 switch (_that) {
 case SendMessageUpdate() when update != null:
 return update(_that.bytes);case SendMessageSelection() when selection != null:
 return selection(_that.start,_that.end);case SendMessageUnselect() when unselect != null:
 return unselect();case SendMessageInit() when init != null:
-return init(_that.bytes,_that.to);case SendMessageJoin() when join != null:
+return init(_that.bytes,_that.selections,_that.to);case SendMessageJoin() when join != null:
 return join(_that.bytes);case _:
   return null;
 
@@ -418,10 +418,17 @@ String toString() {
 @JsonSerializable()
 
 class SendMessageInit implements SendMessage {
-  const SendMessageInit({@Uint8ListConverter() required this.bytes, required this.to, final  String? $type}): $type = $type ?? 'init';
+  const SendMessageInit({@Uint8ListConverter() required this.bytes, required final  Map<String, Selection> selections, required this.to, final  String? $type}): _selections = selections,$type = $type ?? 'init';
   factory SendMessageInit.fromJson(Map<String, dynamic> json) => _$SendMessageInitFromJson(json);
 
 @Uint8ListConverter() final  Uint8List bytes;
+ final  Map<String, Selection> _selections;
+ Map<String, Selection> get selections {
+  if (_selections is EqualUnmodifiableMapView) return _selections;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_selections);
+}
+
  final  String to;
 
 @JsonKey(name: 'type')
@@ -441,16 +448,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SendMessageInit&&const DeepCollectionEquality().equals(other.bytes, bytes)&&(identical(other.to, to) || other.to == to));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SendMessageInit&&const DeepCollectionEquality().equals(other.bytes, bytes)&&const DeepCollectionEquality().equals(other._selections, _selections)&&(identical(other.to, to) || other.to == to));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(bytes),to);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(bytes),const DeepCollectionEquality().hash(_selections),to);
 
 @override
 String toString() {
-  return 'SendMessage.init(bytes: $bytes, to: $to)';
+  return 'SendMessage.init(bytes: $bytes, selections: $selections, to: $to)';
 }
 
 
@@ -461,7 +468,7 @@ abstract mixin class $SendMessageInitCopyWith<$Res> implements $SendMessageCopyW
   factory $SendMessageInitCopyWith(SendMessageInit value, $Res Function(SendMessageInit) _then) = _$SendMessageInitCopyWithImpl;
 @useResult
 $Res call({
-@Uint8ListConverter() Uint8List bytes, String to
+@Uint8ListConverter() Uint8List bytes, Map<String, Selection> selections, String to
 });
 
 
@@ -478,10 +485,11 @@ class _$SendMessageInitCopyWithImpl<$Res>
 
 /// Create a copy of SendMessage
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? bytes = null,Object? to = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? bytes = null,Object? selections = null,Object? to = null,}) {
   return _then(SendMessageInit(
 bytes: null == bytes ? _self.bytes : bytes // ignore: cast_nullable_to_non_nullable
-as Uint8List,to: null == to ? _self.to : to // ignore: cast_nullable_to_non_nullable
+as Uint8List,selections: null == selections ? _self._selections : selections // ignore: cast_nullable_to_non_nullable
+as Map<String, Selection>,to: null == to ? _self.to : to // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -738,7 +746,7 @@ return disconnected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String peerId)?  welcome,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String peerId)?  update,TResult Function( int start,  int end,  String peerId)?  selection,TResult Function( String peerId)?  unselect,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String from)?  read,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String to)?  init,TResult Function( String peerId)?  connected,TResult Function( String peerId)?  disconnected,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String peerId)?  welcome,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String peerId)?  update,TResult Function( int start,  int end,  String peerId)?  selection,TResult Function( String peerId)?  unselect,TResult Function(@Uint8ListConverter()  Uint8List bytes,  String from)?  read,TResult Function(@Uint8ListConverter()  Uint8List bytes,  Map<String, Selection> selections,  String to)?  init,TResult Function( String peerId)?  connected,TResult Function( String peerId)?  disconnected,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ReceiveMessageWelcome() when welcome != null:
 return welcome(_that.peerId);case ReceiveMessageUpdate() when update != null:
@@ -746,7 +754,7 @@ return update(_that.bytes,_that.peerId);case ReceiveMessageSelection() when sele
 return selection(_that.start,_that.end,_that.peerId);case ReceiveMessageUnselect() when unselect != null:
 return unselect(_that.peerId);case ReceiveMessageRead() when read != null:
 return read(_that.bytes,_that.from);case ReceiveMessageInit() when init != null:
-return init(_that.bytes,_that.to);case ReceiveMessageConnected() when connected != null:
+return init(_that.bytes,_that.selections,_that.to);case ReceiveMessageConnected() when connected != null:
 return connected(_that.peerId);case ReceiveMessageDisconnected() when disconnected != null:
 return disconnected(_that.peerId);case _:
   return orElse();
@@ -766,7 +774,7 @@ return disconnected(_that.peerId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String peerId)  welcome,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String peerId)  update,required TResult Function( int start,  int end,  String peerId)  selection,required TResult Function( String peerId)  unselect,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String from)  read,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String to)  init,required TResult Function( String peerId)  connected,required TResult Function( String peerId)  disconnected,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String peerId)  welcome,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String peerId)  update,required TResult Function( int start,  int end,  String peerId)  selection,required TResult Function( String peerId)  unselect,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  String from)  read,required TResult Function(@Uint8ListConverter()  Uint8List bytes,  Map<String, Selection> selections,  String to)  init,required TResult Function( String peerId)  connected,required TResult Function( String peerId)  disconnected,}) {final _that = this;
 switch (_that) {
 case ReceiveMessageWelcome():
 return welcome(_that.peerId);case ReceiveMessageUpdate():
@@ -774,7 +782,7 @@ return update(_that.bytes,_that.peerId);case ReceiveMessageSelection():
 return selection(_that.start,_that.end,_that.peerId);case ReceiveMessageUnselect():
 return unselect(_that.peerId);case ReceiveMessageRead():
 return read(_that.bytes,_that.from);case ReceiveMessageInit():
-return init(_that.bytes,_that.to);case ReceiveMessageConnected():
+return init(_that.bytes,_that.selections,_that.to);case ReceiveMessageConnected():
 return connected(_that.peerId);case ReceiveMessageDisconnected():
 return disconnected(_that.peerId);}
 }
@@ -790,7 +798,7 @@ return disconnected(_that.peerId);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String peerId)?  welcome,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String peerId)?  update,TResult? Function( int start,  int end,  String peerId)?  selection,TResult? Function( String peerId)?  unselect,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String from)?  read,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String to)?  init,TResult? Function( String peerId)?  connected,TResult? Function( String peerId)?  disconnected,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String peerId)?  welcome,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String peerId)?  update,TResult? Function( int start,  int end,  String peerId)?  selection,TResult? Function( String peerId)?  unselect,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  String from)?  read,TResult? Function(@Uint8ListConverter()  Uint8List bytes,  Map<String, Selection> selections,  String to)?  init,TResult? Function( String peerId)?  connected,TResult? Function( String peerId)?  disconnected,}) {final _that = this;
 switch (_that) {
 case ReceiveMessageWelcome() when welcome != null:
 return welcome(_that.peerId);case ReceiveMessageUpdate() when update != null:
@@ -798,7 +806,7 @@ return update(_that.bytes,_that.peerId);case ReceiveMessageSelection() when sele
 return selection(_that.start,_that.end,_that.peerId);case ReceiveMessageUnselect() when unselect != null:
 return unselect(_that.peerId);case ReceiveMessageRead() when read != null:
 return read(_that.bytes,_that.from);case ReceiveMessageInit() when init != null:
-return init(_that.bytes,_that.to);case ReceiveMessageConnected() when connected != null:
+return init(_that.bytes,_that.selections,_that.to);case ReceiveMessageConnected() when connected != null:
 return connected(_that.peerId);case ReceiveMessageDisconnected() when disconnected != null:
 return disconnected(_that.peerId);case _:
   return null;
@@ -1185,10 +1193,17 @@ as String,
 @JsonSerializable()
 
 class ReceiveMessageInit implements ReceiveMessage {
-  const ReceiveMessageInit({@Uint8ListConverter() required this.bytes, required this.to, final  String? $type}): $type = $type ?? 'init';
+  const ReceiveMessageInit({@Uint8ListConverter() required this.bytes, required final  Map<String, Selection> selections, required this.to, final  String? $type}): _selections = selections,$type = $type ?? 'init';
   factory ReceiveMessageInit.fromJson(Map<String, dynamic> json) => _$ReceiveMessageInitFromJson(json);
 
 @Uint8ListConverter() final  Uint8List bytes;
+ final  Map<String, Selection> _selections;
+ Map<String, Selection> get selections {
+  if (_selections is EqualUnmodifiableMapView) return _selections;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_selections);
+}
+
  final  String to;
 
 @JsonKey(name: 'type')
@@ -1208,16 +1223,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageInit&&const DeepCollectionEquality().equals(other.bytes, bytes)&&(identical(other.to, to) || other.to == to));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiveMessageInit&&const DeepCollectionEquality().equals(other.bytes, bytes)&&const DeepCollectionEquality().equals(other._selections, _selections)&&(identical(other.to, to) || other.to == to));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(bytes),to);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(bytes),const DeepCollectionEquality().hash(_selections),to);
 
 @override
 String toString() {
-  return 'ReceiveMessage.init(bytes: $bytes, to: $to)';
+  return 'ReceiveMessage.init(bytes: $bytes, selections: $selections, to: $to)';
 }
 
 
@@ -1228,7 +1243,7 @@ abstract mixin class $ReceiveMessageInitCopyWith<$Res> implements $ReceiveMessag
   factory $ReceiveMessageInitCopyWith(ReceiveMessageInit value, $Res Function(ReceiveMessageInit) _then) = _$ReceiveMessageInitCopyWithImpl;
 @useResult
 $Res call({
-@Uint8ListConverter() Uint8List bytes, String to
+@Uint8ListConverter() Uint8List bytes, Map<String, Selection> selections, String to
 });
 
 
@@ -1245,10 +1260,11 @@ class _$ReceiveMessageInitCopyWithImpl<$Res>
 
 /// Create a copy of ReceiveMessage
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? bytes = null,Object? to = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? bytes = null,Object? selections = null,Object? to = null,}) {
   return _then(ReceiveMessageInit(
 bytes: null == bytes ? _self.bytes : bytes // ignore: cast_nullable_to_non_nullable
-as Uint8List,to: null == to ? _self.to : to // ignore: cast_nullable_to_non_nullable
+as Uint8List,selections: null == selections ? _self._selections : selections // ignore: cast_nullable_to_non_nullable
+as Map<String, Selection>,to: null == to ? _self.to : to // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

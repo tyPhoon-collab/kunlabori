@@ -11,6 +11,266 @@ part of 'client_event.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
+
+/// @nodoc
+mixin _$Selection {
+
+ int get start; int get end;
+/// Create a copy of Selection
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SelectionCopyWith<Selection> get copyWith => _$SelectionCopyWithImpl<Selection>(this as Selection, _$identity);
+
+  /// Serializes this Selection to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Selection&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,start,end);
+
+@override
+String toString() {
+  return 'Selection(start: $start, end: $end)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SelectionCopyWith<$Res>  {
+  factory $SelectionCopyWith(Selection value, $Res Function(Selection) _then) = _$SelectionCopyWithImpl;
+@useResult
+$Res call({
+ int start, int end
+});
+
+
+
+
+}
+/// @nodoc
+class _$SelectionCopyWithImpl<$Res>
+    implements $SelectionCopyWith<$Res> {
+  _$SelectionCopyWithImpl(this._self, this._then);
+
+  final Selection _self;
+  final $Res Function(Selection) _then;
+
+/// Create a copy of Selection
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? start = null,Object? end = null,}) {
+  return _then(_self.copyWith(
+start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
+as int,end: null == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [Selection].
+extension SelectionPatterns on Selection {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _Selection value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _Selection() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _Selection value)  $default,){
+final _that = this;
+switch (_that) {
+case _Selection():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _Selection value)?  $default,){
+final _that = this;
+switch (_that) {
+case _Selection() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int start,  int end)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _Selection() when $default != null:
+return $default(_that.start,_that.end);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int start,  int end)  $default,) {final _that = this;
+switch (_that) {
+case _Selection():
+return $default(_that.start,_that.end);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int start,  int end)?  $default,) {final _that = this;
+switch (_that) {
+case _Selection() when $default != null:
+return $default(_that.start,_that.end);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _Selection implements Selection {
+  const _Selection({required this.start, required this.end});
+  factory _Selection.fromJson(Map<String, dynamic> json) => _$SelectionFromJson(json);
+
+@override final  int start;
+@override final  int end;
+
+/// Create a copy of Selection
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SelectionCopyWith<_Selection> get copyWith => __$SelectionCopyWithImpl<_Selection>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$SelectionToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Selection&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,start,end);
+
+@override
+String toString() {
+  return 'Selection(start: $start, end: $end)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SelectionCopyWith<$Res> implements $SelectionCopyWith<$Res> {
+  factory _$SelectionCopyWith(_Selection value, $Res Function(_Selection) _then) = __$SelectionCopyWithImpl;
+@override @useResult
+$Res call({
+ int start, int end
+});
+
+
+
+
+}
+/// @nodoc
+class __$SelectionCopyWithImpl<$Res>
+    implements _$SelectionCopyWith<$Res> {
+  __$SelectionCopyWithImpl(this._self, this._then);
+
+  final _Selection _self;
+  final $Res Function(_Selection) _then;
+
+/// Create a copy of Selection
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? start = null,Object? end = null,}) {
+  return _then(_Selection(
+start: null == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
+as int,end: null == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
 /// @nodoc
 mixin _$ClientEvent {
 
@@ -137,11 +397,11 @@ return delta(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function()?  welcome,TResult Function( String peerId)?  connected,TResult Function( String peerId)?  disconnected,TResult Function( Selection selection,  String peerId)?  selected,TResult Function( String peerId)?  unselected,TResult Function( String text)?  text,TResult Function( SimpleDelta delta)?  delta,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String peerId)?  welcome,TResult Function( String peerId)?  connected,TResult Function( String peerId)?  disconnected,TResult Function( Selection selection,  String peerId)?  selected,TResult Function( String peerId)?  unselected,TResult Function( String text)?  text,TResult Function( SimpleDelta delta)?  delta,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ClientEventInit() when init != null:
 return init();case ClientEventWelcome() when welcome != null:
-return welcome();case ClientEventConnected() when connected != null:
+return welcome(_that.peerId);case ClientEventConnected() when connected != null:
 return connected(_that.peerId);case ClientEventDisconnected() when disconnected != null:
 return disconnected(_that.peerId);case ClientEventSelected() when selected != null:
 return selected(_that.selection,_that.peerId);case ClientEventUnselected() when unselected != null:
@@ -165,11 +425,11 @@ return delta(_that.delta);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function()  welcome,required TResult Function( String peerId)  connected,required TResult Function( String peerId)  disconnected,required TResult Function( Selection selection,  String peerId)  selected,required TResult Function( String peerId)  unselected,required TResult Function( String text)  text,required TResult Function( SimpleDelta delta)  delta,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String peerId)  welcome,required TResult Function( String peerId)  connected,required TResult Function( String peerId)  disconnected,required TResult Function( Selection selection,  String peerId)  selected,required TResult Function( String peerId)  unselected,required TResult Function( String text)  text,required TResult Function( SimpleDelta delta)  delta,}) {final _that = this;
 switch (_that) {
 case ClientEventInit():
 return init();case ClientEventWelcome():
-return welcome();case ClientEventConnected():
+return welcome(_that.peerId);case ClientEventConnected():
 return connected(_that.peerId);case ClientEventDisconnected():
 return disconnected(_that.peerId);case ClientEventSelected():
 return selected(_that.selection,_that.peerId);case ClientEventUnselected():
@@ -189,11 +449,11 @@ return delta(_that.delta);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function()?  welcome,TResult? Function( String peerId)?  connected,TResult? Function( String peerId)?  disconnected,TResult? Function( Selection selection,  String peerId)?  selected,TResult? Function( String peerId)?  unselected,TResult? Function( String text)?  text,TResult? Function( SimpleDelta delta)?  delta,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String peerId)?  welcome,TResult? Function( String peerId)?  connected,TResult? Function( String peerId)?  disconnected,TResult? Function( Selection selection,  String peerId)?  selected,TResult? Function( String peerId)?  unselected,TResult? Function( String text)?  text,TResult? Function( SimpleDelta delta)?  delta,}) {final _that = this;
 switch (_that) {
 case ClientEventInit() when init != null:
 return init();case ClientEventWelcome() when welcome != null:
-return welcome();case ClientEventConnected() when connected != null:
+return welcome(_that.peerId);case ClientEventConnected() when connected != null:
 return connected(_that.peerId);case ClientEventDisconnected() when disconnected != null:
 return disconnected(_that.peerId);case ClientEventSelected() when selected != null:
 return selected(_that.selection,_that.peerId);case ClientEventUnselected() when unselected != null:
@@ -243,33 +503,67 @@ String toString() {
 
 
 class ClientEventWelcome implements ClientEvent {
-  const ClientEventWelcome();
+  const ClientEventWelcome({required this.peerId});
   
 
+ final  String peerId;
 
-
+/// Create a copy of ClientEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ClientEventWelcomeCopyWith<ClientEventWelcome> get copyWith => _$ClientEventWelcomeCopyWithImpl<ClientEventWelcome>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientEventWelcome);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientEventWelcome&&(identical(other.peerId, peerId) || other.peerId == peerId));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,peerId);
 
 @override
 String toString() {
-  return 'ClientEvent.welcome()';
+  return 'ClientEvent.welcome(peerId: $peerId)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class $ClientEventWelcomeCopyWith<$Res> implements $ClientEventCopyWith<$Res> {
+  factory $ClientEventWelcomeCopyWith(ClientEventWelcome value, $Res Function(ClientEventWelcome) _then) = _$ClientEventWelcomeCopyWithImpl;
+@useResult
+$Res call({
+ String peerId
+});
 
 
+
+
+}
+/// @nodoc
+class _$ClientEventWelcomeCopyWithImpl<$Res>
+    implements $ClientEventWelcomeCopyWith<$Res> {
+  _$ClientEventWelcomeCopyWithImpl(this._self, this._then);
+
+  final ClientEventWelcome _self;
+  final $Res Function(ClientEventWelcome) _then;
+
+/// Create a copy of ClientEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? peerId = null,}) {
+  return _then(ClientEventWelcome(
+peerId: null == peerId ? _self.peerId : peerId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 /// @nodoc
 
@@ -447,7 +741,7 @@ $Res call({
 });
 
 
-
+$SelectionCopyWith<$Res> get selection;
 
 }
 /// @nodoc
@@ -468,7 +762,16 @@ as String,
   ));
 }
 
-
+/// Create a copy of ClientEvent
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SelectionCopyWith<$Res> get selection {
+  
+  return $SelectionCopyWith<$Res>(_self.selection, (value) {
+    return _then(_self.copyWith(selection: value));
+  });
+}
 }
 
 /// @nodoc

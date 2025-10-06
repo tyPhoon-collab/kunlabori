@@ -1,4 +1,12 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Selection {
+    start: u32,
+    end: u32,
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
@@ -26,6 +34,7 @@ pub enum SendMessage {
     Init {
         bytes: String,
         to: String,
+        selections: HashMap<String, Selection>,
     },
     Connected {
         peer_id: String,
@@ -39,9 +48,20 @@ pub enum SendMessage {
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum ReceiveMessage {
-    Update { bytes: String },
-    Selection { start: u32, end: u32 },
+    Update {
+        bytes: String,
+    },
+    Selection {
+        start: u32,
+        end: u32,
+    },
     Unselect {},
-    Join { bytes: String },
-    Init { bytes: String, to: String },
+    Join {
+        bytes: String,
+    },
+    Init {
+        bytes: String,
+        to: String,
+        selections: HashMap<String, Selection>,
+    },
 }

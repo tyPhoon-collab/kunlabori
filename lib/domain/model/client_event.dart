@@ -2,27 +2,20 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:kunlabori/src/rust/api/model.dart';
 
 part 'client_event.freezed.dart';
+part 'client_event.g.dart';
 
-@immutable
-final class Selection {
-  const Selection({
-    required this.start,
-    required this.end,
-  });
+@freezed
+sealed class Selection with _$Selection {
+  const factory Selection({
+    required int start,
+    required int end,
+  }) = _Selection;
 
-  const Selection.zero() : start = 0, end = 0;
-  const Selection.same(int index) : start = index, end = index;
+  factory Selection.zero() => const Selection(start: 0, end: 0);
+  factory Selection.same(int index) => Selection(start: index, end: index);
 
-  final int start;
-  final int end;
-
-  @override
-  int get hashCode => Object.hash(start, end);
-
-  @override
-  bool operator ==(Object other) {
-    return other is Selection && other.start == start && other.end == end;
-  }
+  factory Selection.fromJson(Map<String, dynamic> json) =>
+      _$SelectionFromJson(json);
 }
 
 @freezed
@@ -31,7 +24,8 @@ sealed class ClientEvent with _$ClientEvent {
   const factory ClientEvent.init() = ClientEventInit;
 
   /// WebsocketサーバーからWelcomeメッセージを受け取った
-  const factory ClientEvent.welcome() = ClientEventWelcome;
+  const factory ClientEvent.welcome({required String peerId}) =
+      ClientEventWelcome;
 
   /// Websocketサーバーに接続した
   const factory ClientEvent.connected({required String peerId}) =

@@ -401,7 +401,7 @@ final class DocumentControllerProvider
 }
 
 String _$documentControllerHash() =>
-    r'065610f4f3ab10bfed63be05571a6cf7e93f5c69';
+    r'c9c05e08205f8651870fb082225ecaf1fce5dfb6';
 
 final class DocumentControllerFamily extends $Family
     with $FunctionalFamilyOverride<DocumentController, String> {

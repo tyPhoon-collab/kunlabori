@@ -44,6 +44,9 @@ Map<String, dynamic> _$SendMessageUnselectToJson(
 SendMessageInit _$SendMessageInitFromJson(Map<String, dynamic> json) =>
     SendMessageInit(
       bytes: const Uint8ListConverter().fromJson(json['bytes'] as String),
+      selections: (json['selections'] as Map<String, dynamic>).map(
+        (k, e) => MapEntry(k, Selection.fromJson(e as Map<String, dynamic>)),
+      ),
       to: json['to'] as String,
       $type: json['type'] as String?,
     );
@@ -51,6 +54,7 @@ SendMessageInit _$SendMessageInitFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$SendMessageInitToJson(SendMessageInit instance) =>
     <String, dynamic>{
       'bytes': const Uint8ListConverter().toJson(instance.bytes),
+      'selections': instance.selections,
       'to': instance.to,
       'type': instance.$type,
     };
@@ -140,6 +144,9 @@ Map<String, dynamic> _$ReceiveMessageReadToJson(ReceiveMessageRead instance) =>
 ReceiveMessageInit _$ReceiveMessageInitFromJson(Map<String, dynamic> json) =>
     ReceiveMessageInit(
       bytes: const Uint8ListConverter().fromJson(json['bytes'] as String),
+      selections: (json['selections'] as Map<String, dynamic>).map(
+        (k, e) => MapEntry(k, Selection.fromJson(e as Map<String, dynamic>)),
+      ),
       to: json['to'] as String,
       $type: json['type'] as String?,
     );
@@ -147,6 +154,7 @@ ReceiveMessageInit _$ReceiveMessageInitFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ReceiveMessageInitToJson(ReceiveMessageInit instance) =>
     <String, dynamic>{
       'bytes': const Uint8ListConverter().toJson(instance.bytes),
+      'selections': instance.selections,
       'to': instance.to,
       'type': instance.$type,
     };

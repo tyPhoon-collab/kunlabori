@@ -13,14 +13,19 @@ final class WebsocketEventHandler {
   final Send _send;
   final Sink _sink;
 
-  void handle(String id, ReceiveMessage message) {
+  void handle(
+    String id,
+    ReceiveMessage message, {
+    // for SendMessage.init
+    required Map<String, Selection> Function() getSelections,
+  }) {
     final action = switch (message) {
-      ReceiveMessageWelcome() => () {
+      ReceiveMessageWelcome(:final peerId) => () {
         // Welcomeメッセージを受け取ったらJoinメッセージを送る
         _send(
           SendMessage.join(bytes: rust_api.stateVector(id: id)),
         );
-        _sink(const ClientEvent.welcome());
+        _sink(ClientEvent.welcome(peerId: peerId));
       },
       ReceiveMessageConnected(:final peerId) => () {
         _sink(ClientEvent.connected(peerId: peerId));
@@ -42,16 +47,30 @@ final class WebsocketEventHandler {
       ReceiveMessageUnselect(:final peerId) => () {
         _sink(ClientEvent.unselected(peerId: peerId));
       },
-      ReceiveMessageRead(:final bytes, :final from) => () => _send(
-        SendMessage.init(
-          bytes: rust_api.diff(id: id, since: bytes),
-          to: from,
-        ),
-      ),
-      ReceiveMessageInit(:final bytes) => () => rust_api.merge(
-        id: id,
-        update: bytes,
-      ),
+      ReceiveMessageRead(:final bytes, :final from) => () {
+        final selections = getSelections();
+        _send(
+          SendMessage.init(
+            bytes: rust_api.diff(id: id, since: bytes),
+            selections: selections,
+            to: from,
+          ),
+        );
+      },
+      ReceiveMessageInit(:final bytes, :final selections) => () {
+        rust_api.merge(
+          id: id,
+          update: bytes,
+        );
+        selections.forEach((peerId, selection) {
+          _sink(
+            ClientEvent.selected(
+              selection: selection,
+              peerId: peerId,
+            ),
+          );
+        });
+      },
     };
     action();
   }

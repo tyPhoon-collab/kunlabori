@@ -265,16 +265,19 @@ class _EventListeners extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final myPeerId = useRef<String?>(null);
+
     ref
       ..listen(eventProvider, (previous, next) {
         final notifier = ref.read(collaboratorIndexesProvider.notifier);
 
         switch (next) {
-          case ClientEventWelcome():
+          case ClientEventWelcome(:final peerId):
             WidgetsBinding.instance.addPostFrameCallback((_) {
               ref.read(selectionControllerProvider(docId)).value =
-                  const Selection.zero();
+                  Selection.zero();
             });
+            myPeerId.value = peerId;
           case ClientEventSelected(:final selection, :final peerId):
             notifier.update(peerId, selection);
           case ClientEventDisconnected(:final peerId):
@@ -289,7 +292,18 @@ class _EventListeners extends HookConsumerWidget {
       ..listen(messagesProvider, (previous, next) {
         switch (next) {
           case AsyncData(:final value):
-            ref.read(websocketEventHandlerProvider).handle(docId, value);
+            ref
+                .read(websocketEventHandlerProvider)
+                .handle(
+                  docId,
+                  value,
+                  getSelections: () => {
+                    ?myPeerId.value: ?ref
+                        .read(selectionControllerProvider(docId))
+                        .value,
+                    ...ref.read(collaboratorIndexesProvider),
+                  },
+                );
           case AsyncError(:final error, :final stackTrace):
             debugPrint('WebSocket error: $error');
             debugPrintStack(stackTrace: stackTrace);
