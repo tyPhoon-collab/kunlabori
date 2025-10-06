@@ -156,16 +156,24 @@ class HomePage extends HookConsumerWidget {
   }
 }
 
-class _HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
+class _HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const _HomeAppBar();
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return AppBar(
       title: const Text('Kunlabori'),
+      actions: [
+        IconButton(
+          onPressed: () {
+            ref.invalidate(socketProvider);
+          },
+          icon: const Icon(Icons.refresh_rounded),
+        ),
+      ],
     );
   }
 }
